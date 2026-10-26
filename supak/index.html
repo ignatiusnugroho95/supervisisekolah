@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supervisi Akademik — SupervisiSekolah.id</title>
+    <meta name="description" content="Pusat Pilihan dan Pelaksanaan Supervisi Akademik Sekolah: Supervisi Pembelajaran di Kelas & Supervisi Bimbingan Konseling (BK)">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0f172a",
+                        secondary: "#006c49",
+                        surface: "#f8fafc",
+                        "surface-dim": "#f1f5f9"
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 14px 30px -10px rgba(15, 23, 42, 0.12);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+    <!-- Top Navigation Header -->
+    <header id="app-header" class="bg-white shadow-sm sticky top-0 z-50 transition-all border-b border-slate-200/80"></header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:pb-16 flex-grow w-full">
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-5">
+            <a href="../dashboard" class="hover:text-blue-600 transition flex items-center gap-1 font-medium">
+                <span class="material-symbols-outlined text-sm">dashboard</span>
+                <span>Dashboard KS</span>
+            </a>
+            <span class="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
+            <span class="text-blue-700 font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">school</span>
+                <span>Supervisi Akademik</span>
+            </span>
+        </nav>
+
+        <!-- Hero Header -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 md:p-10 mb-8 shadow-xl border border-slate-800">
+            <!-- Background glow accents -->
+            <div class="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-teal-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 mb-3">
+                        <span class="material-symbols-outlined text-sm">verified</span>
+                        <span>Portal Resmi Kepala Sekolah</span>
+                        <span class="w-1 h-1 rounded-full bg-blue-400"></span>
+                        <span id="hero-academic-year">2026/2027</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                        Supervisi Akademik Sekolah
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base mt-2.5 leading-relaxed">
+                        Pilih jenis supervisi akademik yang akan dilaksanakan. Lakukan telaah dokumen perencanaan, observasi pelaksanaan pembelajaran atau layanan, serta refleksi coaching pasca observasi dengan dukungan asisten AI.
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-3 flex-shrink-0">
+                    <div class="px-4 py-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-slate-200 flex items-center gap-2.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <div>
+                            <div class="text-[10px] text-slate-400 uppercase font-semibold">Status Instrumen</div>
+                            <div class="font-bold text-white">Standar BSNP &amp; Kurikulum Merdeka</div>
+                        </div>
+                    </div>
+                    <a href="../dashboard" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        <span>Kembali ke Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Summary Metrics Strip -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase text-slate-500">Guru Mapel / Kelas</span>
+                    <span class="material-symbols-outlined text-blue-600 bg-blue-50 p-1.5 rounded-xl text-lg">menu_book</span>
+                </div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-slate-900" id="stat-teachers-count">-</div>
+                <div class="text-[11px] text-slate-500 mt-1">Supervisi Pembelajaran</div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase text-teal-600">Guru BK (Konselor)</span>
+                    <span class="material-symbols-outlined text-teal-600 bg-teal-50 p-1.5 rounded-xl text-lg">psychology</span>
+                </div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-teal-700" id="stat-bk-count">-</div>
+                <div class="text-[11px] text-teal-600/80 mt-1">Supervisi Layanan BK</div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase text-indigo-600">Instrumen Siap</span>
+                    <span class="material-symbols-outlined text-indigo-600 bg-indigo-50 p-1.5 rounded-xl text-lg">fact_check</span>
+                </div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-indigo-700">63+</div>
+                <div class="text-[11px] text-indigo-600/80 mt-1">Butir Telaah RPP &amp; RPL BK</div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase text-amber-600">Metode Refleksi</span>
+                    <span class="material-symbols-outlined text-amber-600 bg-amber-50 p-1.5 rounded-xl text-lg">smart_toy</span>
+                </div>
+                <div class="text-lg sm:text-xl font-extrabold text-amber-700 mt-1">TIRTA + AI</div>
+                <div class="text-[11px] text-amber-600/80 mt-1">Coaching &amp; Umpan Balik Cepat</div>
+            </div>
+        </div>
+
+        <!-- Section: Pilihan Utama Supervisi Akademik -->
+        <div class="mb-10">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-blue-600">category</span>
+                        <span>Pilih Jalur Supervisi Akademik</span>
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Silakan tentukan fokus supervisi akademik yang hendak dilakukan oleh Kepala Sekolah.</p>
+                </div>
+            </div>
+
+            <!-- Two Master Feature Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- CARD 1: Supervisi Pembelajaran (/observasi) -->
+                <div class="glass-card rounded-3xl border-2 border-blue-200/80 p-6 sm:p-8 flex flex-col justify-between hover:border-blue-500 transition-all duration-300 glow-hover relative overflow-hidden group shadow-sm hover:shadow-md">
+                    <div class="absolute top-0 right-0 w-36 h-36 bg-blue-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform"></div>
+                    
+                    <div>
+                        <!-- Header badge & icon -->
+                        <div class="flex items-start justify-between gap-4 mb-4">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0 group-hover:rotate-3 transition-transform">
+                                <span class="material-symbols-outlined text-3xl">visibility</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-blue-600"></span> Guru Mapel / Kelas
+                            </span>
+                        </div>
+
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                            Supervisi Pembelajaran
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                            Instrumen lengkap observasi kegiatan belajar mengajar di kelas, telaah RPP / Modul Ajar Kurikulum Merdeka, serta pembinaan klinis pasca-observasi.
+                        </p>
+
+                        <!-- Feature Checklist -->
+                        <div class="mt-5 space-y-2.5 border-t border-slate-100 pt-5">
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-blue-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>Telaah RPP / Modul Ajar:</strong> Analisis tujuan, asesmen awal, kegiatan berdiferensiasi, dan literasi numerasi.</span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-blue-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>Observasi Tatap Muka:</strong> Rubrik pengamatan pelaksanaan pembelajaran (Pendahuluan, Inti, Penutup).</span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-blue-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>Coaching TIRTA &amp; AI:</strong> Percakapan tindak lanjut terstruktur dengan draf rekomendasi AI Gemini.</span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-blue-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>Cetak &amp; Ekspor:</strong> Berita Acara Supervisi, lembar instrumen, dan rekap penilaian (PDF / Excel).</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+                        <a href="./observasi/" class="w-full sm:flex-1 py-3.5 px-5 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-sm transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2">
+                            <span>Masuk Supervisi Pembelajaran</span>
+                            <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        </a>
+                        <a href="./observasi/#jadwal" class="w-full sm:w-auto py-3.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold text-xs transition flex items-center justify-center gap-1.5" title="Lihat Rekapitulasi & Jadwal">
+                            <span class="material-symbols-outlined text-base">calendar_month</span>
+                            <span>Jadwal</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CARD 2: Supervisi BK (/supak/supbk) -->
+                <div class="glass-card rounded-3xl border-2 border-teal-200/80 p-6 sm:p-8 flex flex-col justify-between hover:border-teal-500 transition-all duration-300 glow-hover relative overflow-hidden group shadow-sm hover:shadow-md">
+                    <div class="absolute top-0 right-0 w-36 h-36 bg-teal-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform"></div>
+
+                    <div>
+                        <!-- Header badge & icon -->
+                        <div class="flex items-start justify-between gap-4 mb-4">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-700 text-white flex items-center justify-center shadow-lg shadow-teal-500/20 flex-shrink-0 group-hover:rotate-3 transition-transform">
+                                <span class="material-symbols-outlined text-3xl">psychology</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-teal-600"></span> Guru BK / Konselor
+                            </span>
+                        </div>
+
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 group-hover:text-teal-600 transition-colors">
+                            Supervisi Bimbingan &amp; Konseling (BK)
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                            Instrumen khusus penilaian program bimbingan dan konseling: administrasi 33 butir, telaah RPL BK 30 butir, serta pelaksanaan layanan konseling.
+                        </p>
+
+                        <!-- Feature Checklist -->
+                        <div class="mt-5 space-y-2.5 border-t border-slate-100 pt-5">
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-teal-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>33 Butir Instrumen Program BK:</strong> Program tahunan, asesmen kebutuhan siswa, anggaran, dan fasilitas BK.</span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-teal-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>Telaah RPL BK (30 Butir):</strong> Rencana Pelaksanaan Layanan bimbingan klasikal, kelompok, dan individual.</span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-teal-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>Supervisi Layanan Konseling:</strong> Pengamatan langsung layanan konseling individual, alih tangan kasus, &amp; home visit.</span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                <span class="material-symbols-outlined text-teal-600 text-base flex-shrink-0">check_circle</span>
+                                <span><strong>Rekap &amp; Sertifikat:</strong> Lembar hasil supervisi Guru BK terstandar dengan tanda tangan digital Kepala Sekolah.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+                        <a href="./supbk/" class="w-full sm:flex-1 py-3.5 px-5 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold text-sm transition-all shadow-md shadow-teal-600/20 flex items-center justify-center gap-2">
+                            <span>Masuk Supervisi Guru BK</span>
+                            <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        </a>
+                        <a href="./supbk/#tab-rekap" class="w-full sm:w-auto py-3.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold text-xs transition flex items-center justify-center gap-1.5" title="Lihat Rekapitulasi & Jadwal BK">
+                            <span class="material-symbols-outlined text-base">calendar_month</span>
+                            <span>Jadwal BK</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Alur Siklus Supervisi Klinis 4 Tahap -->
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs mb-10">
+            <div class="max-w-2xl mb-6">
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">Pedoman Pelaksanaan</span>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mt-2">Siklus 4 Tahap Supervisi Klinis Berkelanjutan</h3>
+                <p class="text-xs sm:text-sm text-slate-600 mt-1">Supervisi akademik mengedepankan pendekatan kemitraan yang memberdayakan guru untuk berefleksi dan bertumbuh.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Step 1 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 relative">
+                    <div class="w-8 h-8 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center mb-3">1</div>
+                    <div class="font-bold text-sm text-slate-800">Pra-Observasi</div>
+                    <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Pemeriksaan dokumen perencanaan (RPP/RPL BK) dan dialog penyelarasan tujuan observasi bersama guru.
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 relative">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center mb-3">2</div>
+                    <div class="font-bold text-sm text-slate-800">Pelaksanaan Observasi</div>
+                    <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Kepala sekolah mengamati langsung proses belajar/layanan dengan instrumen objektif dan catatan fakta.
+                    </div>
+                </div>
+                <!-- Step 3 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 relative">
+                    <div class="w-8 h-8 rounded-xl bg-teal-600 text-white font-bold text-xs flex items-center justify-center mb-3">3</div>
+                    <div class="font-bold text-sm text-slate-800">Pasca-Observasi (Coaching)</div>
+                    <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Percakapan reflektif menggunakan alur TIRTA (Tujuan, Identifikasi, Rencana, Tanggung Jawab) didukung saran AI.
+                    </div>
+                </div>
+                <!-- Step 4 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 relative">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-center mb-3">4</div>
+                    <div class="font-bold text-sm text-slate-800">Rencana Tindak Lanjut</div>
+                    <div class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Kesepakatan peningkatan kompetensi guru melalui pelatihan, komunitas belajar (Kombel), atau supervisi lanjutan.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Info Supervisi Terkait (Tendik & Manajerial) -->
+        <div class="bg-gradient-to-r from-slate-100 to-indigo-50/50 rounded-3xl p-6 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl">info</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-slate-800">Mencari Supervisi Tenaga Kependidikan atau Evaluasi Kinerja?</h4>
+                    <p class="text-xs text-slate-600 mt-0.5">
+                        Supervisi Tenaga Kependidikan &amp; Manajerial berada di level Portal Utama Dashboard. Anda juga dapat membuka Evaluasi 19 Kompetensi Kinerja Guru.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
+                <a href="../evaluasi" class="flex-1 sm:flex-none px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 transition text-center">
+                    Evaluasi Kinerja
+                </a>
+                <a href="../dashboard" class="flex-1 sm:flex-none px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition text-center">
+                    Dashboard KS
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Uniform Footer -->
+    <footer id="app-footer" class="bg-white py-12 border-t border-slate-200/80 w-full mt-auto"></footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav id="app-mobile-nav" class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 md:hidden bg-white shadow-lg rounded-t-xl border-t border-slate-200"></nav>
+
+    <!-- Scripts -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/includes.js"></script>
+
+    <script>
+        // Auth verification
+        if (window.KS_AUTH) {
+            window.KS_AUTH.requireAuth();
+        }
+
+        // Initialize uniform header, footer & mobile navigation
+        if (window.KS_INCLUDES) {
+            window.KS_INCLUDES.init({
+                type: 'dashboard',
+                activeNav: 'supak'
+            });
+        }
+
+        // Populate dynamic profile & statistics
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                const profile = window.KS_AUTH ? window.KS_AUTH.getProfile() : null;
+                if (profile) {
+                    const heroYear = document.getElementById('hero-academic-year');
+                    if (heroYear && profile.academicYear) {
+                        heroYear.innerText = `${profile.academicYear} • ${profile.semester || 'Ganjil'}`;
+                    }
+                }
+
+                // Fetch total employee counts from api.php
+                const res = await fetch('../api.php?action=get_karyawan');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        const totalTeachers = data.filter(k => (k.role || '').toLowerCase().includes('guru') && !(k.role || '').toLowerCase().includes('bk')).length;
+                        const totalBk = data.filter(k => (k.role || '').toLowerCase().includes('bk')).length;
+
+                        const elTeachers = document.getElementById('stat-teachers-count');
+                        const elBk = document.getElementById('stat-bk-count');
+
+                        if (elTeachers) elTeachers.innerText = totalTeachers || '0';
+                        if (elBk) elBk.innerText = totalBk || '0';
+                    }
+                }
+            } catch (err) {
+                console.warn('Gagal memuat statistik karyawan:', err);
+                // Fallback default
+                const elTeachers = document.getElementById('stat-teachers-count');
+                const elBk = document.getElementById('stat-bk-count');
+                if (elTeachers) elTeachers.innerText = '12';
+                if (elBk) elBk.innerText = '2';
+            }
+        });
+    </script>
+</body>
+
+</html>

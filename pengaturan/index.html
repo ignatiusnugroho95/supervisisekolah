@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Akun Kepala Sekolah &amp; Identitas Sekolah — SupervisiSekolah.id</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- App Modules -->
+    <script src="../js/auth.js?v=20261020_v1"></script>
+    <script src="../js/includes.js?v=20261015_v2"></script>
+    <script src="../js/supervision-indicators.js?v=20261015_v2"></script>
+    <script src="../js/supervision-bk.js?v=20261017"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0f172a",
+                        secondary: "#0284c7",
+                        "secondary-container": "#e0f2fe",
+                        "on-secondary-container": "#0369a1",
+                        surface: "#ffffff",
+                        "on-surface": "#0f172a",
+                        "on-surface-variant": "#64748b",
+                        "surface-container": "#f8fafc",
+                        outline: "#cbd5e1"
+                    },
+                    maxWidth: {
+                        'container-max': '1280px'
+                    },
+                    padding: {
+                        'margin-mobile': '1rem',
+                        'margin-desktop': '2rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .font-display {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+    <!-- Uniform Header -->
+    <header id="app-header"></header>
+
+    <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-6 pb-24 md:pb-12 flex-grow w-full space-y-6">
+        
+        <!-- Header Banner -->
+        <section class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-secondary-container text-on-secondary-container rounded-2xl flex items-center justify-center border border-sky-200 shadow-inner">
+                    <span class="material-symbols-outlined text-3xl text-secondary" style="font-variation-settings: 'FILL' 1;">manage_accounts</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold font-display text-primary">Pengaturan Akun &amp; Identitas Sekolah</h1>
+                    <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Kelola identitas pribadi Kepala Sekolah dan data profil instansi sekolah.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="../karyawan" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">badge</span>
+                    Data Karyawan
+                </a>
+                <a href="../dashboard" class="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">dashboard</span>
+                    Ke Dashboard
+                </a>
+            </div>
+        </section>
+
+        <!-- Notification Banner -->
+        <div id="save-alert" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs md:text-sm font-semibold flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                <span>Data profil Kepala Sekolah dan identitas sekolah berhasil diperbarui secara permanen!</span>
+            </div>
+            <button onclick="document.getElementById('save-alert').classList.add('hidden')" class="text-emerald-600 hover:text-emerald-900 font-bold">&times;</button>
+        </div>
+
+        <!-- Form Grid: 2 Columns -->
+        <form id="profile-settings-form" onsubmit="handleSaveSettings(event)" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: User Summary Card -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 text-center">
+                    <div class="relative w-28 h-28 mx-auto mb-4">
+                        <img id="avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250" class="w-28 h-28 rounded-3xl object-cover border-4 border-slate-100 shadow-md" alt="Avatar Kepala Sekolah" />
+                        <span class="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white" title="Akun Terverifikasi">
+                            <span class="material-symbols-outlined text-xs">check</span>
+                        </span>
+                    </div>
+
+                    <h3 id="card-fullname" class="text-lg font-bold font-display text-primary">—</h3>
+                    <p id="card-role" class="text-xs text-secondary font-semibold">Kepala Sekolah SMP</p>
+                    <p id="card-school" class="text-xs text-slate-500 mt-1 font-medium">—</p>
+
+                    <div class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-2 gap-3 text-left text-xs">
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Username</span>
+                            <span id="card-username" class="font-mono font-bold text-slate-700">—</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Status Akun</span>
+                            <span id="card-status" class="font-bold text-emerald-600">Administrator</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keamanan Akun Box -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+                    <h4 class="text-sm font-bold font-display text-primary flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-lg">security</span>
+                        Kredensial Akses Kepala Sekolah
+                    </h4>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-username">Username Login *</label>
+                        <input id="set-username" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-700 focus:bg-white focus:border-secondary outline-none" />
+                        <span class="text-[10px] text-slate-400 mt-1 block">Username akun Kepala Sekolah yang tersimpan di tabel MySQL <code>users</code>.</span>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-status">Status Akun *</label>
+                        <select id="set-status" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-secondary outline-none">
+                            <option value="active">Administrator / Aktif</option>
+                            <option value="inactive">Nonaktif</option>
+                        </select>
+                        <span class="text-[10px] text-slate-400 mt-1 block">Status akun login di sistem supervisi.</span>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-password">Kata Sandi / Password *</label>
+                        <div class="relative">
+                            <input id="set-password" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:bg-white focus:border-secondary outline-none" />
+                        </div>
+                        <span class="text-[10px] text-slate-400 mt-1 block">Gunakan password ini saat masuk ke sistem (tersimpan aman terenkripsi di MySQL).</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Profile & School Data Form (2 Cols Span) -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Section A: Identitas Personal Kepala Sekolah -->
+                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/80 space-y-5">
+                    <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                        <span class="material-symbols-outlined text-secondary text-2xl">person</span>
+                        <div>
+                            <h3 class="text-base font-bold font-display text-primary">Identitas Pribadi Kepala Sekolah</h3>
+                            <p class="text-xs text-slate-400">Nama, gelar, panggilan, dan kontak resmi pimpinan.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-titleprefix">Gelar Depan</label>
+                            <input id="set-titleprefix" type="text" placeholder="Contoh: Dr. / Drs." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-firstname">First Name (Nama Depan) *</label>
+                            <input id="set-firstname" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-lastname">Last Name (Nama Belakang) *</label>
+                            <input id="set-lastname" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-titlesuffix">Gelar Belakang</label>
+                            <input id="set-titlesuffix" type="text" placeholder="Contoh: M.Pd. / S.Pd." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-fullname">Nama Lengkap & Gelar (Otomatis/Kustom)</label>
+                            <input id="set-fullname" type="text" placeholder="Contoh: Dr. H. Ahmad Fauzi, M.Pd." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-nickname">Nick Name (Nama Panggilan)</label>
+                            <input id="set-nickname" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-email">Alamat Email Pribadi / Akun *</label>
+                            <input id="set-email" type="email" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-phone">Nomor Telepon / WhatsApp *</label>
+                            <input id="set-phone" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-nip">NIP Kepala Sekolah</label>
+                            <input id="set-nip" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-nuptk">NUPTK</label>
+                            <input id="set-nuptk" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section B: Identitas Sekolah & Lembaga -->
+                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/80 space-y-5">
+                    <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                        <span class="material-symbols-outlined text-secondary text-2xl">apartment</span>
+                        <div>
+                            <h3 class="text-base font-bold font-display text-primary">Identitas Lembaga Sekolah</h3>
+                            <p class="text-xs text-slate-400">Data resmi sekolah yang tertera pada laporan, kop dokumen, dan sistem evaluasi.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-schoolname">Nama Resmi Sekolah *</label>
+                            <input id="set-schoolname" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-npsn">NPSN Sekolah</label>
+                            <input id="set-npsn" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-amber-50/70 border border-amber-200 rounded-2xl">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-amber-900 mb-0.5" for="set-schoolcode">
+                                    <span class="material-symbols-outlined text-sm align-middle text-amber-600 mr-1">key</span>
+                                    Kode Akses Sekolah (Akses Masuk Guru) *
+                                </label>
+                                <p class="text-[11px] text-amber-800">Kode akses resmi sekolah yang tersimpan di MySQL <code>schools</code> untuk masuk ke Dashboard Guru.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input id="set-schoolcode" type="text" required placeholder="Contoh: BRI-TF8U" class="w-36 px-3 py-2 bg-white border border-amber-300 rounded-xl text-xs font-mono font-black text-amber-700 text-center tracking-wider focus:ring-2 focus:ring-amber-400 outline-none uppercase" />
+                                <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('set-schoolcode').value); alert('Kode Akses Sekolah berhasil disalin: ' + document.getElementById('set-schoolcode').value);" class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm flex-shrink-0">
+                                    <span class="material-symbols-outlined text-sm">content_copy</span> Salin
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-schooladdress">Alamat Lengkap Sekolah</label>
+                        <input id="set-schooladdress" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-schoolemail">Email Resmi Sekolah</label>
+                            <input id="set-schoolemail" type="email" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-schoolphone">Telepon / Fax Sekolah</label>
+                            <input id="set-schoolphone" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" />
+                        </div>
+                    </div>
+
+                <!-- Submit Button Bar -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="reset" onclick="loadCurrentProfile()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+                        Batal / Reset Form
+                    </button>
+                    <button id="btn-save-profile" type="submit" class="px-6 py-2.5 bg-secondary text-white rounded-xl text-xs font-bold hover:bg-sky-700 active:scale-95 transition flex items-center gap-2 shadow-md">
+                        <span class="material-symbols-outlined text-base">save</span>
+                        <span>Simpan Seluruh Perubahan</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- ==================== SECTION C: PENGATURAN SIKLUS SUPERVISI ==================== -->
+        <section id="section-siklus-supervisi" class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/80 space-y-6 mt-8">
+            <!-- Header Banner -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                <div class="flex items-start gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center text-2xl shadow-md flex-shrink-0">
+                        <span class="material-symbols-outlined text-2xl">event_repeat</span>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="text-base md:text-lg font-bold font-display text-primary">Pengaturan Siklus Supervisi</h3>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Multi-Tenant Terisolasi
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
+                            Konfigurasi periode aktif supervisi, repositori dokumen Modul Ajar/RPP, dan pilihan kategori elemen yang aktif disupervisi. Seluruh preferensi ini tersimpan khusus untuk sekolah Anda (<span id="siklus-active-school-id" class="font-mono font-bold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200">SCH-001</span>) atas nama Kepala Sekolah <strong id="siklus-active-principal" class="text-slate-700">—</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Active Period Badge -->
+                <div class="flex items-center gap-3 bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200/80 flex-shrink-0">
+                    <span class="material-symbols-outlined text-sky-600 text-xl">calendar_month</span>
+                    <div class="text-xs">
+                        <span class="text-slate-400 font-bold block text-[10px] uppercase tracking-wider">Siklus Berjalan</span>
+                        <span id="label-active-period" class="font-black text-slate-800 text-sm">2026/2027 • Ganjil</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-Card 1: Periode Supervisi & Repositori Modul Ajar -->
+            <div class="p-5 bg-gradient-to-br from-slate-50 to-sky-50/20 border border-slate-200/80 rounded-2xl space-y-4">
+                <div class="flex items-center gap-2 pb-2 border-b border-slate-200/60">
+                    <span class="material-symbols-outlined text-sky-600 text-lg">tune</span>
+                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">1. Periode Supervisi &amp; Repositori Cloud Drive (Modul Ajar &amp; Dokumentasi)</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-academicyear">
+                            Tahun Ajaran Aktif *
+                        </label>
+                        <select id="set-academicyear" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary focus:ring-2 focus:ring-sky-200 transition outline-none font-medium">
+                            <option value="2023/2024">2023/2024</option>
+                            <option value="2024/2025">2024/2025</option>
+                            <option value="2025/2026">2025/2026</option>
+                            <option value="2026/2027">2026/2027</option>
+                            <option value="2027/2028">2027/2028</option>
+                        </select>
+                        <p class="text-[10px] text-slate-400 mt-1">Mengubah tahun ajaran akan memuat konfigurasi kategori khusus tahun tersebut.</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="set-semester">
+                            Semester *
+                        </label>
+                        <select id="set-semester" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary focus:ring-2 focus:ring-sky-200 transition outline-none font-medium">
+                            <option value="Ganjil">Semester Ganjil</option>
+                            <option value="Genap">Semester Genap</option>
+                        </select>
+                        <p class="text-[10px] text-slate-400 mt-1">Preferensi kategori supervisi dapat dibedakan antara semester ganjil dan genap.</p>
+                    </div>
+                </div>
+
+                <!-- 1. Input Folder Simpanan Modul Ajar (Google Drive / Cloud Storage) -->
+                <div class="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900" for="set-modulajar-folder">
+                            <span class="material-symbols-outlined text-sm align-middle text-emerald-600 mr-1">folder_shared</span>
+                            Tautan Folder Simpanan Modul Ajar &amp; RPP (Tahap 1) *
+                        </label>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-300">
+                            Google Drive / Cloud Storage
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-emerald-800 leading-relaxed">
+                        Masukkan tautan folder tempat Kepala Sekolah &amp; Guru menyimpan Modul Ajar dan RPP. Tautan ini otomatis terhubung sebagai pintasan pada Tab Telaah Modul Ajar, Portal Guru, dan lembar laporan hasil supervisi.
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-1">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-base">link</span>
+                            <input id="set-modulajar-folder" type="url" placeholder="https://drive.google.com/drive/folders/... atau https://onedrive.live.com/..." class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition outline-none font-mono" />
+                        </div>
+                        <button type="button" onclick="testModulAjarDriveLink()" class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm flex-shrink-0">
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+                            <span>Tes Buka</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Input Folder Dokumentasi Observasi Kelas (Langkah 2) -->
+                <div class="p-4 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-900" for="set-doc-obs-folder">
+                            <span class="material-symbols-outlined text-sm align-middle text-indigo-600 mr-1">photo_camera</span>
+                            Tautan Folder Dokumentasi Observasi Kelas (Langkah 2) *
+                        </label>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-full border border-indigo-300">
+                            Google Drive / Cloud Storage
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-indigo-800 leading-relaxed">
+                        Masukkan tautan folder (Google Drive / Cloud Storage) tempat Kepala Sekolah menyimpan foto, video, atau dokumen dokumentasi pelaksanaan observasi di kelas. Tautan ini otomatis menjadi pintasan pada Tab Observasi Langkah 2 dan dicantumkan pada Lembar Laporan Hasil guru.
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-1">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-base">link</span>
+                            <input id="set-doc-obs-folder" type="url" placeholder="https://drive.google.com/drive/folders/... atau https://onedrive.live.com/..." class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-indigo-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 transition outline-none font-mono" />
+                        </div>
+                        <button type="button" onclick="testDocObsDriveLink()" class="px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm flex-shrink-0">
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+                            <span>Tes Buka</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Input Folder Dokumentasi Pasca-Observasi (Langkah 3) -->
+                <div class="p-4 bg-teal-50/70 border border-teal-200 rounded-2xl space-y-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-teal-900" for="set-doc-pasca-folder">
+                            <span class="material-symbols-outlined text-sm align-middle text-teal-600 mr-1">forum</span>
+                            Tautan Folder Dokumentasi Pasca-Observasi &amp; Coaching (Langkah 3) *
+                        </label>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-teal-100 text-teal-800 rounded-full border border-teal-300">
+                            Google Drive / Cloud Storage
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-teal-800 leading-relaxed">
+                        Masukkan tautan folder (Google Drive / Cloud Storage) tempat Kepala Sekolah menyimpan dokumentasi wawancara pasca-observasi, lembar coaching refleksi, atau bukti tindak lanjut. Tautan ini otomatis menjadi pintasan pada Tab Observasi Langkah 3 dan dicantumkan pada Lembar Laporan Hasil guru.
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-1">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-base">link</span>
+                            <input id="set-doc-pasca-folder" type="url" placeholder="https://drive.google.com/drive/folders/... atau https://onedrive.live.com/..." class="w-full pl-9 pr-3.5 py-2.5 bg-white border border-teal-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-400 focus:border-teal-500 transition outline-none font-mono" />
+                        </div>
+                        <button type="button" onclick="testDocPascaDriveLink()" class="px-3.5 py-2.5 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm flex-shrink-0">
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+                            <span>Tes Buka</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-Card 2: Pengelolaan Kategori & Indikator Supervisi Akademik -->
+            <div class="space-y-4 pt-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sky-600 text-lg">checklist_rtl</span>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">2. Pilihan Kategori &amp; Elemen Supervisi Aktif</h4>
+                            <p class="text-[11px] text-slate-500">Centang elemen yang aktif disupervisi. Indikator pada <strong>Telaah RPP</strong>, <strong>Pra-Observasi</strong>, <strong>Observasi Kelas</strong>, dan <strong>Pasca-Observasi</strong> di menu <a href="../supak/observasi" class="text-sky-600 font-bold hover:underline">/supak/observasi</a> akan otomatis menyesuaikan.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Controls -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="selectAllCategories(true)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 transition">
+                            Pilih Semua
+                        </button>
+                        <button type="button" onclick="selectStandardCategories()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 transition">
+                            Standar (ELE+PM)
+                        </button>
+                        <button type="button" onclick="openAddCategoryModal()" class="px-3 py-1.5 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            + Kategori
+                        </button>
+                        <button type="button" onclick="openAddIndicatorModal()" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">post_add</span>
+                            + Indikator
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Category Grid Container (Loaded Dynamically) -->
+                <div id="category-cards-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <div class="col-span-full py-10 text-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-sky-500"></i>
+                        <p>Memuat konfigurasi kategori supervisi dari database MySQL...</p>
+                    </div>
+                </div>
+
+                <!-- Live Calculation & Save Footer Banner -->
+                <div class="p-4 md:p-5 rounded-2xl bg-gradient-to-r from-slate-50 via-sky-50/30 to-indigo-50/20 border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-slate-700">Ringkasan Butir Supervisi Aktif:</span>
+                            <span id="badge-active-cats-count" class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-black">0 Kategori Terpilih</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-600 font-medium">
+                            <span id="stat-stage1" class="px-2 py-0.5 bg-white rounded-lg border border-slate-200">Tahap 1 (Telaah RPP): <strong class="text-blue-700">0</strong> Butir</span>
+                            <span id="stat-stage2" class="px-2 py-0.5 bg-white rounded-lg border border-slate-200">Tahap 2 (Pra-Obs): <strong class="text-amber-700">0</strong> Tanya</span>
+                            <span id="stat-stage3" class="px-2 py-0.5 bg-white rounded-lg border border-slate-200">Tahap 3 (Obs Kelas): <strong class="text-emerald-700">0</strong> Butir</span>
+                            <span id="stat-stage4" class="px-2 py-0.5 bg-white rounded-lg border border-slate-200">Tahap 4 (Pasca-Obs): <strong class="text-rose-700">0</strong> Tanya</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="saveSupervisionCategories()" id="btn-save-categories" class="w-full md:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined text-base">check_circle</span>
+                            <span>Simpan Pengaturan Siklus Supervisi</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-Card 3: Pilihan Kategori & Elemen Supervisi Guru BK Aktif -->
+            <div class="space-y-4 pt-6 border-t border-slate-200/80">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-teal-600 text-xl">psychology</span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">3. Pilihan Kategori &amp; Elemen Supervisi Guru BK Aktif</h4>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-100 text-teal-800 border border-teal-200">
+                                    Khusus Supervisi BK
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Centang elemen yang aktif disupervisi untuk Guru BK. Indikator pada <strong>Supervisi BK</strong>, <strong>Telaah RPL BK</strong>, dan <strong>Coaching TIRTA</strong> di menu <a href="../supak/supbk" class="text-teal-700 font-bold hover:underline">/supak/supbk</a> akan otomatis menyesuaikan.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Controls for BK -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="selectAllBkCategories(true)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 transition">
+                            Pilih Semua
+                        </button>
+                        <button type="button" onclick="selectStandardBkCategories()" class="px-3 py-1.5 bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200 rounded-xl text-xs font-bold transition">
+                            Standar (Dasar Saja)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BK Category Cards Grid -->
+                <div id="bk-category-cards-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="col-span-full py-8 text-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-teal-500"></i>
+                        <p>Memuat konfigurasi kategori supervisi Guru BK...</p>
+                    </div>
+                </div>
+
+                <!-- BK Summary & Save Banner -->
+                <div class="p-4 md:p-5 rounded-2xl bg-gradient-to-r from-teal-50/60 via-slate-50 to-indigo-50/20 border border-teal-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-slate-700">Ringkasan Butir Supervisi BK Aktif:</span>
+                            <span id="badge-active-bk-cats-count" class="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[11px] font-black">0 Elemen Terpilih</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-600 font-medium">
+                            <span id="stat-bk-stage1" class="px-2 py-0.5 bg-white rounded-lg border border-slate-200">Tahap 1 (Supervisi BK): <strong class="text-teal-700">0</strong> Butir</span>
+                            <span id="stat-bk-stage2" class="px-2 py-0.5 bg-white rounded-lg border border-slate-200">Tahap 2 (Telaah RPL): <strong class="text-indigo-700">0</strong> Butir</span>
+                            <span id="stat-bk-total" class="px-2 py-0.5 bg-white rounded-lg border border-slate-200">Total Butir BK: <strong class="text-emerald-700">0</strong> Butir</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="saveSupervisionBkCategories()" id="btn-save-bk-categories" class="w-full md:w-auto px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined text-base">check_circle</span>
+                            <span>Simpan Pengaturan Kategori BK</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Tambah Kategori Baru -->
+    <div id="modal-add-category" class="fixed inset-0 z-[999] bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sky-600">playlist_add</span>
+                    <h3 class="font-bold text-slate-800 text-sm">Tambah Kategori Elemen Baru</h3>
+                </div>
+                <button type="button" onclick="closeAddCategoryModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+            </div>
+            <form onsubmit="handleCreateCategory(event)" class="space-y-3.5 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" for="new-cat-name">Nama Kategori *</label>
+                    <input id="new-cat-name" type="text" required placeholder="Contoh: Inovasi Digital & Multimedia" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-sky-500 outline-none" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1" for="new-cat-code">Kode Singkat *</label>
+                        <input id="new-cat-code" type="text" required maxlength="5" placeholder="Contoh: INO" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl uppercase font-mono focus:bg-white focus:border-sky-500 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1" for="new-cat-color">Tema Warna</label>
+                        <select id="new-cat-color" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-sky-500 outline-none">
+                            <option value="blue">Biru (Blue)</option>
+                            <option value="sky">Langit (Sky)</option>
+                            <option value="emerald">Hijau (Emerald)</option>
+                            <option value="amber">Kuning (Amber)</option>
+                            <option value="rose">Merah Muda (Rose)</option>
+                            <option value="purple">Ungu (Purple)</option>
+                            <option value="teal" selected>Teal / Toska</option>
+                            <option value="indigo">Indigo</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" for="new-cat-desc">Deskripsi Fokus Kategori</label>
+                    <textarea id="new-cat-desc" rows="2" placeholder="Jelaskan ruang lingkup elemen atau kompetensi yang dinilai..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-sky-500 outline-none"></textarea>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddCategoryModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold shadow-sm transition">Simpan Kategori</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Indikator Baru -->
+    <div id="modal-add-indicator" class="fixed inset-0 z-[999] bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-indigo-600">post_add</span>
+                    <h3 class="font-bold text-slate-800 text-sm">Tambah Butir Indikator Supervisi Baru</h3>
+                </div>
+                <button type="button" onclick="closeAddIndicatorModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+            </div>
+            <form onsubmit="handleCreateIndicator(event)" class="space-y-3.5 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" for="new-ind-cat">Kategori Induk *</label>
+                    <select id="new-ind-cat" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" for="new-ind-stage">Tahap Supervisi *</label>
+                    <select id="new-ind-stage" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none">
+                        <option value="1TelaahModulAjar">Tahap 1: Telaah Modul Ajar (RPP)</option>
+                        <option value="2PraObs">Tahap 2: Wawancara Pra-Observasi</option>
+                        <option value="3Observasi">Tahap 3: Observasi Pembelajaran Kelas</option>
+                        <option value="4PostObs">Tahap 4: Wawancara Pasca-Observasi (Refleksi)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" for="new-ind-focus">Fokus / Bagian Pembelajaran</label>
+                    <input id="new-ind-focus" type="text" placeholder="Contoh: Kegiatan Inti / Pengalaman Belajar" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none" />
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1" for="new-ind-title">Teks Pernyataan Indikator / Pertanyaan *</label>
+                    <textarea id="new-ind-title" required rows="3" placeholder="Tuliskan indikator yang harus diamati atau pertanyaan wawancara..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none"></textarea>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddIndicatorModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-sm transition">Simpan Indikator</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Lihat Indikator Kategori -->
+    <div id="modal-view-indicators" class="fixed inset-0 z-[999] bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col p-6 shadow-2xl border border-slate-100 overflow-hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <span id="view-cat-badge" class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-blue-100 text-blue-800">ELE</span>
+                    <div>
+                        <h3 id="view-cat-title" class="font-bold text-slate-800 text-sm">Daftar Indikator Kategori</h3>
+                        <p id="view-cat-desc" class="text-[11px] text-slate-400">Rincian seluruh butir indikator per tahap supervisi.</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeViewIndicatorsModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div id="view-cat-indicators-content" class="flex-1 overflow-y-auto py-4 space-y-4 text-xs pr-1">
+                <!-- Rendered dynamically -->
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end flex-shrink-0">
+                <button type="button" onclick="closeViewIndicatorsModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Modal Notification Popup -->
+    <div id="hero-save-modal" class="fixed inset-0 z-[999] bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl border border-slate-100 transform transition-all duration-300 scale-95 text-center relative overflow-hidden" id="hero-save-card">
+            <!-- Decorative Top Gradient Accent -->
+            <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-sky-500 to-indigo-600"></div>
+
+            <!-- Hero Success Icon Badge -->
+            <div class="w-20 h-20 mx-auto mb-5 rounded-3xl bg-emerald-50 text-emerald-600 border-2 border-emerald-200 flex items-center justify-center shadow-lg shadow-emerald-500/15">
+                <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+            </div>
+
+            <!-- Hero Headline -->
+            <h2 class="text-2xl font-bold font-display text-primary tracking-tight">Profil Berhasil Diperbarui!</h2>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                Perubahan data akun Kepala Sekolah &amp; Identitas Lembaga telah tersimpan permanen di database lokal serta otomatis tersinkron ke semua modul web.
+            </p>
+
+            <!-- Snapshot Info Card -->
+            <div class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-200/80 text-left space-y-2.5 text-xs">
+                <div class="flex items-center justify-between border-b border-slate-200/60 pb-2">
+                    <span class="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">Nama Resmi Kepala Sekolah</span>
+                    <span id="hero-saved-name" class="font-bold text-slate-800 text-right">—</span>
+                </div>
+                <div class="flex items-center justify-between border-b border-slate-200/60 pb-2">
+                    <span class="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">Instansi Sekolah</span>
+                    <span id="hero-saved-school" class="font-bold text-sky-700 text-right">—</span>
+                </div>
+                <div class="flex items-center justify-between border-b border-slate-200/60 pb-2">
+                    <span class="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">NIP / NUPTK</span>
+                    <span id="hero-saved-nip" class="font-mono text-slate-700 text-right">-</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">Tahun Ajaran &amp; Semester</span>
+                    <span id="hero-saved-period" class="font-semibold text-emerald-700 text-right">2025/2026 (Genap)</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button onclick="closeHeroModal()" class="w-full sm:w-auto px-6 py-2.5 bg-secondary text-white rounded-xl text-xs font-bold hover:bg-sky-700 shadow-md transition flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">check</span>
+                    <span>Lanjutkan / Tutup</span>
+                </button>
+                <a href="../dashboard" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">dashboard</span>
+                    <span>Buka Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Uniform Footer -->
+    <footer id="app-footer"></footer>
+    <!-- Uniform Mobile Bottom Nav -->
+    <nav id="app-mobile-nav"></nav>
+
+    <script>
+        // Check Auth Guard
+        if (window.KS_AUTH) {
+            window.KS_AUTH.requireAuth();
+        }
+
+        function initPengaturanPage() {
+            // Render Includes Layout safely
+            try {
+                if (window.KS_INCLUDES) {
+                    window.KS_INCLUDES.init({ type: 'dashboard', activeNav: 'pengaturan' });
+                }
+            } catch (err) {
+                console.warn('Layout render warning:', err);
+            }
+
+            try {
+                loadCurrentProfile();
+            } catch (err) {
+                console.error('Error loading current profile:', err);
+            }
+
+            try {
+                loadSupervisionCategoriesConfig();
+                loadSupervisionBkCategoriesConfig();
+            } catch (err) {
+                console.error('Error loading supervision categories:', err);
+            }
+
+            // Direct event listener binding to form for bulletproof trigger
+            const form = document.getElementById('profile-settings-form');
+            if (form) {
+                form.addEventListener('submit', handleSaveSettings);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', initPengaturanPage);
+        } else {
+            initPengaturanPage();
+        }
+
+        // Listen to server synchronization updates across any browser tab
+        window.addEventListener('ks:profile-synced', (e) => {
+            loadCurrentProfile();
+        });
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) initPengaturanPage();
+        });
+
+        async function loadCurrentProfile() {
+            let p = window.KS_AUTH ? window.KS_AUTH.getProfile() : {};
+            const session = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+            if (session) {
+                if (!p.username || (session.username && p.username !== session.username)) {
+                    p.username = session.username;
+                    p.fullName = session.fullName || p.fullName;
+                    p.schoolId = session.schoolId || p.schoolId;
+                    p.schoolName = session.schoolName || p.schoolName;
+                }
+            }
+            renderProfileForm(p);
+
+            // Fetch live, authoritative data directly from MySQL database
+            try {
+                const token = localStorage.getItem('supervisi_auth_token') || localStorage.getItem('ks_auth_token') || (session ? session.token : '');
+                const schoolId = (session && session.schoolId) ? session.schoolId : (p.schoolId || '');
+                const username = (session && session.username) ? session.username : (p.username || '');
+                const baseUrl = window.KS_AUTH ? window.KS_AUTH.getBaseUrl() : '../';
+
+                const res = await fetch(baseUrl + `api.php?action=get_profile&school_id=${encodeURIComponent(schoolId)}&token=${encodeURIComponent(token)}&username=${encodeURIComponent(username)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.success && data.profile) {
+                        p = data.profile;
+                        localStorage.setItem('supervisi_headmaster_profile', JSON.stringify(p));
+                        localStorage.setItem('ks_headmaster_profile', JSON.stringify(p));
+                        renderProfileForm(p);
+                    }
+                }
+            } catch (err) {
+                console.warn('Gagal memuat profil langsung dari MySQL:', err);
+            }
+        }
+
+        function renderProfileForm(p) {
+            const session = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+            const fullName = p.fullName || (session ? session.fullName : '') || '';
+            const schoolName = p.schoolName || (session ? session.schoolName : '') || '';
+            const username = p.username || (session ? session.username : '') || '';
+            const status = p.status || (session ? session.status : 'active') || 'active';
+
+            // Card Summary
+            const elFullname = document.getElementById('card-fullname');
+            if (elFullname) elFullname.innerText = fullName;
+            const elRole = document.getElementById('card-role');
+            if (elRole) elRole.innerText = p.role || (session ? session.roleLabel : 'Kepala Sekolah SMP');
+            const elSchool = document.getElementById('card-school');
+            if (elSchool) elSchool.innerText = schoolName;
+            const elUser = document.getElementById('card-username');
+            if (elUser) elUser.innerText = username;
+            const elStatus = document.getElementById('card-status');
+            if (elStatus) {
+                elStatus.innerText = status === 'active' ? 'Administrator' : 'Nonaktif';
+                elStatus.className = status === 'active' ? 'font-bold text-emerald-600' : 'font-bold text-amber-600';
+            }
+            if (p.avatarUrl) {
+                const elAvatar = document.getElementById('avatar-preview');
+                if (elAvatar) elAvatar.src = p.avatarUrl;
+            }
+
+            // Input Fields
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = (val !== undefined && val !== null) ? val : '';
+            };
+
+            setVal('set-username', username);
+            setVal('set-status', status);
+            setVal('set-password', p.password || 'kepalasekolah');
+
+            setVal('set-titleprefix', p.titlePrefix);
+            setVal('set-firstname', p.firstName);
+            setVal('set-lastname', p.lastName);
+            setVal('set-titlesuffix', p.titleSuffix);
+            setVal('set-fullname', p.fullName);
+            setVal('set-nickname', p.nickName);
+            setVal('set-email', p.email);
+            setVal('set-phone', p.phone);
+            setVal('set-nip', p.nip);
+            setVal('set-nuptk', p.nuptk);
+
+            setVal('set-schoolname', p.schoolName);
+            setVal('set-npsn', p.npsn);
+            setVal('set-schoolcode', p.schoolCode);
+            setVal('set-schooladdress', p.schoolAddress);
+            setVal('set-schoolemail', p.schoolEmail);
+            setVal('set-schoolphone', p.schoolPhone);
+            setVal('set-academicyear', p.academicYear || '2026/2027');
+            setVal('set-semester', p.semester || 'Ganjil');
+            const folderInput = document.getElementById('set-modulajar-folder');
+            if (folderInput) folderInput.value = p.modulAjarFolderUrl || '';
+            const docObsInput = document.getElementById('set-doc-obs-folder');
+            if (docObsInput) docObsInput.value = p.dokumentasiObservasiFolderUrl || '';
+            const docPascaInput = document.getElementById('set-doc-pasca-folder');
+            if (docPascaInput) docPascaInput.value = p.dokumentasiPascaFolderUrl || '';
+
+            // Siklus Supervisi School ID & Principal Badges
+            const schoolId = p.schoolId || (session ? session.schoolId : '') || 'SCH-001';
+            const elSiklusSchoolId = document.getElementById('siklus-active-school-id');
+            if (elSiklusSchoolId) elSiklusSchoolId.innerText = schoolId;
+            const elSiklusPrincipal = document.getElementById('siklus-active-principal');
+            if (elSiklusPrincipal) elSiklusPrincipal.innerText = fullName || username;
+        }
+
+        function testGenericDriveLink(inputId, label) {
+            const el = document.getElementById(inputId);
+            const url = el ? el.value.trim() : '';
+            if (!url) {
+                alert(`Silakan masukkan tautan Google Drive / Cloud Storage untuk ${label} terlebih dahulu.`);
+                if (el) el.focus();
+                return;
+            }
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('Tautan harus diawali dengan http:// atau https://');
+                if (el) el.focus();
+                return;
+            }
+            window.open(url, '_blank');
+        }
+
+        function testModulAjarDriveLink() {
+            testGenericDriveLink('set-modulajar-folder', 'Modul Ajar & RPP');
+        }
+
+        function testDocObsDriveLink() {
+            testGenericDriveLink('set-doc-obs-folder', 'Dokumentasi Observasi (Langkah 2)');
+        }
+
+        function testDocPascaDriveLink() {
+            testGenericDriveLink('set-doc-pasca-folder', 'Dokumentasi Pasca-Observasi (Langkah 3)');
+        }
+
+        async function handleSaveSettings(e) {
+            if (e) e.preventDefault();
+
+            try {
+                const getVal = (id) => {
+                    const el = document.getElementById(id);
+                    return el ? el.value.trim() : '';
+                };
+
+                const session = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+                const currentProf = window.KS_AUTH ? window.KS_AUTH.getProfile() : {};
+                const schoolId = session ? (session.schoolId || '') : (currentProf.schoolId || 'SCH-001');
+
+                const newUsername = getVal('set-username') || (session ? session.username : '') || currentProf.username || '';
+                const newStatus = getVal('set-status') || 'active';
+                const newPassword = getVal('set-password') || '';
+
+                const updated = {
+                    schoolId: schoolId,
+                    school_id: schoolId,
+                    username: newUsername,
+                    status: newStatus,
+                    password: newPassword,
+                    titlePrefix: getVal('set-titleprefix'),
+                    firstName: getVal('set-firstname') || currentProf.firstName || '',
+                    lastName: getVal('set-lastname') || currentProf.lastName || '',
+                    titleSuffix: getVal('set-titlesuffix') || currentProf.titleSuffix || '',
+                    fullName: getVal('set-fullname') || currentProf.fullName || (session ? session.fullName : ''),
+                    nickName: getVal('set-nickname') || currentProf.nickName || '',
+                    email: getVal('set-email') || currentProf.email || '',
+                    phone: getVal('set-phone') || currentProf.phone || '',
+                    nip: getVal('set-nip') || currentProf.nip || '',
+                    nuptk: getVal('set-nuptk') || currentProf.nuptk || '',
+                    schoolName: getVal('set-schoolname') || currentProf.schoolName || '',
+                    npsn: getVal('set-npsn') || currentProf.npsn || '',
+                    schoolAddress: getVal('set-schooladdress') || currentProf.schoolAddress || '',
+                    schoolEmail: getVal('set-schoolemail') || currentProf.schoolEmail || '',
+                    schoolPhone: getVal('set-schoolphone') || currentProf.schoolPhone || '',
+                    schoolCode: getVal('set-schoolcode') || currentProf.schoolCode || '',
+                    academicYear: getVal('set-academicyear') || currentProf.academicYear || '2026/2027',
+                    semester: document.getElementById('set-semester') ? document.getElementById('set-semester').value : 'Ganjil',
+                    modulAjarFolderUrl: getVal('set-modulajar-folder') || '',
+                    dokumentasiObservasiFolderUrl: getVal('set-doc-obs-folder') || '',
+                    dokumentasiPascaFolderUrl: getVal('set-doc-pasca-folder') || ''
+                };
+
+                // Save to local storage and sync directly to Server MySQL Database
+                const saved = await window.KS_AUTH.saveProfile(updated);
+
+                // Also save active categories to MySQL for this school & period if selected
+                if (window.KS_INDICATOR_MANAGER && selectedCategoryNames.length > 0) {
+                    await window.KS_INDICATOR_MANAGER.saveActiveCategories(saved.academicYear, saved.semester, selectedCategoryNames);
+                }
+                if (window.KS_BK_MANAGER && selectedBkCategoryNames.length > 0) {
+                    await window.KS_BK_MANAGER.saveActiveCategories(saved.academicYear, saved.semester, selectedBkCategoryNames);
+                }
+
+                // Multi-Cycle Supervision Synchronization:
+                // If the supervision cycle (academic year / semester) changed, load the newly selected cycle's data
+                const cycleChanged = (currentProf.academicYear !== saved.academicYear) || (currentProf.semester !== saved.semester);
+                if (cycleChanged) {
+                    if (window.KS_OBSERVATION_DB && typeof window.KS_OBSERVATION_DB.fetchFromServer === 'function') {
+                        await window.KS_OBSERVATION_DB.fetchFromServer(saved.academicYear, saved.semester);
+                    }
+                    if (window.KS_TELAAH_RPP_DB && typeof window.KS_TELAAH_RPP_DB.fetchFromServer === 'function') {
+                        await window.KS_TELAAH_RPP_DB.fetchFromServer(saved.academicYear, saved.semester);
+                    }
+                }
+
+                // Re-render header & card with new data
+                if (window.KS_INCLUDES) {
+                    window.KS_INCLUDES.renderHeader({ type: 'dashboard', activeNav: 'pengaturan' });
+                    window.KS_INCLUDES.renderFooter({ type: 'dashboard', activeNav: 'pengaturan' });
+                }
+                renderProfileForm(saved);
+
+                // Show Notification Banner
+                const alertBox = document.getElementById('save-alert');
+                if (alertBox) {
+                    alertBox.classList.remove('hidden');
+                }
+
+                // Trigger Hero Popup Modal
+                showHeroModal(saved);
+
+            } catch (err) {
+                console.error("Error saving profile:", err);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Menyimpan',
+                        text: 'Terjadi kesalahan teknis saat menyimpan data: ' + err.message,
+                        confirmButtonColor: '#0284c7'
+                    });
+                } else {
+                    alert('Gagal menyimpan profil: ' + err.message);
+                }
+            }
+        }
+
+        function showHeroModal(profile) {
+            document.getElementById('hero-saved-name').innerText = profile.fullName || `${profile.firstName} ${profile.lastName}`;
+            document.getElementById('hero-saved-school').innerText = profile.schoolName || '-';
+            document.getElementById('hero-saved-nip').innerText = `${profile.nip || '-'} / ${profile.nuptk || '-'}`;
+            document.getElementById('hero-saved-period').innerText = `${profile.academicYear || '2025/2026'} (${profile.semester || 'Genap'})`;
+
+            const modal = document.getElementById('hero-save-modal');
+            const card = document.getElementById('hero-save-card');
+            modal.classList.remove('hidden');
+
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            }, 10);
+
+            // Trigger Confetti Celebration
+            if (typeof confetti === 'function') {
+                try {
+                    confetti({
+                        particleCount: 80,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                } catch (e) {}
+            }
+        }
+
+        function closeHeroModal() {
+            const modal = document.getElementById('hero-save-modal');
+            const card = document.getElementById('hero-save-card');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // ==============================================================
+        // SUPERVISION CATEGORIES & INDICATORS MANAGEMENT LOGIC
+        // ==============================================================
+        let currentSupervisionConfig = null;
+        let selectedCategoryNames = [];
+
+        // Hook period changes to auto-update categories
+        document.getElementById('set-academicyear')?.addEventListener('change', () => {
+            updateActivePeriodLabel();
+            loadSupervisionCategoriesConfig();
+        });
+        document.getElementById('set-semester')?.addEventListener('change', () => {
+            updateActivePeriodLabel();
+            loadSupervisionCategoriesConfig();
+        });
+
+        function updateActivePeriodLabel() {
+            const year = document.getElementById('set-academicyear')?.value || '2026/2027';
+            const sem = document.getElementById('set-semester')?.value || 'Ganjil';
+            const lbl = document.getElementById('label-active-period');
+            if (lbl) lbl.innerText = `${year} • ${sem}`;
+        }
+
+        async function loadSupervisionCategoriesConfig() {
+            updateActivePeriodLabel();
+            const year = document.getElementById('set-academicyear')?.value || '2026/2027';
+            const sem = document.getElementById('set-semester')?.value || 'Ganjil';
+
+            if (window.KS_INDICATOR_MANAGER) {
+                currentSupervisionConfig = await window.KS_INDICATOR_MANAGER.loadConfig(year, sem, true);
+                selectedCategoryNames = [...(currentSupervisionConfig.active_categories || [])];
+                renderCategoryCards();
+                updateLiveSummaryStats();
+            }
+        }
+
+        function renderCategoryCards() {
+            const container = document.getElementById('category-cards-grid');
+            if (!container || !currentSupervisionConfig) return;
+
+            const categories = currentSupervisionConfig.categories || [];
+            if (categories.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400">Tidak ada kategori supervisi yang ditemukan.</div>`;
+                return;
+            }
+
+            // Populate category dropdown for indicator modal
+            const catSelect = document.getElementById('new-ind-cat');
+            if (catSelect) {
+                catSelect.innerHTML = categories.map(c => `
+                    <option value="${c.name}" data-id="${c.id}">${c.name} (${c.code || c.id})</option>
+                `).join('');
+            }
+
+            container.innerHTML = categories.map(cat => {
+                const isActive = selectedCategoryNames.includes(cat.name);
+                const theme = window.KS_INDICATOR_MANAGER ? window.KS_INDICATOR_MANAGER.getCategoryTheme(cat.color) : { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' };
+                const counts = cat.counts || { '1TelaahModulAjar': 0, '2PraObs': 0, '3Observasi': 0, '4PostObs': 0, 'total': 0 };
+
+                return `
+                    <div class="relative bg-white rounded-2xl p-5 border-2 transition-all duration-200 flex flex-col justify-between ${isActive ? 'border-sky-500 shadow-md shadow-sky-500/5' : 'border-slate-200/80 opacity-80 hover:opacity-100'}">
+                        <!-- Top Accent Line -->
+                        <div class="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl ${isActive ? 'bg-gradient-to-r from-sky-500 to-indigo-600' : 'bg-slate-200'}"></div>
+
+                        <div>
+                            <!-- Header: Checkbox & Badge -->
+                            <div class="flex items-start justify-between gap-3 mb-3 pt-1">
+                                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                                    <input type="checkbox" ${isActive ? 'checked' : ''} onchange="toggleCategoryActive('${cat.name.replace(/'/g, "\\'")}', this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 transition cursor-pointer" />
+                                    <span class="font-bold text-xs text-slate-800 hover:text-sky-600 transition leading-snug">${cat.name}</span>
+                                </label>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${theme.bg} ${theme.text} border ${theme.border} flex-shrink-0">
+                                    ${cat.code || cat.id}
+                                </span>
+                            </div>
+
+                            <p class="text-[11px] text-slate-500 line-clamp-2 mb-4 leading-relaxed font-normal">
+                                ${cat.description || 'Tidak ada keterangan fokus.'}
+                            </p>
+                        </div>
+
+                        <!-- Stage Counts & Actions -->
+                        <div class="pt-3 border-t border-slate-100 space-y-2.5">
+                            <div class="grid grid-cols-4 gap-1 text-center">
+                                <div class="p-1.5 rounded-lg bg-slate-50" title="Tahap 1: Telaah Modul Ajar (RPP)">
+                                    <span class="block text-[9px] uppercase font-bold text-slate-400">T1 RPP</span>
+                                    <span class="text-xs font-black text-blue-700">${counts['1TelaahModulAjar']}</span>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-slate-50" title="Tahap 2: Wawancara Pra-Observasi">
+                                    <span class="block text-[9px] uppercase font-bold text-slate-400">T2 Pra</span>
+                                    <span class="text-xs font-black text-amber-700">${counts['2PraObs']}</span>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-slate-50" title="Tahap 3: Observasi Kelas">
+                                    <span class="block text-[9px] uppercase font-bold text-slate-400">T3 Obs</span>
+                                    <span class="text-xs font-black text-emerald-700">${counts['3Observasi']}</span>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-slate-50" title="Tahap 4: Wawancara Pasca-Observasi">
+                                    <span class="block text-[9px] uppercase font-bold text-slate-400">T4 Psc</span>
+                                    <span class="text-xs font-black text-rose-700">${counts['4PostObs']}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-2 pt-1 text-[11px]">
+                                <button type="button" onclick="openViewIndicatorsModal('${cat.name.replace(/'/g, "\\'")}')" class="text-sky-600 hover:text-sky-800 font-bold flex items-center gap-1 hover:underline">
+                                    <i class="fa-solid fa-eye text-[10px]"></i>
+                                    <span>Lihat ${counts.total} Butir</span>
+                                </button>
+                                ${cat.is_custom ? `
+                                    <button type="button" onclick="handleDeleteCustomCategory('${cat.id}', '${cat.name.replace(/'/g, "\\'")}')" class="text-rose-500 hover:text-rose-700 font-semibold" title="Hapus Kategori Kustom">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleCategoryActive(catName, isChecked) {
+            if (isChecked) {
+                if (!selectedCategoryNames.includes(catName)) selectedCategoryNames.push(catName);
+            } else {
+                selectedCategoryNames = selectedCategoryNames.filter(n => n !== catName);
+            }
+            renderCategoryCards();
+            updateLiveSummaryStats();
+        }
+
+        function selectAllCategories(isSelectAll) {
+            if (!currentSupervisionConfig) return;
+            const all = (currentSupervisionConfig.categories || []).map(c => c.name);
+            selectedCategoryNames = isSelectAll ? all : [];
+            renderCategoryCards();
+            updateLiveSummaryStats();
+        }
+
+        function selectStandardCategories() {
+            selectedCategoryNames = ['Elemen Dasar', 'Pembelajaran Mendalam'];
+            renderCategoryCards();
+            updateLiveSummaryStats();
+        }
+
+        function updateLiveSummaryStats() {
+            if (!currentSupervisionConfig) return;
+            const indicators = currentSupervisionConfig.indicators || [];
+
+            let s1 = 0, s2 = 0, s3 = 0, s4 = 0;
+            indicators.forEach(ind => {
+                const cat = ind.category_name || ind.categoryName || '';
+                if (selectedCategoryNames.includes(cat)) {
+                    const st = ind.stage || '';
+                    if (st === '1TelaahModulAjar') s1++;
+                    else if (st === '2PraObs') s2++;
+                    else if (st === '3Observasi') s3++;
+                    else if (st === '4PostObs') s4++;
+                }
+            });
+
+            document.getElementById('badge-active-cats-count').innerText = `${selectedCategoryNames.length} Kategori Terpilih`;
+            document.getElementById('stat-stage1').innerHTML = `Tahap 1 (Telaah RPP): <strong class="text-blue-700">${s1}</strong> Butir (Max: ${s1 * 4})`;
+            document.getElementById('stat-stage2').innerHTML = `Tahap 2 (Pra-Obs): <strong class="text-amber-700">${s2}</strong> Tanya`;
+            document.getElementById('stat-stage3').innerHTML = `Tahap 3 (Obs Kelas): <strong class="text-emerald-700">${s3}</strong> Butir (Max: ${s3 * 4})`;
+            document.getElementById('stat-stage4').innerHTML = `Tahap 4 (Pasca-Obs): <strong class="text-rose-700">${s4}</strong> Tanya`;
+        }
+
+        async function saveSupervisionCategories() {
+            const year = document.getElementById('set-academicyear')?.value || '2026/2027';
+            const sem = document.getElementById('set-semester')?.value || 'Ganjil';
+            const folderUrl = document.getElementById('set-modulajar-folder')?.value.trim() || '';
+            const docObsFolderUrl = document.getElementById('set-doc-obs-folder')?.value.trim() || '';
+            const docPascaFolderUrl = document.getElementById('set-doc-pasca-folder')?.value.trim() || '';
+            const btn = document.getElementById('btn-save-categories');
+
+            if (selectedCategoryNames.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pilih Minimal 1 Kategori',
+                    text: 'Pilihlah setidaknya satu kategori elemen supervisi untuk semester ini.'
+                });
+                return;
+            }
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Menyimpan Pengaturan Siklus...</span>`;
+            btn.disabled = true;
+
+            try {
+                // 1. Update cycle & drive folders in school profile
+                let savedProfile = null;
+                if (window.KS_AUTH) {
+                    savedProfile = await window.KS_AUTH.saveProfile({
+                        academicYear: year,
+                        semester: sem,
+                        modulAjarFolderUrl: folderUrl,
+                        dokumentasiObservasiFolderUrl: docObsFolderUrl,
+                        dokumentasiPascaFolderUrl: docPascaFolderUrl
+                    });
+                }
+
+                // 2. Save active categories for this school & period
+                const res = await window.KS_INDICATOR_MANAGER.saveActiveCategories(year, sem, selectedCategoryNames);
+
+                const session = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+                const schoolId = (savedProfile && savedProfile.schoolId) || (session ? session.schoolId : '') || 'SCH-001';
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pengaturan Siklus Tersimpan!',
+                    html: `Pengaturan Siklus Supervisi untuk sekolah <b>${schoolId}</b> berhasil diperbarui:<br><span class="text-xs text-slate-600">Tahun Ajaran: <b>${year}</b> • Semester: <b>${sem}</b> • <b>${selectedCategoryNames.length}</b> Kategori Aktif</span>`,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+
+                updateActivePeriodLabel();
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Menyimpan',
+                    text: err.message
+                });
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // --- Modals for Category & Indicator Creation ---
+        function openAddCategoryModal() {
+            document.getElementById('modal-add-category')?.classList.remove('hidden');
+        }
+        function closeAddCategoryModal() {
+            document.getElementById('modal-add-category')?.classList.add('hidden');
+        }
+
+        async function handleCreateCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-cat-name')?.value.trim();
+            const code = document.getElementById('new-cat-code')?.value.trim();
+            const color = document.getElementById('new-cat-color')?.value;
+            const desc = document.getElementById('new-cat-desc')?.value.trim();
+
+            if (!name) return;
+
+            try {
+                const res = await fetch(`${window.KS_INDICATOR_MANAGER.getBaseUrl()}api.php?action=add_category`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, code, color, description: desc })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Kategori Berhasil Dibuat', text: data.message, timer: 1500, showConfirmButton: false });
+                    closeAddCategoryModal();
+                    // auto activate new category
+                    if (!selectedCategoryNames.includes(name)) selectedCategoryNames.push(name);
+                    await loadSupervisionCategoriesConfig();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.error });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Kesalahan Sistem', text: err.message });
+            }
+        }
+
+        function openAddIndicatorModal() {
+            document.getElementById('modal-add-indicator')?.classList.remove('hidden');
+        }
+        function closeAddIndicatorModal() {
+            document.getElementById('modal-add-indicator')?.classList.add('hidden');
+        }
+
+        async function handleCreateIndicator(e) {
+            e.preventDefault();
+            const catName = document.getElementById('new-ind-cat')?.value;
+            const stage = document.getElementById('new-ind-stage')?.value;
+            const focus = document.getElementById('new-ind-focus')?.value.trim();
+            const title = document.getElementById('new-ind-title')?.value.trim();
+
+            if (!title) return;
+
+            try {
+                const res = await fetch(`${window.KS_INDICATOR_MANAGER.getBaseUrl()}api.php?action=add_indicator`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categoryName: catName, stage, focus, title })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Indikator Berhasil Ditambahkan', text: data.message, timer: 1500, showConfirmButton: false });
+                    closeAddIndicatorModal();
+                    await loadSupervisionCategoriesConfig();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.error });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Kesalahan Sistem', text: err.message });
+            }
+        }
+
+        function openViewIndicatorsModal(catName) {
+            if (!currentSupervisionConfig) return;
+            const cat = (currentSupervisionConfig.categories || []).find(c => c.name === catName);
+            const indicators = (currentSupervisionConfig.indicators || []).filter(i => (i.category_name || i.categoryName) === catName);
+
+            document.getElementById('view-cat-badge').innerText = cat ? (cat.code || cat.id) : 'CAT';
+            document.getElementById('view-cat-title').innerText = `Daftar Indikator: ${catName}`;
+            document.getElementById('view-cat-desc').innerText = `Total ${indicators.length} butir indikator dan pertanyaan wawancara.`;
+
+            const stageNames = {
+                '1TelaahModulAjar': 'Tahap 1: Telaah Modul Ajar (RPP)',
+                '2PraObs': 'Tahap 2: Wawancara Pra-Observasi',
+                '3Observasi': 'Tahap 3: Observasi Pembelajaran Kelas',
+                '4PostObs': 'Tahap 4: Wawancara Pasca-Observasi (Refleksi)'
+            };
+
+            const grouped = {};
+            ['1TelaahModulAjar', '2PraObs', '3Observasi', '4PostObs'].forEach(st => grouped[st] = []);
+            indicators.forEach(i => {
+                if (grouped[i.stage]) grouped[i.stage].push(i);
+            });
+
+            const contentEl = document.getElementById('view-cat-indicators-content');
+            contentEl.innerHTML = Object.keys(grouped).map(st => {
+                const list = grouped[st];
+                return `
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50/50">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-3">
+                            <span class="font-bold text-slate-800 text-xs">${stageNames[st]}</span>
+                            <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-bold">${list.length} Butir</span>
+                        </div>
+                        ${list.length === 0 ? `
+                            <p class="text-[11px] text-slate-400 italic">Tidak ada butir pada tahap ini.</p>
+                        ` : `
+                            <div class="space-y-2">
+                                ${list.map(ind => `
+                                    <div class="p-3 bg-white rounded-xl border border-slate-200/80 flex items-start justify-between gap-3 shadow-2xs">
+                                        <div class="flex items-start gap-2.5">
+                                            <span class="px-2 py-0.5 rounded bg-slate-100 font-mono text-[10px] font-bold text-slate-600 flex-shrink-0">${ind.id}</span>
+                                            <div>
+                                                <p class="text-xs text-slate-700 leading-relaxed">${ind.title}</p>
+                                                ${ind.focus ? `<span class="inline-block mt-1 text-[10px] font-semibold text-slate-400 italic">Fokus: ${ind.focus}</span>` : ''}
+                                            </div>
+                                        </div>
+                                        ${ind.is_custom ? `
+                                            <button type="button" onclick="handleDeleteCustomIndicator('${ind.id}', '${catName.replace(/'/g, "\\'")}')" class="text-rose-500 hover:text-rose-700 p-1" title="Hapus Butir Kustom">
+                                                <i class="fa-solid fa-trash-can text-xs"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modal-view-indicators')?.classList.remove('hidden');
+        }
+
+        function closeViewIndicatorsModal() {
+            document.getElementById('modal-view-indicators')?.classList.add('hidden');
+        }
+
+        async function handleDeleteCustomCategory(catId, catName) {
+            const confirm = await Swal.fire({
+                title: `Hapus Kategori ${catName}?`,
+                text: 'Kategori kustom dan seluruh indikator di dalamnya akan dihapus permanen.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            });
+            if (!confirm.isConfirmed) return;
+
+            try {
+                const res = await fetch(`${window.KS_INDICATOR_MANAGER.getBaseUrl()}api.php?action=delete_category&id=${encodeURIComponent(catId)}`);
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Terhapus', text: data.message, timer: 1500, showConfirmButton: false });
+                    selectedCategoryNames = selectedCategoryNames.filter(n => n !== catName);
+                    await loadSupervisionCategoriesConfig();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.error });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Kesalahan', text: err.message });
+            }
+        }
+
+        async function handleDeleteCustomIndicator(indId, catName) {
+            try {
+                const res = await fetch(`${window.KS_INDICATOR_MANAGER.getBaseUrl()}api.php?action=delete_indicator&id=${encodeURIComponent(indId)}`);
+                const data = await res.json();
+                if (data.success) {
+                    await loadSupervisionCategoriesConfig();
+                    openViewIndicatorsModal(catName);
+                }
+            } catch (err) {
+                alert('Gagal menghapus indikator: ' + err.message);
+            }
+        }
+
+        // ==================== SUPERVISI GURU BK LOGIC ====================
+        let currentBkSupervisionConfig = null;
+        let selectedBkCategoryNames = ['Indikator Dasar', 'Deep Learning', 'Literasi Numerasi'];
+
+        async function loadSupervisionBkCategoriesConfig() {
+            const year = document.getElementById('set-academicyear')?.value || '2026/2027';
+            const sem = document.getElementById('set-semester')?.value || 'Ganjil';
+
+            if (window.KS_BK_MANAGER) {
+                currentBkSupervisionConfig = await window.KS_BK_MANAGER.loadConfig(year, sem, true);
+                selectedBkCategoryNames = [...(currentBkSupervisionConfig.active_categories || ['Indikator Dasar', 'Deep Learning', 'Literasi Numerasi'])];
+                renderBkCategoryCards();
+                updateBkLiveSummaryStats();
+            }
+        }
+
+        function renderBkCategoryCards() {
+            const container = document.getElementById('bk-category-cards-grid');
+            if (!container || !currentBkSupervisionConfig) return;
+
+            const categories = [
+                {
+                    name: 'Indikator Dasar',
+                    code: 'DASAR',
+                    desc: 'Fondasi program tahunan/semester, administrasi, layanan dasar, asesmen kebutuhan, dan catatan kumulatif BK.',
+                    supCount: 17,
+                    rplCount: 16
+                },
+                {
+                    name: 'Deep Learning',
+                    code: 'DEEP',
+                    desc: 'Penerapan layanan yang berkesadaran, bermakna, menggembirakan (mindful, meaningful, joyful), serta pertanyaan pemantik.',
+                    supCount: 2,
+                    rplCount: 2
+                },
+                {
+                    name: 'Literasi Numerasi',
+                    code: 'LITNUM',
+                    desc: 'Penguatan keterampilan membaca dan menafsirkan informasi, data/angka, asesmen diri, dan peminatan peserta didik.',
+                    supCount: 14,
+                    rplCount: 12
+                }
+            ];
+
+            container.innerHTML = categories.map(cat => {
+                const isActive = selectedBkCategoryNames.includes(cat.name);
+                const theme = window.KS_BK_MANAGER.getCategoryTheme(cat.name);
+                const total = cat.supCount + cat.rplCount;
+
+                return `
+                    <div class="relative bg-white rounded-2xl p-5 border-2 transition-all duration-200 flex flex-col justify-between ${isActive ? 'border-teal-500 shadow-md shadow-teal-500/5' : 'border-slate-200/80 opacity-80 hover:opacity-100'}">
+                        <div class="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl ${isActive ? 'bg-gradient-to-r ' + theme.accent : 'bg-slate-200'}"></div>
+                        <div>
+                            <div class="flex items-start justify-between gap-3 mb-3 pt-1">
+                                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                                    <input type="checkbox" ${isActive ? 'checked' : ''} onchange="toggleBkCategoryActive('${cat.name}', this.checked)" class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500 border-slate-300 transition cursor-pointer" />
+                                    <span class="font-bold text-xs text-slate-800 hover:text-teal-600 transition leading-snug">${cat.name}</span>
+                                </label>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${theme.badge} border flex-shrink-0">
+                                    ${cat.code}
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mb-4 leading-relaxed font-normal">
+                                ${cat.desc}
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 space-y-2">
+                            <div class="grid grid-cols-2 gap-2 text-center">
+                                <div class="p-2 rounded-xl bg-slate-50">
+                                    <span class="block text-[9px] uppercase font-bold text-slate-400">Tahap 1: Supervisi BK</span>
+                                    <span class="text-xs font-black text-teal-700">${cat.supCount} Butir</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-50">
+                                    <span class="block text-[9px] uppercase font-bold text-slate-400">Tahap 2: Telaah RPL</span>
+                                    <span class="text-xs font-black text-indigo-700">${cat.rplCount} Butir</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between pt-1 text-[11px] text-slate-500 font-semibold">
+                                <span>Total Kontribusi:</span>
+                                <span class="font-bold text-slate-800">${total} Butir</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleBkCategoryActive(catName, isChecked) {
+            if (isChecked) {
+                if (!selectedBkCategoryNames.includes(catName)) {
+                    selectedBkCategoryNames.push(catName);
+                }
+            } else {
+                if (selectedBkCategoryNames.length <= 1) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Minimal 1 Elemen BK Aktif',
+                        text: 'Setidaknya harus ada satu elemen supervisi BK yang aktif untuk siklus ini.'
+                    });
+                    renderBkCategoryCards();
+                    return;
+                }
+                selectedBkCategoryNames = selectedBkCategoryNames.filter(n => n !== catName);
+            }
+            renderBkCategoryCards();
+            updateBkLiveSummaryStats();
+        }
+
+        function selectAllBkCategories(selectAll) {
+            if (selectAll) {
+                selectedBkCategoryNames = ['Indikator Dasar', 'Deep Learning', 'Literasi Numerasi'];
+            } else {
+                selectedBkCategoryNames = ['Indikator Dasar'];
+            }
+            renderBkCategoryCards();
+            updateBkLiveSummaryStats();
+        }
+
+        function selectStandardBkCategories() {
+            selectedBkCategoryNames = ['Indikator Dasar'];
+            renderBkCategoryCards();
+            updateBkLiveSummaryStats();
+        }
+
+        function updateBkLiveSummaryStats() {
+            let stage1Count = 0;
+            let stage2Count = 0;
+
+            const countsMap = {
+                'Indikator Dasar': { sup: 17, rpl: 16 },
+                'Deep Learning': { sup: 2, rpl: 2 },
+                'Literasi Numerasi': { sup: 14, rpl: 12 }
+            };
+
+            selectedBkCategoryNames.forEach(name => {
+                if (countsMap[name]) {
+                    stage1Count += countsMap[name].sup;
+                    stage2Count += countsMap[name].rpl;
+                }
+            });
+
+            const badge = document.getElementById('badge-active-bk-cats-count');
+            if (badge) badge.innerText = `${selectedBkCategoryNames.length} Elemen Terpilih`;
+
+            const s1 = document.getElementById('stat-bk-stage1');
+            if (s1) s1.innerHTML = `Tahap 1 (Supervisi BK): <strong class="text-teal-700">${stage1Count}</strong> Butir`;
+
+            const s2 = document.getElementById('stat-bk-stage2');
+            if (s2) s2.innerHTML = `Tahap 2 (Telaah RPL): <strong class="text-indigo-700">${stage2Count}</strong> Butir`;
+
+            const sTot = document.getElementById('stat-bk-total');
+            if (sTot) sTot.innerHTML = `Total Butir BK: <strong class="text-emerald-700">${stage1Count + stage2Count}</strong> Butir`;
+        }
+
+        async function saveSupervisionBkCategories() {
+            const btn = document.getElementById('btn-save-bk-categories');
+            const year = document.getElementById('set-academicyear')?.value || '2026/2027';
+            const sem = document.getElementById('set-semester')?.value || 'Ganjil';
+
+            if (!btn || !window.KS_BK_MANAGER) return;
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Menyimpan Kategori BK...</span>`;
+            btn.disabled = true;
+
+            try {
+                await window.KS_BK_MANAGER.saveActiveCategories(year, sem, selectedBkCategoryNames);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Kategori BK Tersimpan!',
+                    html: `Pengaturan Elemen Supervisi Guru BK berhasil disimpan:<br><span class="text-xs text-slate-600"><b>${selectedBkCategoryNames.length}</b> Elemen Aktif untuk Semester <b>${sem} ${year}</b></span>`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Menyimpan',
+                    text: err.message
+                });
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // Watch cycle changes
+        document.getElementById('set-academicyear')?.addEventListener('change', () => {
+            loadSupervisionCategoriesConfig();
+            loadSupervisionBkCategoriesConfig();
+        });
+        document.getElementById('set-semester')?.addEventListener('change', () => {
+            loadSupervisionCategoriesConfig();
+            loadSupervisionBkCategoriesConfig();
+        });
+    </script>
+</body>
+
+</html>

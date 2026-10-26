@@ -1,0 +1,21 @@
+# Local environment overrides
+config/db_config.php
+
+# Archives & Temporary Deployment Packages
+*.zip
+temp_deploy_pkg/
+temp_deploy_staging/
+
+# Scratch & Temporary Logs/Dumps
+scratch/
+*.log
+*.tmp
+*dump*.txt
+scratch_*.txt
+
+# Editor & OS Artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

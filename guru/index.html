@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Guru — SupervisiSekolah.id</title>
+  <meta name="description" content="Dashboard Personal Guru: Jadwal Supervisi Saya, Laporan Observasi Privat Saya, dan Toolkit Guru AI Kurikulum Merdeka.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-main {
+      background: radial-gradient(circle at 10% 20%, #0d1b2a 0%, #0b132b 40%, #08111e 80%, #030712 100%);
+      min-height: 100vh;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(16, 185, 129, 0.3);
+      box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.5);
+    }
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.15;
+      pointer-events: none;
+      animation: float 14s ease-in-out infinite;
+    }
+    .orb-1 { width: 500px; height: 500px; background: #10b981; top: -100px; left: -100px; }
+    .orb-2 { width: 450px; height: 450px; background: #0ea5e9; bottom: -100px; right: -80px; animation-delay: -5s; }
+    .orb-3 { width: 350px; height: 350px; background: #8b5cf6; top: 35%; right: 15%; animation-delay: -9s; }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(25px, -25px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+    .code-input {
+      letter-spacing: 0.3em;
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      font-size: 1.3rem;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .code-input::placeholder {
+      letter-spacing: normal;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+    .fade-in { animation: fadeInUp 0.45s ease both; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35));
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #34d399;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-main text-slate-100 min-h-screen flex flex-col relative selection:bg-emerald-500 selection:text-white">
+  <!-- Glowing Ambient Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- NAVIGATION BAR (Clean Header: Brand + Identitas Guru + Tombol Keluar) -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <header class="sticky top-0 z-50 glass-panel border-b border-white/10 bg-slate-950/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      <!-- Brand & School Info -->
+      <div class="flex items-center gap-3">
+        <a href="../" class="flex items-center gap-2.5 group">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition">
+            <i class="fa-solid fa-chalkboard-user text-white text-lg"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-display font-black text-lg text-white tracking-tight">KS<span class="text-emerald-400">.ID</span></span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30 uppercase tracking-wider">Portal Personal Guru</span>
+            </div>
+            <p id="top-school-name" class="text-xs text-slate-400 font-medium truncate max-w-[200px] sm:max-w-md">Memuat informasi sekolah...</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Header Actions (Only switch/logout when logged in) -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <div id="header-user-badge" class="hidden items-center gap-2.5">
+          <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs">
+            <img id="header-user-avatar" src="" alt="Guru" class="w-5 h-5 rounded-full object-cover">
+            <span id="header-user-name" class="text-white font-semibold truncate max-w-[150px]">Guru</span>
+          </div>
+          <button id="btn-switch-school" onclick="logoutGuruSession()" class="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center gap-1.5" title="Keluar dari sesi portal guru">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Keluar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- AUTH REDIRECT NOTICE (Semua autentikasi terpusat via /portal/)        -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <section id="auth-redirect-notice" class="hidden flex-1 flex items-center justify-center px-4 py-16">
+    <div class="glass-card rounded-3xl p-8 max-w-md w-full text-center space-y-4 border border-white/10 shadow-2xl">
+      <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-2xl shadow-lg shadow-emerald-500/20">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold font-display text-white">Mengarahkan ke Portal GTK...</h2>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          Autentikasi Guru &amp; Tenaga Kependidikan kini terpusat melalui <strong>Portal Terpadu GTK (1 Pintu)</strong>. Mengalihkan Anda secara otomatis...
+        </p>
+      </div>
+      <div class="pt-2">
+        <a href="../portal/" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/25 transition">
+          <span>Buka Portal GTK</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- AUTHENTICATED PERSONAL TEACHER DASHBOARD                              -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <main id="dashboard-content-section" class="hidden flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8 fade-in">
+    
+    <!-- ── BANNER KHUSUS GURU BK (Mengarahkan ke Portal Guru BK) ─────── -->
+    <div id="banner-guru-bk-notice" class="hidden rounded-2xl p-4 sm:p-5 border border-teal-500/40 bg-gradient-to-r from-teal-950/90 via-slate-900/90 to-emerald-950/80 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-start sm:items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400 text-lg flex-shrink-0">
+          <i class="fa-solid fa-hands-holding-child"></i>
+        </div>
+        <div>
+          <h4 class="text-white font-bold text-sm flex items-center gap-2">
+            <span>Anda Terdaftar Sebagai Guru BK (Bimbingan Konseling)</span>
+            <span class="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold border border-teal-500/30">Portal Khusus Tersedia</span>
+          </h4>
+          <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">
+            Gunakan portal khusus Guru BK untuk mengajukan jadwal supervisi BK (Administrasi, RPL BK, Observasi Layanan & Coaching), melihat rapor BK, dan mengisi Refleksi Mandiri Konselor.
+          </p>
+        </div>
+      </div>
+      <a href="../gurubk/" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-bold text-xs transition inline-flex items-center justify-center gap-2 shadow-md flex-shrink-0">
+        <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+        <span>Buka Portal Guru BK</span>
+      </a>
+    </div>
+
+    <!-- ── 1. HERO BANNER PERSONAL GURU ─────────────────────────────────── -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-emerald-500/20 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-emerald-950/40 shadow-xl">
+      <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+        <!-- Avatar & Identitas Guru -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+          <div class="relative">
+            <img id="personal-teacher-avatar" src="" alt="Foto Guru"
+              class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-emerald-400/40 shadow-xl shadow-emerald-500/20 flex-shrink-0">
+            <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-slate-900 flex items-center justify-center text-slate-950 text-[10px]" title="Guru Terverifikasi">
+              <i class="fa-solid fa-check"></i>
+            </span>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold border border-emerald-500/30 flex items-center gap-1.5">
+                <i class="fa-solid fa-chalkboard-user text-[10px]"></i> <span id="personal-teacher-role">Guru Mata Pelajaran</span>
+              </span>
+              <span id="personal-academic-period" class="px-2.5 py-0.5 rounded-full bg-white/10 text-slate-300 text-[11px] font-medium">
+                Tahun Ajaran 2026/2027 · Semester Ganjil
+              </span>
+            </div>
+
+            <h1 class="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
+              Selamat Datang, <span id="personal-teacher-name" class="text-emerald-400">—</span>
+            </h1>
+
+            <div class="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-300">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-book-bookmark text-emerald-400"></i>
+                <span id="personal-teacher-subject" class="font-semibold text-white">—</span>
+              </span>
+              <span class="flex items-center gap-1.5 text-slate-400">
+                <i class="fa-solid fa-id-card text-slate-400"></i>
+                <span>NIP: <span id="personal-teacher-nip" class="text-slate-200 font-mono">—</span></span>
+              </span>
+              <span class="flex items-center gap-1.5 text-slate-400">
+                <i class="fa-solid fa-school text-amber-400"></i>
+                <span id="personal-school-name" class="text-slate-200">—</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Summary & Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0 text-amber-400 text-xl font-bold">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div class="text-xs">
+              <div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Capaian Observasi Terakhir</div>
+              <div class="flex items-baseline gap-1.5 mt-0.5">
+                <span id="kpi-latest-score" class="text-xl font-black text-amber-300">—</span>
+                <span id="kpi-latest-predicate" class="text-xs font-bold text-emerald-400">Belum Ada</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <button onclick="openModalAjukanJadwal()"
+              class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2 active:scale-95">
+              <i class="fa-solid fa-calendar-plus text-xs"></i>
+              <span>+ Ajukan Jadwal Baru</span>
+            </button>
+            <a id="hero-btn-drive-folder" href="#" target="_blank"
+              class="px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs border border-emerald-500/40 transition flex items-center justify-center gap-2 text-center">
+              <i class="fa-brands fa-google-drive text-emerald-400"></i>
+              <span>Folder Modul Ajar</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-75"></i>
+            </a>
+            <a href="supervisi/laporan-supervisi/"
+              class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 font-semibold text-xs border border-white/15 transition flex items-center justify-center gap-2 text-center">
+              <i class="fa-solid fa-file-invoice text-blue-400"></i>
+              <span>Buka Rapor Resmi</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Quick KPI Stat Pills -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-5 mt-5 border-t border-white/10 text-xs">
+        <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/50 border border-white/5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-clipboard-check text-sm"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Status Observasi Kelas</div>
+            <div id="quick-obs-status" class="font-bold text-white truncate">Memuat status...</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/50 border border-white/5">
+          <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-book-open text-sm"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Telaah Modul / RPP</div>
+            <div id="quick-rpp-status" class="font-bold text-white truncate">Memuat status...</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/50 border border-white/5">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-calendar-day text-sm"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Jadwal Terdekat</div>
+            <div id="quick-next-schedule" class="font-bold text-white truncate">Memuat jadwal...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BANNER NOTIFIKASI KHUSUS GURU BK: REFLEKSI DIRI PASCA-COACHING ══ -->
+    <div id="guruIndexBannerRefleksiBK" class="hidden glass-card rounded-2xl p-5 border border-amber-500/50 bg-gradient-to-r from-amber-950/80 via-slate-900/90 to-emerald-950/70 shadow-xl relative overflow-hidden mb-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+        <div class="flex items-start gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
+            <i class="fa-solid fa-bell animate-bounce"></i>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="font-display font-bold text-white text-sm sm:text-base">Refleksi Diri Pasca-Coaching BK Diperlukan</h3>
+              <span id="guruIndexBadgeRefleksiBK" class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30 animate-pulse">
+                Menunggu Guru BK
+              </span>
+            </div>
+            <p id="guruIndexDescRefleksiBK" class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+              Kepala Sekolah telah menyelesaikan sesi wawancara Coaching BK dengan Anda. Silakan lengkapi <strong>Lembar Refleksi Diri Guru BK Pasca-Coaching (12 Indikator)</strong> sebagai umpan balik dan komitmen tindak lanjut.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <a href="supervisi/?action=refleksi_bk"
+            class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/25 transition flex items-center justify-center gap-2 active:scale-95">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span id="guruIndexBtnRefleksiBK">Isi Refleksi Diri Sekarang</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. TAB NAVIGATION (ALUR KERJA SUPERVISI PEMBELAJARAN) ──────────── -->
+    <div class="flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl glass-card border border-white/10 overflow-x-auto scrollbar-none">
+      <!-- 1. TAHAP PERSIAPAN & PRA-OBSERVASI -->
+      <button id="tabBtn-persiapan" onclick="switchPersonalTab('persiapan')"
+        class="tab-btn active flex-1 py-3 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-wand-magic-sparkles text-emerald-400 text-sm"></i>
+        <span>1. Persiapan &amp; Modul Ajar</span>
+        <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">Pra-Observasi</span>
+      </button>
+
+      <!-- 2. TAHAP JADWAL & PELAKSANAAN -->
+      <button id="tabBtn-jadwal" onclick="switchPersonalTab('jadwal')"
+        class="tab-btn flex-1 py-3 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-calendar-days text-amber-400 text-sm"></i>
+        <span>2. Jadwal &amp; Supervisi</span>
+        <span id="tab-badge-schedules" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono">0</span>
+      </button>
+
+      <!-- 3. TAHAP HASIL & EVALUASI -->
+      <button id="tabBtn-laporan" onclick="switchPersonalTab('laporan')"
+        class="tab-btn flex-1 py-3 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-chart-pie text-blue-400 text-sm"></i>
+        <span>3. Hasil Laporan</span>
+        <span id="tab-badge-obs" class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-mono">0</span>
+      </button>
+
+      <!-- 4. PROFIL & AKUN SAYA -->
+      <button id="tabBtn-profil" onclick="switchPersonalTab('profil')"
+        class="tab-btn flex-1 py-3 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-id-badge text-purple-400 text-sm"></i>
+        <span>4. Profil &amp; Akun Guru</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      </button>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 1 CONTENT: PERSIAPAN & PERANGKAT AJAR (PRA-OBSERVASI)           -->
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <div id="tabContent-persiapan" class="space-y-8">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold border border-emerald-500/30 uppercase tracking-wider">
+              Tahap 1 &bull; Pra-Observasi
+            </span>
+            <span class="text-xs text-slate-400">&bull; Perencanaan Dokumen Pembelajaran</span>
+          </div>
+          <h2 class="font-display font-black text-xl sm:text-2xl text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i>
+            Persiapan Pembelajaran &amp; Pengumpulan Modul Ajar
+          </h2>
+          <p class="text-xs text-slate-300 max-w-3xl leading-relaxed mt-1">
+            Susun Modul Ajar berstandar Kurikulum Merdeka &amp; Deep Learning, manfaatkan Generator AI, pelajari 8 fokus observasi kinerja PMM, dan unggah modul ajar Anda ke folder Google Drive resmi sekolah sebelum mengajukan jadwal supervisi.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button onclick="switchPersonalTab('jadwal')"
+            class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 font-semibold text-xs border border-white/15 transition flex items-center gap-2">
+            <span>Lanjut ke Jadwal</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── CARD 1: FOLDER SIMPANAN MODUL AJAR & RPP (GOOGLE DRIVE RESMI) ─ -->
+      <div id="banner-modulajar-folder" class="glass-card rounded-3xl p-6 sm:p-7 border-2 border-emerald-500/30 bg-gradient-to-r from-emerald-950/70 via-slate-900/90 to-teal-950/60 shadow-xl relative overflow-hidden group">
+        <div class="absolute -top-16 -right-16 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div class="flex items-start gap-4 max-w-3xl">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/30 text-slate-950 flex-shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <i class="fa-brands fa-google-drive"></i>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold border border-emerald-500/30 uppercase tracking-wider flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Tempat Pengumpulan Berkas Resmi
+                </span>
+                <span id="badge-folder-period" class="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold border border-teal-500/30">
+                  Semester Ganjil · 2026/2027
+                </span>
+              </div>
+              <h3 class="font-display font-black text-xl sm:text-2xl text-white">
+                Folder Simpanan Modul Ajar &amp; RPP Sekolah
+              </h3>
+              <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                Kumpulkan file Modul Ajar, RPP, dan instrumen asesmen pembelajaran Anda ke folder Google Drive bersama yang disediakan oleh Kepala Sekolah. Berkas ini akan ditelaah oleh Kepala Sekolah sebelum observasi kelas tatap muka dimulai.
+              </p>
+              <!-- Format & Naming Checklist Tips -->
+              <div class="pt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-300">
+                <span class="flex items-center gap-1.5 text-emerald-300">
+                  <i class="fa-solid fa-check-circle text-xs"></i> Format: PDF / DOC
+                </span>
+                <span class="flex items-center gap-1.5 text-emerald-300">
+                  <i class="fa-solid fa-check-circle text-xs"></i> Contoh: <code class="text-white bg-slate-900/80 px-1.5 py-0.5 rounded">ModulAjar_Mapel_NamaGuru.pdf</code>
+                </span>
+                <span class="flex items-center gap-1.5 text-emerald-300">
+                  <i class="fa-solid fa-check-circle text-xs"></i> Wajib diunggah sebelum jadwal telaah
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+            <a id="btn-open-modulajar-folder" href="#" target="_blank"
+              class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-2 active:scale-95 transition text-center whitespace-nowrap">
+              <i class="fa-brands fa-google-drive text-base"></i>
+              <span>Buka Folder Modul Ajar</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-0.5"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CARD 2: PROMO HIGHLIGHT TOOLKIT AI GURU ─────────────────────── -->
+      <div class="glass-card rounded-3xl p-6 sm:p-7 relative overflow-hidden border-2 border-indigo-500/30 bg-gradient-to-r from-slate-900/90 via-indigo-950/40 to-slate-900/90 shadow-xl group">
+        <div class="absolute -top-16 -right-16 w-56 h-56 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div class="flex items-start gap-4 max-w-3xl">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 via-indigo-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/30 text-white flex-shrink-0 text-2xl group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold border border-emerald-500/30 uppercase tracking-wider flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Toolkit Guru Terintegrasi
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-bold border border-indigo-500/30">
+                  Kurikulum Merdeka &amp; Deep Learning
+                </span>
+              </div>
+              <h3 class="font-display font-black text-xl sm:text-2xl text-white">
+                Generator Modul Ajar &amp; Prompt RPP Claude AI
+              </h3>
+              <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                Buat dokumen modul ajar resmi siap cetak (.doc) atau generate prompt AI berstandar tinggi. Data Nama Guru, NIP, Mata Pelajaran, dan Sekolah Anda sudah terisi otomatis!
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-shrink-0">
+            <a href="toolkit/generator-modul-ajar/"
+              class="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-95 transition text-center whitespace-nowrap">
+              <i class="fa-solid fa-file-word"></i>
+              <span>Generator Modul (.doc)</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+            <a href="toolkit/generator-prompt-rpp/"
+              class="px-4 py-3 rounded-2xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 text-xs font-bold border border-indigo-500/40 flex items-center justify-center gap-2 transition text-center whitespace-nowrap">
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+              <span>Prompt Claude AI</span>
+            </a>
+            <a href="toolkit/"
+              class="px-3.5 py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-semibold border border-white/15 flex items-center justify-center gap-1.5 transition text-center whitespace-nowrap" title="Jelajahi Semua Toolkit">
+              <i class="fa-solid fa-toolbox text-indigo-300"></i>
+              <span>Semua Alat</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CARD 3: 8 FOKUS PERILAKU OBSERVASI KELAS (PMM) ──────────────── -->
+      <section class="space-y-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-extrabold border border-teal-500/30 uppercase tracking-wider">
+              Rubrik Observasi Kelas
+            </span>
+            <span class="text-xs text-slate-400">&bull; PMM Kemendikbudristek</span>
+          </div>
+          <h3 class="font-display font-black text-xl text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-compass text-teal-400"></i>
+            Panduan 8 Fokus Perilaku Observasi Kelas
+          </h3>
+          <p class="text-xs text-slate-400">Pahami indikator yang diamati oleh Kepala Sekolah saat hadir di ruang kelas nyata untuk persiapan optimal</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+          <!-- Indikator 1 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-emerald-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">Indikator 1</span>
+              <i class="fa-solid fa-door-open text-emerald-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Keteraturan Suasana Kelas</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Membangun suasana belajar yang kondusif, merespons dinamika kelas secara positif, dan memastikan keterlibatan murid.
+            </p>
+          </div>
+
+          <!-- Indikator 2 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-emerald-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">Indikator 2</span>
+              <i class="fa-solid fa-handshake text-emerald-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Penerapan Disiplin Positif</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Memfasilitasi kesepakatan kelas, mengajak refleksi konsekuensi logis tanpa hukuman atau ancaman.
+            </p>
+          </div>
+
+          <!-- Indikator 3 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-emerald-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">Indikator 3</span>
+              <i class="fa-solid fa-comment-dots text-emerald-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Umpan Balik Konstruktif</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Memberikan respon spesifik terhadap proses berpikir dan karya murid untuk memicu perbaikan kualitas.
+            </p>
+          </div>
+
+          <!-- Indikator 4 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-emerald-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">Indikator 4</span>
+              <i class="fa-solid fa-heart text-emerald-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Perhatian dan Kepedulian</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Menghargai keunikan setiap murid, bersikap empati, serta mendengarkan pandangan anak secara adil.
+            </p>
+          </div>
+
+          <!-- Indikator 5 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-emerald-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 font-bold text-[10px]">Indikator 5</span>
+              <i class="fa-solid fa-mountain-sun text-teal-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Ekspektasi pada Peserta Didik</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Mengkomunikasikan harapan tinggi pada potensi murid dan mendorong rasa percaya diri dalam belajar.
+            </p>
+          </div>
+
+          <!-- Indikator 6 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-teal-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 font-bold text-[10px]">Indikator 6</span>
+              <i class="fa-solid fa-people-arrows text-teal-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Aktivitas Interaktif</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Memfasilitasi kolaborasi kelompok, diskusi kritis, dan keterlibatan aktif peserta didik secara merata.
+            </p>
+          </div>
+
+          <!-- Indikator 7 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-teal-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 font-bold text-[10px]">Indikator 7</span>
+              <i class="fa-solid fa-sliders text-teal-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Instruksi yang Adaptif</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Menyesuaikan tempo dan metode mengajar berdasarkan respon pemahaman murid selama proses pembelajaran.
+            </p>
+          </div>
+
+          <!-- Indikator 8 -->
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2 hover:border-teal-500/30 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 font-bold text-[10px]">Indikator 8</span>
+              <i class="fa-solid fa-chalkboard text-teal-400"></i>
+            </div>
+            <div class="font-bold text-white text-sm">Instruksi Pembelajaran</div>
+            <p class="text-slate-300 leading-relaxed text-[11px]">
+              Fokus: Penjelasan konsep yang runtut, relevan dengan kehidupan nyata, serta menggunakan media yang efektif.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CARD 4: PANDUAN 42 INDIKATOR TELAAH MODUL/RPP (SOLO TAXONOMY) ─ -->
+      <section class="space-y-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold border border-amber-500/30 uppercase tracking-wider">
+              Instrumen Telaah Dokumen
+            </span>
+            <span class="text-xs text-slate-400">&bull; 42 Indikator Telaah RPP</span>
+          </div>
+          <h3 class="font-display font-black text-xl text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-book-bookmark text-amber-400"></i>
+            Panduan Komponen Telaah Modul Ajar oleh Kepala Sekolah
+          </h3>
+          <p class="text-xs text-slate-400">Poin penting yang diperiksa oleh Kepala Sekolah saat mengevaluasi modul ajar sebelum observasi tatap muka</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">1</div>
+            <h4 class="font-bold text-white text-sm">Kelengkapan Komponen Pokok</h4>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              Memuat Identitas Sekolah, Capaian Pembelajaran (CP), Tujuan Pembelajaran (TP), Alur Tujuan Pembelajaran (ATP), dan Alokasi Waktu yang realistis.
+            </p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">2</div>
+            <h4 class="font-bold text-white text-sm">Taksonomi SOLO &amp; HOTS</h4>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              Tingkat kognitif terstruktur mulai dari unistructural, multistructural, hingga relational dan extended abstract (penalaran tingkat tinggi).
+            </p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">3</div>
+            <h4 class="font-bold text-white text-sm">Pembelajaran Berdiferensiasi</h4>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              Mengakomodasi keberagaman kesiapan belajar, minat, dan profil belajar murid melalui diferensiasi konten, proses, maupun produk.
+            </p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2">
+            <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold">4</div>
+            <h4 class="font-bold text-white text-sm">Asesmen Awal &amp; Formatif</h4>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              Tersedia instrumen asesmen diagnostik di awal serta teknik penilaian formatif berkelanjutan untuk memandu umpan balik selama pembelajaran.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CARD 5: NEXT STEP CTA CALLOUT ───────────────────────────────── -->
+      <div class="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-gradient-to-r from-slate-900/90 via-emerald-950/40 to-slate-900/90 shadow-xl flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl flex-shrink-0 border border-emerald-500/30">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-white text-base">Modul Ajar Sudah Diunggah ke Google Drive Sekolah?</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Lanjutkan ke tahap berikutnya untuk mengajukan kesepakatan tanggal telaah dan observasi kelas tatap muka.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <button onclick="switchPersonalTab('jadwal'); openModalAjukanJadwal();"
+            class="w-full md:w-auto px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap">
+            <i class="fa-solid fa-calendar-plus text-xs"></i>
+            <span>Ajukan Jadwal Supervisi Sekarang (Tahap 2)</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 2 CONTENT: JADWAL & SUPERVISI SAYA (PELAKSANAAN)                -->
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <div id="tabContent-jadwal" class="hidden space-y-6">
+      <!-- Section Header & Action -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold border border-amber-500/30 uppercase tracking-wider">
+              Tahap 2 &bull; Pelaksanaan Supervisi
+            </span>
+            <span class="text-xs text-slate-400">&bull; Kesepakatan &amp; Linimasa</span>
+          </div>
+          <h2 class="font-display font-black text-xl sm:text-2xl text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-calendar-days text-amber-400"></i>
+            Jadwal Supervisi &amp; Pengajuan Mandiri
+          </h2>
+          <p class="text-xs text-slate-400">Pantau linimasa supervisi klinis Anda dan ajukan usulan jadwal baru ke Kepala Sekolah</p>
+        </div>
+        <button onclick="openModalAjukanJadwal()"
+          class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2 active:scale-95">
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span>Ajukan Jadwal Supervisi Baru</span>
+        </button>
+      </div>
+
+      <!-- 3 Steps Timeline Info -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs">1</span>
+            <span class="text-[10px] text-amber-300 font-semibold uppercase tracking-wider">Tahap Perencanaan</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">Telaah Modul / RPP</h4>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Pemeriksaan kelengkapan dokumen ajar, Taksonomi SOLO, dan rubrik diferensiasi oleh Kepala Sekolah sebelum masuk kelas.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">2</span>
+            <span class="text-[10px] text-emerald-300 font-semibold uppercase tracking-wider">Tahap Pelaksanaan</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">Observasi Tatap Muka</h4>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Kepala Sekolah mengamati interaksi kelas nyata dengan rubrik 8 fokus perilaku kinerja PMM (minimal di hari yang sama atau setelah telaah).
+          </p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center text-xs">3</span>
+            <span class="text-[10px] text-blue-300 font-semibold uppercase tracking-wider">Tahap Coaching</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">Refleksi Pasca-Observasi</h4>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Sesi diskusi reflektif dua arah untuk mengidentifikasi keberhasilan, tantangan, serta merumuskan rencana tindak lanjut pengembangan diri.
+          </p>
+        </div>
+      </div>
+
+      <!-- Jadwal List Container -->
+      <div id="schedules-list-container" class="space-y-3">
+        <!-- Rendered by JavaScript -->
+        <div class="p-8 text-center glass-card rounded-2xl">
+          <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-400 mb-2"></i>
+          <p class="text-xs text-slate-400">Memuat jadwal Anda...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 3 CONTENT: HASIL & LAPORAN OBSERVASI PRIVAT SAYA (TINDAK LANJUT) -->
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <div id="tabContent-laporan" class="hidden space-y-6">
+      <!-- Section Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-extrabold border border-blue-500/30 uppercase tracking-wider">
+              Tahap 3 &bull; Pasca-Observasi &amp; Tindak Lanjut
+            </span>
+            <span class="text-xs text-slate-400">&bull; Evaluasi &amp; Coaching</span>
+          </div>
+          <h2 class="font-display font-black text-xl sm:text-2xl text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-chart-pie text-blue-400"></i>
+            Hasil &amp; Rekapitulasi Observasi Privat Saya
+          </h2>
+          <p class="text-xs text-slate-400">Hanya Anda dan Kepala Sekolah yang memiliki akses terhadap lembar evaluasi dan catatan coaching ini</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="supervisi/laporan-supervisi/?print=1" target="_blank"
+            class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition flex items-center gap-2">
+            <i class="fa-solid fa-print"></i>
+            <span>Cetak Dokumen Resmi (PDF)</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Container Laporan Observasi Terkini -->
+      <div id="private-report-container">
+        <!-- Rendered by JavaScript -->
+        <div class="p-8 text-center glass-card rounded-2xl">
+          <i class="fa-solid fa-spinner fa-spin text-2xl text-blue-400 mb-2"></i>
+          <p class="text-xs text-slate-400">Memuat laporan observasi Anda...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 4 CONTENT: PROFIL & AKUN SAYA                                   -->
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <div id="tabContent-profil" class="hidden space-y-6">
+      <!-- Section Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="font-display font-black text-xl text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-id-badge text-amber-400"></i>
+            Profil &amp; Akun Pendidik
+          </h2>
+          <p class="text-xs text-slate-400">Kelola identitas, nomor induk, mata pelajaran, kontak, dan kredensial akun Anda. Perubahan langsung tersinkronisasi ke Kepala Sekolah &amp; Admin.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Sinkronisasi Database Aktif
+          </span>
+        </div>
+      </div>
+
+      <!-- Identity Card Preview & Access Code Strip -->
+      <div class="glass-card rounded-3xl p-6 border border-white/10 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-emerald-950/30 shadow-xl">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="flex items-center gap-4">
+            <div class="relative group">
+              <img id="profil-card-avatar" src="" alt="Foto Guru" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-emerald-500/50 shadow-lg shadow-emerald-500/20">
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center text-[10px] font-bold shadow">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 id="profil-card-name" class="font-display font-black text-lg sm:text-xl text-white">Nama Guru</h3>
+                <span id="profil-card-role-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30 uppercase">Guru</span>
+                <span id="profil-card-status-badge" class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-semibold">PNS</span>
+              </div>
+              <p id="profil-card-subject" class="text-xs sm:text-sm text-slate-300 font-medium">Mata Pelajaran: -</p>
+              <div class="flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+                <span>NIP: <strong id="profil-card-nip" class="text-slate-200">-</strong></span>
+                <span>&bull;</span>
+                <span>NUPTK: <strong id="profil-card-nuptk" class="text-slate-200">-</strong></span>
+                <span>&bull;</span>
+                <span>ID: <strong id="profil-card-empid" class="text-slate-200">EMP-000</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Access Code Box -->
+          <div class="w-full md:w-auto p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between md:justify-start gap-4">
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">Kode Akses Portal Guru</div>
+              <div id="profil-card-access-code" class="font-mono font-black text-base text-amber-300 tracking-wider">----</div>
+            </div>
+            <button type="button" onclick="copyAccessCode()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-semibold border border-amber-500/30 transition flex items-center gap-1.5 active:scale-95" title="Salin Kode Akses">
+              <i class="fa-solid fa-copy"></i>
+              <span>Salin</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Edit Form -->
+      <form id="form-edit-profil" onsubmit="handleSaveProfile(event)" class="space-y-6">
+        
+        <!-- CARD 1: IDENTITAS & KEPEGAWAIAN -->
+        <div class="glass-card rounded-3xl p-6 border border-white/10 space-y-4">
+          <div class="flex items-center gap-2.5 pb-3 border-b border-white/10">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm sm:text-base">1. Identitas Pokok &amp; Kepegawaian</h3>
+              <p class="text-[11px] text-slate-400">Data ini tampil pada lembar telaah modul ajar, rubrik observasi kelas, dan laporan dinas.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+            <!-- Nama Lengkap -->
+            <div class="lg:col-span-2">
+              <label class="block text-slate-300 font-semibold mb-1">
+                Nama Lengkap &amp; Gelar Akademik <span class="text-rose-400">*</span>
+              </label>
+              <input type="text" id="edit-profil-name" required placeholder="Contoh: Ridar Kurnia Pratama, M.Pd."
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 text-xs">
+            </div>
+
+            <!-- Nama Panggilan -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Nama Panggilan / Sapaan</label>
+              <input type="text" id="edit-profil-nickname" placeholder="Contoh: Pak Ridar"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 text-xs">
+            </div>
+
+            <!-- NIP -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">NIP (Nomor Induk Pegawai)</label>
+              <input type="text" id="edit-profil-nip" placeholder="19850415 200902 1 004 atau '-'"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 text-xs">
+            </div>
+
+            <!-- NUPTK -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">NUPTK</label>
+              <input type="text" id="edit-profil-nuptk" placeholder="1934763665200012 atau '-'"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 text-xs">
+            </div>
+
+            <!-- Jenis Kelamin -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Jenis Kelamin</label>
+              <select id="edit-profil-gender" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-400 text-xs">
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+
+            <!-- Mata Pelajaran -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">
+                Mata Pelajaran Diampu <span class="text-rose-400">*</span>
+              </label>
+              <input type="text" id="edit-profil-subject" required placeholder="Contoh: Matematika"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 text-xs">
+            </div>
+
+            <!-- Status Kepegawaian -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Status Kepegawaian</label>
+              <select id="edit-profil-status" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-400 text-xs">
+                <option value="PNS">PNS</option>
+                <option value="PPPK">PPPK</option>
+                <option value="GTT / Kontrak">GTT / Kontrak</option>
+                <option value="Guru Tetap Yayasan">Guru Tetap Yayasan</option>
+                <option value="Honor Sekolah">Honor Sekolah</option>
+              </select>
+            </div>
+
+            <!-- Pendidikan Terakhir -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Pendidikan Terakhir</label>
+              <input type="text" id="edit-profil-education" placeholder="Contoh: S1 Pendidikan Matematika - UNJ"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 text-xs">
+            </div>
+
+            <!-- Tugas Tambahan -->
+            <div class="lg:col-span-3">
+              <label class="block text-slate-300 font-semibold mb-1">Tugas Tambahan / Peran Sekolah</label>
+              <input type="text" id="edit-profil-task" placeholder="Contoh: Wali Kelas VIII-A & Pembina OSIS / Koordinator Kurikulum"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400 text-xs">
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: KONTAK & ALAMAT -->
+        <div class="glass-card rounded-3xl p-6 border border-white/10 space-y-4">
+          <div class="flex items-center gap-2.5 pb-3 border-b border-white/10">
+            <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-address-book"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm sm:text-base">2. Kontak &amp; Domisili Guru</h3>
+              <p class="text-[11px] text-slate-400">Komunikasi resmi untuk pengiriman jadwal supervisi &amp; notifikasi hasil observasi.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Alamat Email Aktif</label>
+              <input type="email" id="edit-profil-email" placeholder="nama.guru@sekolah.sch.id"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-blue-400 text-xs">
+            </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">No. WhatsApp / Handphone</label>
+              <input type="text" id="edit-profil-phone" placeholder="0812-xxxx-xxxx"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-blue-400 text-xs">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-slate-300 font-semibold mb-1">Alamat Tempat Tinggal / Domisili</label>
+              <textarea id="edit-profil-address" rows="2" placeholder="Nama Jalan, Kelurahan, Kecamatan, Kota"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-blue-400 text-xs"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3: FOTO PROFIL & KREDENSIAL LOGIN -->
+        <div class="glass-card rounded-3xl p-6 border border-white/10 space-y-4">
+          <div class="flex items-center gap-2.5 pb-3 border-b border-white/10">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm sm:text-base">3. Foto Profil &amp; Kredensial Akun</h3>
+              <p class="text-[11px] text-slate-400">Atur tautan foto profil dan pembaruan kata sandi akun sistem.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <!-- Foto Profil URL -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Tautan / URL Foto Profil</label>
+              <div class="flex items-center gap-2">
+                <input type="url" id="edit-profil-photo" placeholder="https://..." oninput="handleProfilPhotoInput(this.value)"
+                  class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 text-xs">
+                <button type="button" onclick="generateAvatarFromCurrentName()" class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-200 transition" title="Gunakan Avatar Inisial">
+                  Avatar
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Masukkan link foto online atau klik tombol Avatar untuk inisial nama.</p>
+            </div>
+
+            <!-- Password Akun Baru -->
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">
+                Password Baru Akun (Opsional)
+              </label>
+              <input type="password" id="edit-profil-password" placeholder="Kosongkan jika tidak ingin mengubah password"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 text-xs">
+              <p class="text-[10px] text-slate-400 mt-1">Digunakan untuk login langsung di halaman portal pengguna.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM ACTION BAR -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <p class="text-[11px] text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-arrows-rotate text-emerald-400"></i>
+            Perubahan profil akan langsung disinkronkan ke Database Karyawan &amp; Administrator.
+          </p>
+          <div class="flex items-center gap-2.5 w-full sm:w-auto">
+            <button type="button" onclick="populateProfileForm()"
+              class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs transition">
+              Kembalikan Asli
+            </button>
+            <button type="submit" id="btn-save-profile"
+              class="flex-1 sm:flex-initial px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2 active:scale-95">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Simpan Perubahan Profil</span>
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: AJUKAN JADWAL SUPERVISI BARU                                  -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="modal-ajukan-jadwal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="glass-card rounded-3xl p-6 sm:p-7 w-full max-w-lg border border-emerald-500/30 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-calendar-plus"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">Ajukan Jadwal Supervisi</h3>
+            <p class="text-xs text-slate-400">Kirim usulan jadwal ke Kepala Sekolah</p>
+          </div>
+        </div>
+        <button onclick="closeModalAjukanJadwal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <form id="form-ajukan-jadwal" onsubmit="handleAjukanJadwalSubmit(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Jenis Supervisi</label>
+          <select id="ajukan-supervision-type" onchange="handleIndexSupervisionTypeChange()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-400">
+            <option value="reguler">Supervisi Pembelajaran Reguler (Telaah RPP &amp; Observasi Kelas)</option>
+            <option value="supervisi_bk">Supervisi BK: Pelaksanaan &amp; Administrasi Layanan BK</option>
+            <option value="telaah_rpl">Supervisi BK: Telaah Dokumen RPL BK</option>
+            <option value="coaching_bk">Supervisi BK: Coaching BK (Model TIRTA)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Mata Pelajaran &amp; Guru</label>
+          <input type="text" id="ajukan-subject" disabled class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 text-slate-300 font-medium">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-amber-300 font-semibold mb-1">
+              1. Tanggal Telaah RPP <span class="text-rose-400">*</span>
+            </label>
+            <input type="date" id="ajukan-rpp-date" required onchange="handleRppDateChange(this)"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-400">
+            <p class="text-[10px] text-slate-400 mt-1">Tahap 1: Verifikasi modul</p>
+          </div>
+
+          <div>
+            <label class="block text-emerald-300 font-semibold mb-1">
+              2. Tanggal Observasi Kelas <span class="text-rose-400">*</span>
+            </label>
+            <input type="date" id="ajukan-obs-date" required
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-400">
+            <p class="text-[10px] text-slate-400 mt-1">Sama/setelah telaah RPP</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Kelas / Rombel <span class="text-rose-400">*</span></label>
+            <input type="text" id="ajukan-grade-class" required placeholder="Contoh: Kelas 8A"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Jam Ke / Waktu</label>
+            <input type="text" id="ajukan-time-slot" placeholder="Contoh: 08.00 - 09.20 WIB"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Materi Pokok / Topik Pembelajaran</label>
+          <input type="text" id="ajukan-notes-topic" placeholder="Contoh: Pembelajaran Berdiferensiasi SPLDV"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-400">
+        </div>
+
+        <!-- Box Folder Google Drive & Konfirmasi Upload Modul Ajar -->
+        <div class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-emerald-300 font-bold text-xs">
+              <i class="fa-brands fa-google-drive text-emerald-400 text-sm"></i>
+              <span>Folder Modul Ajar Sekolah</span>
+            </div>
+            <a id="modal-ajukan-drive-link" href="#" target="_blank"
+              class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] transition inline-flex items-center gap-1 shadow-sm flex-shrink-0">
+              <span>Buka Folder</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            </a>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">
+            Sebelum mengajukan jadwal, pastikan Modul Ajar / RPP untuk topik yang diajukan telah diunggah ke folder sekolah di atas untuk dipelajari Kepala Sekolah pada sesi telaah.
+          </p>
+          <label class="flex items-start gap-2.5 pt-2 border-t border-emerald-500/20 cursor-pointer select-none">
+            <input type="checkbox" id="ajukan-confirm-upload" required
+              class="mt-0.5 w-4 h-4 rounded text-emerald-500 bg-slate-900 border-slate-700 focus:ring-emerald-400 focus:ring-offset-slate-900">
+            <span class="text-[11px] text-emerald-200 font-semibold leading-snug">
+              Saya menyatakan telah mengunggah Modul Ajar / RPP ke folder simpanan sekolah di atas. <span class="text-rose-400">*</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="pt-3 border-t border-white/10 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeModalAjukanJadwal()"
+            class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold transition">
+            Batal
+          </button>
+          <button type="submit" id="btn-submit-jadwal"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold transition flex items-center gap-2">
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+            <span>Kirim Pengajuan</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <footer class="glass-panel border-t border-white/10 py-6 mt-12 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="font-display font-bold text-white">SupervisiSekolah.id &middot; Portal Personal Guru</span>
+        <span>&middot;</span>
+        <span>Supervisi Klinis Budaya Positif &amp; PMM</span>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <a href="supervisi/" class="hover:text-amber-400 transition">Ruang Supervisi</a>
+        <span>&middot;</span>
+        <a href="supervisi/laporan-supervisi/" class="hover:text-blue-400 transition">Rapor Observasi</a>
+        <span>&middot;</span>
+        <a href="../login/" class="hover:text-emerald-400 transition">Login KS</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- JAVASCRIPT LOGIC                                                     -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <script>
+    // ── API Base Auto Detection ─────────────────────────────────────────
+    const API_BASE = (() => {
+      const p = window.location.pathname;
+      const idx = p.toLowerCase().indexOf('/guru');
+      const base = idx !== -1 ? p.slice(0, idx + 1) : '/';
+      return window.location.origin + base;
+    })();
+
+    // State Variables
+    let currentGuruData = null;
+
+    // ── On DOM Loaded ───────────────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Check existing teacher & guru session in localStorage
+      const savedTeacher = getTeacherSession();
+      const savedGuruSession = getGuruSession();
+
+      if (savedTeacher && (savedTeacher.name || savedTeacher.id) && savedGuruSession && savedGuruSession.schoolCode) {
+        // Auto-login with existing session credentials & teacherId to re-hydrate fresh fields from server
+        const ok = await loadPersonalDashboard(
+          savedGuruSession.schoolName,
+          savedGuruSession.schoolCode,
+          savedTeacher.name,
+          savedTeacher.accessCode || savedTeacher.code,
+          true,
+          savedTeacher.id || savedGuruSession.teacherId || ''
+        );
+        if (!ok) {
+          redirectToPortal();
+        }
+      } else {
+        // Belum terautentikasi -> langsung arahkan ke Portal GTK (1 Pintu)
+        redirectToPortal();
+      }
+    });
+
+    function redirectToPortal() {
+      const notice = document.getElementById('auth-redirect-notice');
+      if (notice) notice.classList.remove('hidden');
+      const dash = document.getElementById('dashboard-content-section');
+      if (dash) dash.classList.add('hidden');
+      window.location.replace('../portal/');
+    }
+
+    // ── Helper: Session Storage ─────────────────────────────────────────
+    function getGuruSession() {
+      try {
+        const raw = localStorage.getItem('supervisi_guru_session') || localStorage.getItem('ks_guru_session');
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setGuruSession(schoolName, schoolCode, teacher) {
+      try {
+        const payload = JSON.stringify({
+          schoolName: schoolName,
+          schoolCode: schoolCode,
+          teacherName: teacher ? teacher.name : '',
+          teacherId: teacher ? teacher.id : '',
+          teacherNip: teacher ? teacher.nip : '',
+          teacherSubject: teacher ? teacher.subject : '',
+          photo: teacher ? teacher.photo : '',
+          authenticated: true,
+          timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('supervisi_guru_session', payload);
+        localStorage.setItem('ks_guru_session', payload);
+      } catch (e) {}
+    }
+
+    function clearGuruSession() {
+      try {
+        localStorage.removeItem('supervisi_guru_session');
+        localStorage.removeItem('ks_guru_session');
+        localStorage.removeItem('supervisi_teacher_session');
+        localStorage.removeItem('ks_teacher_session');
+        localStorage.removeItem('supervisi_gtk_session');
+      } catch (e) {}
+    }
+
+    function getTeacherSession() {
+      try {
+        const raw = localStorage.getItem('supervisi_teacher_session') || localStorage.getItem('ks_teacher_session');
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setTeacherSession(teacher) {
+      try {
+        const session = JSON.stringify({ ...teacher, authenticated: true, authTime: new Date().toISOString() });
+        localStorage.setItem('supervisi_teacher_session', session);
+        localStorage.setItem('ks_teacher_session', session);
+      } catch (e) {}
+    }
+
+    // ── Helper: Escape HTML ─────────────────────────────────────────────
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // ── Load Personal Dashboard via API ─────────────────────────────────
+    async function loadPersonalDashboard(schoolName, schoolCode, teacherName, teacherCode, isSilent, teacherId) {
+      try {
+        const payload = {
+          schoolName: schoolName,
+          schoolCode: schoolCode,
+          teacherName: teacherName,
+          teacherCode: teacherCode,
+          teacherId: teacherId || ''
+        };
+
+        const res = await fetch(API_BASE + 'api.php?action=guru_portal_login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          clearGuruSession();
+          redirectToPortal();
+          return false;
+        }
+
+        // Save sessions (BOTH guru_session and teacher_session for complete portal synergy)
+        setGuruSession(data.school.name, data.school.schoolCode || schoolCode, data.teacher);
+        setTeacherSession(data.teacher);
+        currentGuruData = data;
+
+        // Render Personal Dashboard UI
+        renderPersonalDashboard(data);
+        showDashboardContent();
+
+        if (!isSilent) {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true
+          });
+          Toast.fire({
+            icon: 'success',
+            title: `Selamat datang, ${data.teacher.name}!`
+          });
+        }
+        return true;
+      } catch (err) {
+        console.error('Network error loading personal dashboard:', err);
+        if (!isSilent) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Koneksi Terputus',
+            text: 'Gagal terhubung ke server. Pastikan Apache & Database aktif.',
+            confirmButtonColor: '#10b981'
+          });
+        }
+        showAuthGate();
+        return false;
+      }
+    }
+
+    // ── Render Personal Dashboard UI ────────────────────────────────────
+    function renderPersonalDashboard(data) {
+      const teacher = data.teacher || {};
+      const school = data.school || {};
+      const summary = data.summary || {};
+      const schedules = data.schedules || [];
+      const observations = data.observations || [];
+      const telaahList = data.telaahRpp || [];
+
+      // 1. Header Identitas
+      const topSchool = document.getElementById('top-school-name');
+      if (topSchool) {
+        topSchool.textContent = `${school.name} (Kode: ${school.schoolCode || '-'})`;
+      }
+      const headerName = document.getElementById('header-user-name');
+      if (headerName) headerName.textContent = teacher.name;
+      const headerAvatar = document.getElementById('header-user-avatar');
+      if (headerAvatar) {
+        headerAvatar.src = teacher.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=10b981&color=fff`;
+      }
+
+      // 2. Hero Personal Profile
+      const isGuruBk = (teacher.role && teacher.role.toLowerCase().includes('bk')) || 
+                       (teacher.subject && teacher.subject.toLowerCase().includes('bk'));
+      const bkBanner = document.getElementById('banner-guru-bk-notice');
+      if (bkBanner) {
+        if (isGuruBk) {
+          bkBanner.classList.remove('hidden');
+        } else {
+          bkBanner.classList.add('hidden');
+        }
+      }
+
+      document.getElementById('personal-teacher-name').textContent = teacher.name;
+      document.getElementById('personal-teacher-role').textContent = teacher.role || 'Tenaga Pendidik';
+      document.getElementById('personal-teacher-subject').textContent = teacher.subject || 'Guru Kelas / Mapel';
+      document.getElementById('personal-teacher-nip').textContent = teacher.nip || '-';
+      document.getElementById('personal-school-name').textContent = school.name || 'Sekolah';
+      document.getElementById('personal-academic-period').textContent = `Tahun Ajaran ${school.academicYear || '2026/2027'} · Semester ${school.semester || 'Ganjil'}`;
+
+      const avatarImg = document.getElementById('personal-teacher-avatar');
+      if (avatarImg) {
+        avatarImg.src = teacher.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=047857&color=fff&size=150`;
+        avatarImg.onerror = function() {
+          this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=047857&color=fff&size=150`;
+        };
+      }
+
+      // 3. Quick KPI Badges
+      const latestObs = summary.latestObservation || observations[0];
+      const kpiScore = document.getElementById('kpi-latest-score');
+      const kpiPred = document.getElementById('kpi-latest-predicate');
+      const quickObs = document.getElementById('quick-obs-status');
+      const quickRpp = document.getElementById('quick-rpp-status');
+      const quickNext = document.getElementById('quick-next-schedule');
+
+      if (latestObs) {
+        const score = latestObs.finalScore || latestObs.totalScore || 0;
+        const pred = latestObs.predicate || 'Baik';
+        if (kpiScore) kpiScore.textContent = `${score}/100`;
+        if (kpiPred) kpiPred.textContent = pred;
+        if (quickObs) quickObs.innerHTML = `<span class="text-emerald-400">Tuntas (${score} - ${pred})</span>`;
+      } else {
+        if (kpiScore) kpiScore.textContent = '—';
+        if (kpiPred) kpiPred.textContent = 'Belum Observasi';
+        if (quickObs) quickObs.innerHTML = `<span class="text-amber-400">Belum Dilaksanakan</span>`;
+      }
+
+      if (telaahList.length > 0) {
+        if (quickRpp) quickRpp.innerHTML = `<span class="text-purple-300 font-semibold">${telaahList.length} Modul Terverifikasi</span>`;
+      } else {
+        if (quickRpp) quickRpp.innerHTML = `<span class="text-slate-400">Belum Ada Telaah</span>`;
+      }
+
+      // Upcoming schedule
+      if (schedules.length > 0) {
+        const upcoming = schedules.find(s => s.status !== 'Ditolak') || schedules[0];
+        if (quickNext) {
+          quickNext.innerHTML = `<span class="text-blue-300 font-semibold">${upcoming.obsDate || upcoming.rppDate} (${upcoming.status || 'Terjadwal'})</span>`;
+        }
+      } else {
+        if (quickNext) quickNext.innerHTML = `<span class="text-slate-400">Belum Dijadwalkan</span>`;
+      }
+
+      // Tab badges count
+      document.getElementById('tab-badge-schedules').textContent = schedules.length;
+      document.getElementById('tab-badge-obs').textContent = observations.length;
+
+      // 4. Bind Folder Simpanan Modul Ajar & RPP Links
+      const folderUrl = school.modulAjarFolderUrl || (window.KS_AUTH ? window.KS_AUTH.getModulAjarFolderUrl() : '');
+      const periodLabel = `Semester ${school.semester || 'Ganjil'} · ${school.academicYear || '2026/2027'}`;
+
+      const badgePeriod = document.getElementById('badge-folder-period');
+      if (badgePeriod) badgePeriod.textContent = periodLabel;
+
+      const bindFolderButton = (btnId) => {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        if (folderUrl) {
+          btn.href = folderUrl;
+          btn.target = '_blank';
+          btn.onclick = null;
+          btn.removeAttribute('disabled');
+          btn.title = `Buka Folder Modul Ajar (${periodLabel})`;
+        } else {
+          btn.href = 'javascript:void(0)';
+          btn.target = '_self';
+          btn.onclick = (e) => {
+            e.preventDefault();
+            Swal.fire({
+              icon: 'info',
+              title: 'Folder Belum Disetel',
+              text: 'Tautan folder simpanan modul ajar belum disetel oleh Kepala Sekolah di menu Pengaturan Lembaga.',
+              confirmButtonColor: '#10b981'
+            });
+          };
+          btn.title = 'Tautan belum disetel oleh Kepala Sekolah';
+        }
+      };
+
+      bindFolderButton('btn-open-modulajar-folder');
+      bindFolderButton('hero-btn-drive-folder');
+      bindFolderButton('modal-ajukan-drive-link');
+
+      // Render Tab 2: Schedules
+      renderSchedulesList(schedules);
+
+      // Render Tab 3: Private Report
+      renderPrivateReport(observations, telaahList, school, teacher);
+
+      // Render Tab 4: Profile & Account Data
+      updateProfilCardAndForm(teacher);
+
+      // Check URL tab parameter if any (e.g. ?tab=jadwal, ?tab=persiapan, ?tab=laporan)
+      try {
+        const urlTab = new URLSearchParams(window.location.search).get('tab');
+        if (urlTab) {
+          switchPersonalTab(urlTab);
+        }
+      } catch (e) {}
+
+      // Check Guru BK Coaching Reflection Notification
+      checkGuruBkCoachingNotification(teacher.name);
+    }
+
+    async function checkGuruBkCoachingNotification(teacherName) {
+      const banner = document.getElementById('guruIndexBannerRefleksiBK');
+      if (!banner) return;
+      try {
+        const res = await fetch('../api.php?action=get_supervisi_bk');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.records)) {
+          const tName = (teacherName || '').toLowerCase();
+          const bkCoaching = data.records.find(r => 
+            (r.teacherName || '').toLowerCase() === tName &&
+            (r.supervisionType === 'coaching_bk' || (r.tahap3TirtaNotes && Object.keys(r.tahap3TirtaNotes).length > 0) || r.coachingKesimpulan)
+          );
+          if (bkCoaching) {
+            const isDone = (bkCoaching.reflectionStatus === 'selesai' || (bkCoaching.refleksiScore && bkCoaching.refleksiScore.average > 0));
+            const badge = document.getElementById('guruIndexBadgeRefleksiBK');
+            const desc = document.getElementById('guruIndexDescRefleksiBK');
+            const btn = document.getElementById('guruIndexBtnRefleksiBK');
+            if (isDone) {
+              banner.className = 'glass-card rounded-2xl p-5 border border-emerald-500/40 bg-gradient-to-r from-emerald-950/80 via-slate-900/90 to-teal-950/70 shadow-xl relative overflow-hidden mb-5 block';
+              if (badge) {
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30';
+                badge.innerHTML = '<i class="fa-solid fa-check text-[9px] mr-1"></i> Selesai Diisi';
+              }
+              if (desc) desc.innerHTML = `Anda telah mengisi 12 indikator refleksi pasca-coaching dengan rata-rata skor <strong>${bkCoaching.refleksiScore?.average || '3.50'} / 4.00</strong>.`;
+              if (btn) btn.textContent = 'Lihat / Perbarui Refleksi Diri';
+            } else {
+              banner.className = 'glass-card rounded-2xl p-5 border border-amber-500/50 bg-gradient-to-r from-amber-950/80 via-slate-900/90 to-emerald-950/70 shadow-xl relative overflow-hidden mb-5 block';
+              if (badge) {
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30 animate-pulse';
+                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 inline-block mr-1"></span> Menunggu Anda';
+              }
+              if (desc) desc.innerHTML = `Kepala Sekolah telah menyelesaikan sesi Coaching BK dengan Anda pada tanggal <strong>${bkCoaching.supervisionDate || ''}</strong>. Silakan isi <strong>Lembar Refleksi Diri (12 Indikator)</strong> sekarang.`;
+              if (btn) btn.textContent = 'Isi Refleksi Diri Sekarang';
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Gagal memuat notifikasi refleksi BK:', e);
+      }
+      banner.classList.add('hidden');
+    }
+
+    // ── Render Tab 1: Schedules List ────────────────────────────────────
+    function renderSchedulesList(schedules) {
+      const container = document.getElementById('schedules-list-container');
+      if (!container) return;
+
+      if (!schedules || schedules.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-8 text-center border border-white/5 space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-xl">
+              <i class="fa-solid fa-calendar-xmark"></i>
+            </div>
+            <h4 class="font-bold text-white text-base">Belum Ada Jadwal Supervisi</h4>
+            <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+              Anda belum memiliki jadwal supervisi untuk semester ini. Anda dapat mengusulkan tanggal telaah RPP dan observasi kelas ke Kepala Sekolah sekarang.
+            </p>
+            <button onclick="openModalAjukanJadwal()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-md transition">
+              <i class="fa-solid fa-calendar-plus"></i>
+              <span>Ajukan Jadwal Sekarang</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = schedules.map(sch => {
+        let statusBadge = '';
+        if (sch.status === 'Disetujui') {
+          statusBadge = `<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[10px] border border-emerald-500/30 flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-[9px]"></i> Disetujui Kepala Sekolah</span>`;
+        } else if (sch.status === 'Pending') {
+          statusBadge = `<span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30 flex items-center gap-1.5"><i class="fa-solid fa-hourglass-half text-[9px]"></i> Menunggu Persetujuan</span>`;
+        } else if (sch.status === 'Ditolak') {
+          statusBadge = `<span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 font-bold text-[10px] border border-rose-500/30 flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark text-[9px]"></i> Perlu Penyesuaian</span>`;
+        } else {
+          statusBadge = `<span class="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 font-bold text-[10px] border border-blue-500/30">${escapeHtml(sch.status)}</span>`;
+        }
+
+        return `
+          <div class="glass-card rounded-2xl p-5 border border-white/5 hover:border-emerald-500/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                ${statusBadge}
+                <span class="text-xs text-slate-400 font-mono">ID: ${escapeHtml(sch.id)}</span>
+                <span class="text-xs text-slate-400">&bull; Diajukan oleh: <strong class="text-slate-200">${escapeHtml(sch.submittedBy || 'Guru')}</strong></span>
+              </div>
+              <div class="font-bold text-white text-base flex items-center gap-2">
+                <span>${escapeHtml(sch.subject || currentGuruData.teacher.subject)}</span>
+                <span class="text-xs font-normal text-slate-400">(${escapeHtml(sch.gradeClass || 'Kelas —')})</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-300">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-book-bookmark text-amber-400 text-xs"></i>
+                  <span>Telaah RPP: <strong class="text-amber-300">${escapeHtml(sch.rppDate || '-')}</strong></span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-chalkboard-user text-emerald-400 text-xs"></i>
+                  <span>Observasi Kelas: <strong class="text-emerald-300">${escapeHtml(sch.obsDate || '-')}</strong></span>
+                </div>
+                ${sch.timeSlot ? `<div class="flex items-center gap-2 text-slate-400 col-span-full"><i class="fa-solid fa-clock text-xs text-blue-400"></i> Waktu / Sesi: ${escapeHtml(sch.timeSlot)}</div>` : ''}
+              </div>
+              ${sch.notes ? `
+                <div class="mt-2 p-2.5 rounded-xl bg-slate-900/60 border border-white/5 text-[11px] text-slate-300 flex items-start gap-2">
+                  <i class="fa-solid fa-message text-slate-400 text-xs mt-0.5"></i>
+                  <span>Catatan: ${escapeHtml(sch.notes)}</span>
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0">
+              <a href="supervisi/"
+                class="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 text-xs font-bold border border-amber-500/30 transition flex items-center justify-center gap-1.5 active:scale-95 text-center">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>Ruang Supervisi</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ── Render Tab 2: Private Report ────────────────────────────────────
+    function renderPrivateReport(observations, telaahList, school, teacher) {
+      const container = document.getElementById('private-report-container');
+      if (!container) return;
+
+      if (!observations || observations.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-8 sm:p-12 text-center border border-white/5 space-y-4">
+            <div class="w-16 h-16 rounded-3xl bg-blue-500/20 text-blue-400 flex items-center justify-center mx-auto text-2xl shadow-lg shadow-blue-500/10">
+              <i class="fa-solid fa-file-shield"></i>
+            </div>
+            <div class="space-y-1 max-w-md mx-auto">
+              <h3 class="font-display font-black text-white text-lg sm:text-xl">Belum Ada Lembar Observasi Kelas</h3>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Kepala Sekolah belum menginput hasil penilaian observasi kelas untuk Anda pada semester ini. Lembar evaluasi resmi akan otomatis tampil di sini segera setelah supervisi tatap muka selesai dilaksanakan.
+              </p>
+            </div>
+
+            <!-- Preparation Checklist for Teacher -->
+            <div class="max-w-lg mx-auto p-4 rounded-2xl bg-white/5 border border-white/10 text-left space-y-2.5 text-xs">
+              <div class="font-bold text-emerald-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <i class="fa-solid fa-list-check"></i> Checklist Persiapan Menghadapi Supervisi
+              </div>
+              <ul class="space-y-2 text-slate-300">
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-circle-check text-emerald-400 text-xs mt-0.5"></i>
+                  <span>Pastikan Modul Ajar Kurikulum Merdeka telah disusun dengan format lengkap (dapat menggunakan Toolkit Guru AI).</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-circle-check text-emerald-400 text-xs mt-0.5"></i>
+                  <span>Terapkan kesepakatan kelas dan disiplin positif saat mengawali proses belajar mengajar.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-circle-check text-emerald-400 text-xs mt-0.5"></i>
+                  <span>Gunakan rubrik 8 fokus perilaku kinerja PMM sebagai panduan pelaksanaan pembelajaran.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pt-2">
+              <button onclick="openModalAjukanJadwal()"
+                class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-md transition">
+                <i class="fa-solid fa-calendar-plus mr-1"></i> Ajukan Jadwal Observasi Sekarang
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Display latest observation
+      const obs = observations[0];
+      const finalScore = obs.finalScore || obs.totalScore || 0;
+      const predicate = obs.predicate || 'Baik';
+      const supervisor = school.principalName || 'Kepala Sekolah';
+
+      // Predicate badge style
+      let predBadgeClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+      if (predicate === 'Amat Baik') predBadgeClass = 'bg-emerald-500/25 text-emerald-200 border-emerald-400/50 shadow-lg shadow-emerald-500/20';
+      else if (predicate === 'Baik') predBadgeClass = 'bg-blue-500/20 text-blue-300 border-blue-400/40';
+      else predBadgeClass = 'bg-amber-500/20 text-amber-300 border-amber-400/40';
+
+      // Extract notes
+      const strengths = obs.strengthsNotes || 'Bapak/Ibu guru menunjukkan penguasaan materi yang sangat baik, komunikasi interaktif dengan murid, serta keteraturan suasana belajar yang kondusif.';
+      const improvements = obs.improvementsNotes || 'Terus pertahankan konsistensi diferensiasi konten/proses dan optimalkan pemanfaatan asesmen formatif berkelanjutan.';
+      const critical = obs.criticalNotes || '';
+      const recommendations = obs.recommendations || '';
+      const conclusion = obs.pascaObservation?.conclusion || 'Supervisi klinis telah tuntas dengan predikat memuaskan.';
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- 1. Hero Score Card -->
+          <div class="glass-card rounded-3xl p-6 sm:p-8 border border-emerald-500/30 bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-900 shadow-xl">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-3 py-1 rounded-full text-xs font-black border ${predBadgeClass}">
+                    Predikat: ${escapeHtml(predicate)}
+                  </span>
+                  <span class="text-xs text-slate-400">&bull; Supervisi Semester Ganjil 2026/2027</span>
+                </div>
+                <h3 class="font-display font-black text-2xl sm:text-3xl text-white">
+                  Lembar Hasil Observasi Pembelajaran Tatap Muka
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+                  Disupervisi langsung oleh <strong class="text-white">${escapeHtml(supervisor)}</strong> pada mata pelajaran <strong class="text-emerald-300">${escapeHtml(obs.subject || teacher.subject)}</strong>.
+                </p>
+              </div>
+
+              <!-- Nilai Total Callout -->
+              <div class="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/10 flex-shrink-0">
+                <div class="text-right">
+                  <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Nilai Akhir Observasi</div>
+                  <div class="text-4xl font-black text-emerald-400 leading-none mt-1">${finalScore}<span class="text-lg text-slate-400 font-normal">/100</span></div>
+                  <div class="text-[11px] text-emerald-300 font-semibold mt-1">${escapeHtml(predicate)}</div>
+                </div>
+                <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl border border-emerald-500/30">
+                  <i class="fa-solid fa-trophy"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Catatan Reflektif & Umpan Balik Coaching KS -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Strengths -->
+            <div class="glass-card rounded-2xl p-5 border border-emerald-500/20 space-y-3">
+              <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                <i class="fa-solid fa-thumbs-up"></i>
+                <h4>Kelebihan &amp; Praktik Baik yang Diamati</h4>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                ${escapeHtml(strengths)}
+              </p>
+            </div>
+
+            <!-- Improvements -->
+            <div class="glass-card rounded-2xl p-5 border border-amber-500/20 space-y-3">
+              <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                <i class="fa-solid fa-lightbulb"></i>
+                <h4>Area Rekomendasi Peningkatan Mutu</h4>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                ${escapeHtml(improvements)}
+              </p>
+            </div>
+          </div>
+
+          <!-- 3. Rencana Aksi Tindak Lanjut & Kesimpulan -->
+          ${recommendations || conclusion ? `
+            <div class="glass-card rounded-2xl p-5 border border-blue-500/20 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-blue-400 font-bold text-sm">
+                  <i class="fa-solid fa-comments"></i>
+                  <h4>Hasil Wawancara Refleksi &amp; Rencana Tindak Lanjut</h4>
+                </div>
+                <span class="text-[10px] text-blue-300 font-semibold bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">Coaching Klinis</span>
+              </div>
+              ${recommendations ? `
+                <div class="text-xs text-slate-300 space-y-1">
+                  <div class="font-semibold text-white">Rekomendasi Kepala Sekolah:</div>
+                  <p class="text-slate-300 leading-relaxed whitespace-pre-line">${escapeHtml(recommendations)}</p>
+                </div>
+              ` : ''}
+              ${conclusion ? `
+                <div class="pt-2 border-t border-white/5 text-xs text-slate-300 space-y-1">
+                  <div class="font-semibold text-white">Kesimpulan Wawancara Pasca-Observasi:</div>
+                  <p class="text-slate-300 leading-relaxed whitespace-pre-line">${escapeHtml(conclusion)}</p>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+
+          <!-- 4. Direct CTA Action to Full Official Report -->
+          <div class="glass-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border border-white/10 bg-slate-900/60">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg flex-shrink-0">
+                <i class="fa-solid fa-print"></i>
+              </div>
+              <div class="text-xs">
+                <div class="font-bold text-white">Dokumen Bukti Fisik e-Kinerja &amp; SKP</div>
+                <div class="text-slate-400">Unduh lembar laporan lengkap bertanda tangan elektronik Kepala Sekolah</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <a href="supervisi/laporan-supervisi/"
+                class="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition border border-white/10 text-center">
+                Lihat Lembar Lengkap
+              </a>
+              <a href="supervisi/laporan-supervisi/?print=1" target="_blank"
+                class="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs transition shadow-md text-center flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download"></i>
+                <span>Export PDF</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Tab Switch Logic ────────────────────────────────────────────────
+    function switchPersonalTab(tabName) {
+      if (tabName === 'toolkit') tabName = 'persiapan';
+      const tabs = ['persiapan', 'jadwal', 'laporan', 'profil'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tabBtn-${t}`) || (t === 'persiapan' ? document.getElementById('tabBtn-toolkit') : null);
+        const content = document.getElementById(`tabContent-${t}`) || (t === 'persiapan' ? document.getElementById('tabContent-toolkit') : null);
+        if (t === tabName) {
+          if (btn) {
+            btn.classList.add('active');
+            btn.classList.remove('text-slate-400');
+          }
+          if (content) content.classList.remove('hidden');
+        } else {
+          if (btn) {
+            btn.classList.remove('active');
+            btn.classList.add('text-slate-400');
+          }
+          if (content) content.classList.add('hidden');
+        }
+      });
+      if (tabName === 'profil') {
+        populateProfileForm();
+      }
+    }
+
+    // ── Teacher Profile Management & Synchronisation ─────────────────────
+    function updateProfilCardAndForm(teacher) {
+      if (!teacher) return;
+      
+      // Update Preview Card
+      const cardAvatar = document.getElementById('profil-card-avatar');
+      if (cardAvatar) {
+        cardAvatar.src = teacher.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=047857&color=fff&size=150`;
+        cardAvatar.onerror = function() {
+          this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=047857&color=fff&size=150`;
+        };
+      }
+      const cardName = document.getElementById('profil-card-name');
+      if (cardName) cardName.textContent = teacher.name;
+      const cardRole = document.getElementById('profil-card-role-badge');
+      if (cardRole) cardRole.textContent = teacher.role || 'Guru';
+      const cardStatus = document.getElementById('profil-card-status-badge');
+      if (cardStatus) cardStatus.textContent = teacher.employmentStatus || 'Aktif';
+      const cardSubject = document.getElementById('profil-card-subject');
+      if (cardSubject) cardSubject.textContent = `Mata Pelajaran: ${teacher.subject || '-'}`;
+      const cardNip = document.getElementById('profil-card-nip');
+      if (cardNip) cardNip.textContent = teacher.nip || '-';
+      const cardNuptk = document.getElementById('profil-card-nuptk');
+      if (cardNuptk) cardNuptk.textContent = teacher.nuptk || '-';
+      const cardEmpId = document.getElementById('profil-card-empid');
+      if (cardEmpId) cardEmpId.textContent = teacher.id || 'EMP-000';
+      const cardCode = document.getElementById('profil-card-access-code');
+      if (cardCode) cardCode.textContent = teacher.accessCode || '----';
+
+      populateProfileForm();
+    }
+
+    function populateProfileForm() {
+      if (!currentGuruData || !currentGuruData.teacher) return;
+      const t = currentGuruData.teacher;
+
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+      };
+
+      setVal('edit-profil-name', t.name);
+      setVal('edit-profil-nickname', t.nickname);
+      setVal('edit-profil-nip', t.nip && t.nip !== '-' ? t.nip : '');
+      setVal('edit-profil-nuptk', t.nuptk && t.nuptk !== '-' ? t.nuptk : '');
+      setVal('edit-profil-gender', t.gender || 'Laki-laki');
+      setVal('edit-profil-subject', t.subject);
+      setVal('edit-profil-status', t.employmentStatus || 'PNS');
+      setVal('edit-profil-education', t.education);
+      setVal('edit-profil-task', t.task);
+      setVal('edit-profil-email', t.email);
+      setVal('edit-profil-phone', t.phone);
+      setVal('edit-profil-address', t.address && t.address !== '-' ? t.address : '');
+      setVal('edit-profil-photo', t.photo || '');
+      setVal('edit-profil-password', '');
+    }
+
+    function handleProfilPhotoInput(url) {
+      const cardAvatar = document.getElementById('profil-card-avatar');
+      if (cardAvatar && url) {
+        cardAvatar.src = url;
+      }
+    }
+
+    function generateAvatarFromCurrentName() {
+      const nameInput = document.getElementById('edit-profil-name');
+      const name = (nameInput && nameInput.value.trim()) || (currentGuruData && currentGuruData.teacher && currentGuruData.teacher.name) || 'Guru';
+      const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=047857&color=fff&size=250`;
+      const photoEl = document.getElementById('edit-profil-photo');
+      if (photoEl) photoEl.value = avatarUrl;
+      handleProfilPhotoInput(avatarUrl);
+    }
+
+    function copyAccessCode() {
+      const code = (currentGuruData && currentGuruData.teacher && currentGuruData.teacher.accessCode) || '';
+      if (!code) {
+        Swal.fire('Info', 'Kode akses belum terdaftar.', 'info');
+        return;
+      }
+      navigator.clipboard.writeText(code).then(() => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: `Kode ${code} disalin!`,
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }).catch(() => {
+        prompt('Salin kode akses:', code);
+      });
+    }
+
+    async function handleSaveProfile(event) {
+      event.preventDefault();
+      if (!currentGuruData || !currentGuruData.teacher) {
+        Swal.fire('Error', 'Sesi login tidak valid. Silakan muat ulang halaman.', 'error');
+        return;
+      }
+
+      const curTeacher = currentGuruData.teacher;
+      const school = currentGuruData.school || {};
+
+      const newName = document.getElementById('edit-profil-name').value.trim();
+      const newSubject = document.getElementById('edit-profil-subject').value.trim();
+
+      if (!newName || !newSubject) {
+        Swal.fire('Perhatian', 'Nama Lengkap dan Mata Pelajaran wajib diisi.', 'warning');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-profile');
+      const origBtnHtml = saveBtn.innerHTML;
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+      saveBtn.disabled = true;
+
+      const newPass = document.getElementById('edit-profil-password').value.trim();
+
+      const payload = {
+        id: curTeacher.id,
+        name: newName,
+        nickname: document.getElementById('edit-profil-nickname').value.trim() || newName.split(' ')[0],
+        nip: document.getElementById('edit-profil-nip').value.trim() || '-',
+        nuptk: document.getElementById('edit-profil-nuptk').value.trim() || '-',
+        gender: document.getElementById('edit-profil-gender').value,
+        subject: newSubject,
+        role: curTeacher.role || 'Guru',
+        department: curTeacher.department || 'Tenaga Pendidik',
+        employmentStatus: document.getElementById('edit-profil-status').value,
+        education: document.getElementById('edit-profil-education').value.trim(),
+        task: document.getElementById('edit-profil-task').value.trim(),
+        email: document.getElementById('edit-profil-email').value.trim(),
+        phone: document.getElementById('edit-profil-phone').value.trim(),
+        address: document.getElementById('edit-profil-address').value.trim(),
+        photo: document.getElementById('edit-profil-photo').value.trim() || curTeacher.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(newName)}&background=047857&color=fff`,
+        accessCode: curTeacher.accessCode || '',
+        status: 'Aktif'
+      };
+
+      if (newPass) {
+        payload.password = newPass;
+      }
+
+      try {
+        const res = await fetch(API_BASE + 'api.php?action=save_employee', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const resData = await res.json();
+
+        if (resData.success) {
+          // Update currentGuruData in memory
+          const updatedTeacher = resData.employee || payload;
+          currentGuruData.teacher = { ...curTeacher, ...updatedTeacher };
+
+          // Update local sessions
+          setGuruSession(school.name, school.schoolCode, currentGuruData.teacher);
+          setTeacherSession(currentGuruData.teacher);
+
+          // Update Header & Hero Displays
+          const headerName = document.getElementById('header-user-name');
+          if (headerName) headerName.textContent = updatedTeacher.name;
+          const headerAvatar = document.getElementById('header-user-avatar');
+          if (headerAvatar) headerAvatar.src = updatedTeacher.photo;
+
+          document.getElementById('personal-teacher-name').textContent = updatedTeacher.name;
+          document.getElementById('personal-teacher-subject').textContent = updatedTeacher.subject;
+          document.getElementById('personal-teacher-nip').textContent = updatedTeacher.nip || '-';
+          const avatarImg = document.getElementById('personal-teacher-avatar');
+          if (avatarImg) avatarImg.src = updatedTeacher.photo;
+
+          // Update Card & Form
+          updateProfilCardAndForm(currentGuruData.teacher);
+
+          // Clear password input
+          document.getElementById('edit-profil-password').value = '';
+
+          // Sync localStorage employee store if accessible
+          if (typeof KS_EMPLOYEE_DB !== 'undefined' && typeof KS_EMPLOYEE_DB.update === 'function') {
+            KS_EMPLOYEE_DB.update(updatedTeacher.id, updatedTeacher);
+          }
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Profil Berhasil Diperbarui!',
+            html: `Data identitas <b>${updatedTeacher.name}</b> berhasil disimpan dan langsung tersinkronkan ke Database Karyawan Kepala Sekolah dan Akun Admin.`,
+            confirmButtonColor: '#10b981'
+          });
+        } else {
+          Swal.fire('Gagal Menyimpan', resData.error || 'Terjadi kesalahan sistem saat memperbarui profil.', 'error');
+        }
+      } catch (err) {
+        console.error('Error saving teacher profile:', err);
+        Swal.fire('Koneksi Gagal', 'Tidak dapat terhubung ke server database.', 'error');
+      } finally {
+        saveBtn.innerHTML = origBtnHtml;
+        saveBtn.disabled = false;
+      }
+    }
+
+    // ── Modal Ajukan Jadwal Logic ────────────────────────────────────────
+    function openModalAjukanJadwal() {
+      if (!currentGuruData || !currentGuruData.teacher) {
+        Swal.fire('Perhatian', 'Silakan login terlebih dahulu.', 'warning');
+        return;
+      }
+      const teacher = currentGuruData.teacher;
+      const school = currentGuruData.school || {};
+
+      document.getElementById('ajukan-subject').value = `${teacher.name} — ${teacher.subject || 'Guru'}`;
+      
+      const isBk = /bk|bimbingan|konseling|konselor/i.test((teacher.subject || '') + ' ' + (teacher.role || '') + ' ' + (teacher.task || ''));
+      const typeSelect = document.getElementById('ajukan-supervision-type');
+      if (typeSelect) {
+        typeSelect.value = isBk ? 'supervisi_bk' : 'reguler';
+      }
+
+      // Default dates
+      const today = new Date();
+      const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const nextTwoWeeks = new Date(today.getTime() + 10 * 24 * 60 * 60 * 1000);
+      
+      const rppInput = document.getElementById('ajukan-rpp-date');
+      const obsInput = document.getElementById('ajukan-obs-date');
+      
+      if (rppInput) {
+        rppInput.min = today.toISOString().split('T')[0];
+        rppInput.value = nextWeek.toISOString().split('T')[0];
+      }
+      if (obsInput) {
+        obsInput.min = nextWeek.toISOString().split('T')[0];
+        obsInput.value = nextTwoWeeks.toISOString().split('T')[0];
+      }
+
+      handleIndexSupervisionTypeChange();
+
+      // Reset upload confirmation checkbox
+      const chkConfirm = document.getElementById('ajukan-confirm-upload');
+      if (chkConfirm) chkConfirm.checked = false;
+
+      document.getElementById('modal-ajukan-jadwal').classList.remove('hidden');
+    }
+
+    function closeModalAjukanJadwal() {
+      document.getElementById('modal-ajukan-jadwal').classList.add('hidden');
+    }
+
+    function handleIndexSupervisionTypeChange() {
+      const type = document.getElementById('ajukan-supervision-type')?.value || 'reguler';
+      const rppInput = document.getElementById('ajukan-rpp-date');
+      const obsInput = document.getElementById('ajukan-obs-date');
+      if (type !== 'reguler' && rppInput && obsInput) {
+        obsInput.value = rppInput.value;
+      }
+    }
+
+    function handleRppDateChange(el) {
+      const type = document.getElementById('ajukan-supervision-type')?.value || 'reguler';
+      const obsInput = document.getElementById('ajukan-obs-date');
+      if (obsInput && el.value) {
+        if (type !== 'reguler') {
+          obsInput.value = el.value;
+          return;
+        }
+        obsInput.min = el.value;
+        if (obsInput.value && obsInput.value < el.value) {
+          obsInput.value = el.value;
+        }
+      }
+    }
+
+    async function handleAjukanJadwalSubmit(event) {
+      event.preventDefault();
+      if (!currentGuruData || !currentGuruData.teacher) return;
+
+      const teacher = currentGuruData.teacher;
+      const school = currentGuruData.school || {};
+      const type = document.getElementById('ajukan-supervision-type')?.value || 'reguler';
+      const rppDate = document.getElementById('ajukan-rpp-date').value;
+      let obsDate = document.getElementById('ajukan-obs-date').value;
+      const gradeClass = document.getElementById('ajukan-grade-class').value.trim();
+      const timeSlot = document.getElementById('ajukan-time-slot').value.trim();
+      const topic = document.getElementById('ajukan-notes-topic').value.trim();
+      const chkConfirm = document.getElementById('ajukan-confirm-upload');
+      const submitBtn = document.getElementById('btn-submit-jadwal');
+
+      if (type !== 'reguler') {
+        obsDate = rppDate;
+      }
+
+      // Strict Confirmation of Modul Ajar upload
+      if (chkConfirm && !chkConfirm.checked) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Konfirmasi Upload Dokumen Diperlukan',
+          text: 'Harap centang pernyataan bahwa Anda telah menyiapkan Modul Ajar / RPL ke folder sekolah sebelum mengajukan jadwal supervisi.',
+          confirmButtonColor: '#10b981'
+        });
+        chkConfirm.focus();
+        return;
+      }
+
+      if (!rppDate || !obsDate) {
+        Swal.fire('Peringatan', 'Tanggal supervisi wajib diisi!', 'warning');
+        return;
+      }
+
+      if (type === 'reguler' && obsDate < rppDate) {
+        Swal.fire('Jadwal Tidak Valid', 'Tanggal observasi kelas harus sama atau setelah tanggal telaah RPP!', 'warning');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Menyimpan...';
+
+      try {
+        const payload = {
+          id: 'SCH-' + Date.now(),
+          teacherId: teacher.id,
+          teacherName: teacher.name,
+          subject: teacher.subject || '',
+          gradeClass: gradeClass,
+          supervisionType: type,
+          rppDate: rppDate,
+          obsDate: obsDate,
+          timeSlot: timeSlot,
+          notes: topic ? `Materi: ${topic}` : '',
+          modulAjarConfirmed: true,
+          submittedBy: 'Guru',
+          academicYear: school.academicYear || '2026/2027',
+          semester: school.semester || 'Ganjil'
+        };
+
+        const res = await fetch(API_BASE + 'api.php?action=save_schedule', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          closeModalAjukanJadwal();
+          Swal.fire({
+            icon: 'success',
+            title: 'Pengajuan Terkirim!',
+            text: 'Usulan jadwal supervisi telah dikirim ke Kepala Sekolah untuk disetujui.',
+            confirmButtonColor: '#10b981'
+          });
+
+          // Reload data
+          await loadPersonalDashboard(
+            school.name,
+            school.schoolCode || 'BRI-XXXX',
+            teacher.name,
+            teacher.accessCode,
+            true
+          );
+        } else {
+          Swal.fire('Gagal', data.error || 'Tidak dapat menyimpan jadwal.', 'error');
+        }
+      } catch (err) {
+        console.error('Gagal mengajukan jadwal:', err);
+        Swal.fire('Koneksi Gagal', 'Gagal mengirim usulan jadwal ke server.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-xs mr-1"></i> Kirim Pengajuan';
+      }
+    }
+
+    // ── Switch View Functions ───────────────────────────────────────────
+    function showAuthGate() {
+      redirectToPortal();
+    }
+
+    function showDashboardContent() {
+      const notice = document.getElementById('auth-redirect-notice');
+      if (notice) notice.classList.add('hidden');
+      document.getElementById('dashboard-content-section').classList.remove('hidden');
+      document.getElementById('header-user-badge').classList.remove('hidden');
+      document.getElementById('header-user-badge').classList.add('flex');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function logoutGuruSession() {
+      Swal.fire({
+        title: 'Keluar dari Portal Guru?',
+        text: 'Sesi personal Anda akan ditutup dan Anda akan dialihkan kembali ke Portal Terpadu GTK.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          clearGuruSession();
+          window.location.replace('../portal/');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

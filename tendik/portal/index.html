@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Tenaga Kependidikan (Tendik) — SupervisiSekolah.id</title>
+  <meta name="description" content="Portal mandiri Tenaga Kependidikan: Cek hasil penilaian supervisi, unduh lembar laporan, dan ajukan jadwal supervisi ke Kepala Sekolah.">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Font Awesome -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- App Modules -->
+  <script src="../../js/auth.js?v=20261018"></script>
+  <script src="../../js/supervision-tendik.js?v=20261018"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif']
+          },
+          colors: {
+            tendik: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .font-display {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .bg-tendik-theme {
+      background: radial-gradient(circle at 10% 20%, #451a03 0%, #1c1917 40%, #0c0a09 80%, #030712 100%);
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(28, 25, 23, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(245, 158, 11, 0.4);
+      box-shadow: 0 16px 32px -8px rgba(120, 53, 15, 0.4);
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(95px);
+      opacity: 0.18;
+      pointer-events: none;
+      animation: float 14s ease-in-out infinite;
+    }
+
+    .orb-1 { width: 500px; height: 500px; background: #d97706; top: -100px; left: -100px; }
+    .orb-2 { width: 450px; height: 450px; background: #b45309; bottom: -100px; right: -80px; animation-delay: -5s; }
+    .orb-3 { width: 350px; height: 350px; background: #6366f1; top: 35%; right: 15%; animation-delay: -9s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(25px, -25px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    .code-input {
+      letter-spacing: 0.3em;
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      font-size: 1.25rem;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    @media print {
+      body { background: white !important; color: black !important; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      .glass-card { background: white !important; border: 1px solid #ccc !important; box-shadow: none !important; }
+      #print-modal-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px; }
+    }
+  </style>
+</head>
+
+<body class="bg-tendik-theme text-slate-100 min-h-screen relative flex flex-col antialiased">
+
+  <!-- Ambient Light Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- TOP APP BAR -->
+  <header class="sticky top-0 z-50 glass-card border-b border-amber-500/20 bg-slate-950/85 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
+      <!-- Brand & School Info -->
+      <div class="flex items-center gap-3">
+        <a href="./" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/25 text-white hover:scale-105 transition">
+          <i class="fa-solid fa-id-badge text-lg"></i>
+        </a>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-display font-black text-base text-white tracking-tight">Portal Tenaga Kependidikan <span class="text-amber-400">(Tendik)</span></span>
+            <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-400/30">7 Instrumen GTK</span>
+          </div>
+          <p id="top-school-name" class="text-xs text-slate-400 font-medium truncate max-w-xs sm:max-w-md">Memuat informasi sekolah...</p>
+        </div>
+      </div>
+
+      <!-- Action: Logout / Switch -->
+      <div class="flex items-center gap-2.5">
+        <div id="header-user-badge" class="hidden items-center gap-2.5">
+          <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="header-user-name" class="text-white font-semibold truncate max-w-[150px]">Tendik</span>
+          </div>
+          <button onclick="logoutTendikSession()" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center gap-1.5" title="Keluar dari portal">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Keluar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- REDIRECT NOTICE (Semua autentikasi terpusat via /portal/)             -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <main id="view-redirect-notice" class="hidden flex-1 flex items-center justify-center px-4 py-16 relative z-10">
+    <div class="glass-card rounded-3xl p-8 max-w-md w-full text-center space-y-4 border border-amber-500/20 shadow-2xl">
+      <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-2xl shadow-lg shadow-amber-500/20">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold font-display text-white">Mengarahkan ke Portal GTK...</h2>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          Autentikasi Tenaga Kependidikan kini terpusat melalui <strong>Portal Terpadu GTK (1 Pintu)</strong>. Mengalihkan Anda secara otomatis...
+        </p>
+      </div>
+      <div class="pt-2">
+        <a href="../../portal/" class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/25 transition">
+          <span>Buka Portal GTK</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- VIEW 2: DASHBOARD UTAMA SESI TENDIK SETELAH LOGIN                     -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <main id="view-dashboard" class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6 hidden relative z-10">
+    
+    <!-- Profile Hero Card -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 border border-amber-500/30 text-white relative overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+        <div class="flex items-center gap-4">
+          <img id="dash-emp-photo" src="" alt="Avatar" class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400/40 shadow-lg shadow-amber-500/20">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="dash-emp-role-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                Staff TU
+              </span>
+              <span class="text-xs text-slate-300 font-mono" id="dash-emp-nip">NIP. -</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold font-display text-white mt-1" id="dash-emp-name">Nama Tendik</h2>
+            <p class="text-xs text-slate-300 mt-0.5" id="dash-emp-task">Kepala Tata Usaha &amp; Pengelola Dapodik</p>
+          </div>
+        </div>
+
+        <!-- Quick Access Code Reminder -->
+        <div class="bg-black/30 border border-amber-500/20 p-3.5 rounded-2xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">Kode Akses Anda:</span>
+            <span class="font-mono font-black text-amber-400 text-sm" id="dash-disp-code">XXXX-XXXX</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs Inside Portal -->
+    <div class="flex items-center gap-2 border-b border-white/10 overflow-x-auto pb-1">
+      <button id="p-tab-btn-results" onclick="switchPortalTab('results')"
+        class="portal-tab-btn px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 border-b-2 border-amber-500 text-amber-300 bg-amber-500/10">
+        <i class="fa-solid fa-file-invoice text-sm"></i>
+        <span>Laporan Hasil Supervisi Saya</span>
+      </button>
+      <button id="p-tab-btn-schedule" onclick="switchPortalTab('schedule')"
+        class="portal-tab-btn px-4 py-2.5 rounded-t-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 border-b-2 border-transparent">
+        <i class="fa-solid fa-calendar-check text-sm"></i>
+        <span>Pengajuan Jadwal Supervisi</span>
+      </button>
+      <button id="p-tab-btn-guidelines" onclick="switchPortalTab('guidelines')"
+        class="portal-tab-btn px-4 py-2.5 rounded-t-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 border-b-2 border-transparent">
+        <i class="fa-solid fa-book-bookmark text-sm"></i>
+        <span>Panduan Standar 7 Instrumen</span>
+      </button>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <!-- PORTAL TAB 1: HASIL SUPERVISI SAYA                                    -->
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <section id="portal-sec-results" class="space-y-6">
+      
+      <!-- Latest Result Highlight -->
+      <div id="latest-result-card" class="glass-card rounded-2xl p-6 border border-amber-500/30 space-y-4">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- History of Supervisions -->
+      <div class="glass-card rounded-2xl p-6 border border-white/10 space-y-4">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
+          <span>Riwayat Penilaian Supervisi Tenaga Kependidikan</span>
+        </h3>
+        <div id="supervision-history-list" class="space-y-3">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <!-- PORTAL TAB 2: PENGAJUAN JADWAL SUPERVISI                             -->
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <section id="portal-sec-schedule" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Form Pengajuan -->
+        <div class="glass-card rounded-2xl p-6 border border-white/10 space-y-4">
+          <div>
+            <h3 class="font-bold text-sm text-white flex items-center gap-2">
+              <i class="fa-solid fa-calendar-plus text-amber-400"></i>
+              <span>Formulir Pengajuan Jadwal Supervisi Mandiri</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+              Ajukan tanggal dan waktu yang siap untuk observasi dokumen/kinerja kepada Kepala Sekolah.
+            </p>
+          </div>
+
+          <form id="portal-schedule-form" onsubmit="handlePortalSubmitSchedule(event)" class="space-y-3.5 text-xs">
+            <div>
+              <label class="block font-bold text-amber-300 mb-1">Pilih Jenis Instrumen yang Diajukan *</label>
+              <select id="p-sched-instrument" required
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/15 text-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <option value="ktas">1. Kepala Tenaga Administrasi Sekolah (KTAS)</option>
+                <option value="persuratan">2. Administrasi Persuratan &amp; Pengarsipan</option>
+                <option value="sarpras">3. Administrasi Sarana &amp; Prasarana</option>
+                <option value="kebersihan">4. Tenaga Kebersihan / OB</option>
+                <option value="perpustakaan">5. Kepala Perpustakaan Sekolah</option>
+                <option value="laboratorium">6. Kepala Laboratorium Sekolah</option>
+                <option value="keamanan">7. Petugas Keamanan / Security</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-amber-300 mb-1">Usulan Tanggal Supervisi *</label>
+              <input type="date" id="p-sched-date" required
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/15 text-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+            </div>
+
+            <div>
+              <label class="block font-bold text-amber-300 mb-1">Usulan Waktu / Jam Observasi</label>
+              <input type="text" id="p-sched-time" placeholder="Contoh: 09.00 - 10.30 WIB"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/15 text-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+            </div>
+
+            <div>
+              <label class="block font-bold text-amber-300 mb-1">Catatan Kesiapan Bukti Fisik</label>
+              <textarea id="p-sched-notes" rows="3" placeholder="Misal: Berkas Buku Kas Umum, Buku Tamu, dan Buku Inventaris telah siap di meja kerja..."
+                class="w-full p-3 rounded-xl bg-slate-900 border border-white/15 text-white font-normal focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+            </div>
+
+            <button type="submit"
+              class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-98 text-slate-950 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Kirim Pengajuan Jadwal ke Kepala Sekolah</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Daftar Status Pengajuan Saya -->
+        <div class="glass-card rounded-2xl p-6 border border-white/10 space-y-4">
+          <h3 class="font-bold text-sm text-white flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-amber-400"></i>
+            <span>Status Pengajuan Jadwal Supervisi Saya</span>
+          </h3>
+          <div id="portal-schedules-list" class="space-y-3">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <!-- PORTAL TAB 3: PANDUAN STANDAR 7 INSTRUMEN MUTU                       -->
+    <!-- ═════════════════════════════════════════════════════════════════════ -->
+    <section id="portal-sec-guidelines" class="space-y-4 hidden">
+      <div class="glass-card rounded-2xl p-6 border border-white/10">
+        <h3 class="font-bold text-base text-white mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-book-open text-amber-400"></i>
+          <span>Panduan Standar 7 Instrumen Mutu Supervisi Tenaga Kependidikan</span>
+        </h3>
+        <p class="text-xs text-slate-300 mb-6 leading-relaxed">
+          Ketahui rincian indikator penilaian dan bukti fisik yang dinilai oleh Kepala Sekolah sesuai panduan resmi Kemendikbudristek &amp; Ditjen GTK.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="guidelines-cards-container">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: CETAK / LIHAT LAPORAN RESMI TENDIK                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="modal-report-view" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white text-slate-900 rounded-3xl max-w-4xl w-full p-6 md:p-8 shadow-2xl border border-slate-300 space-y-6 my-8">
+      
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3 no-print">
+        <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf text-rose-600"></i>
+          <span>Lembar Laporan Hasil Supervisi Resmi</span>
+        </h3>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-print"></i>
+            <span>Cetak / PDF</span>
+          </button>
+          <button onclick="closeReportModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Content Area -->
+      <div id="print-modal-area" class="space-y-6 text-slate-900">
+        <!-- Kop Surat -->
+        <div class="border-b-4 border-double border-slate-900 pb-4 text-center space-y-1">
+          <h2 id="modal-rep-school-name" class="font-display font-black text-xl uppercase tracking-wider text-slate-900">SMP BRIGHTON</h2>
+          <p id="modal-rep-school-addr" class="text-xs text-slate-600 font-medium">Alamat Sekolah</p>
+          <p class="text-xs text-slate-500 font-mono">NPSN: <span id="modal-rep-npsn">20512345</span> • Status Akreditasi: A</p>
+        </div>
+
+        <div class="text-center space-y-1">
+          <h3 id="modal-rep-title" class="font-black text-sm uppercase tracking-wide text-slate-900">
+            INSTRUMEN SUPERVISI TENAGA KEPENDIDIKAN
+          </h3>
+          <p class="text-xs font-bold text-slate-600">
+            TAHUN PELAJARAN <span id="modal-rep-year">2026/2027</span> • SEMESTER <span id="modal-rep-sem">GANJIL</span>
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-xs border border-slate-200 p-3 rounded-xl bg-slate-50/60">
+          <div class="space-y-1">
+            <div class="flex"><span class="w-32 font-semibold text-slate-500">Nama Pegawai</span><span class="font-bold">: <span id="modal-rep-name">-</span></span></div>
+            <div class="flex"><span class="w-32 font-semibold text-slate-500">NIP / NUPTK</span><span class="font-mono">: <span id="modal-rep-nip">-</span></span></div>
+            <div class="flex"><span class="w-32 font-semibold text-slate-500">Tugas / Jabatan</span><span class="font-bold">: <span id="modal-rep-task">-</span></span></div>
+          </div>
+          <div class="space-y-1">
+            <div class="flex"><span class="w-32 font-semibold text-slate-500">Hari / Tanggal</span><span>: <span id="modal-rep-date">-</span></span></div>
+            <div class="flex"><span class="w-32 font-semibold text-slate-500">Supervisor</span><span class="font-bold">: <span id="modal-rep-supervisor">-</span></span></div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto border border-slate-300 rounded-lg">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-300">
+              <tr>
+                <th class="py-2 px-3 border-r border-slate-300 w-10 text-center">No</th>
+                <th class="py-2 px-3 border-r border-slate-300">Aspek yang Diamati</th>
+                <th class="py-2 px-3 border-r border-slate-300 text-center w-28">Bukti Fisik</th>
+                <th class="py-2 px-3 text-center w-16">Skor (1-5)</th>
+              </tr>
+            </thead>
+            <tbody id="modal-rep-table-body" class="divide-y divide-slate-200">
+              <!-- Rendered by JS -->
+            </tbody>
+            <tfoot class="bg-slate-50 font-bold border-t-2 border-slate-300 text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-3 text-right border-r border-slate-300">Total Skor Perolehan</td>
+                <td class="py-2 px-3 text-center font-mono font-bold" id="modal-rep-total-score">0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-3 text-right border-r border-slate-300">Nilai Akhir : (Perolehan / Maks) × 100%</td>
+                <td class="py-2 px-3 text-center font-mono font-black text-amber-900 text-sm" id="modal-rep-final-score">0%</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-3 text-right border-r border-slate-300">Predikat Ketercapaian Mutu</td>
+                <td class="py-2 px-3 text-center font-black" id="modal-rep-predicate">-</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Catatan & Tindak Lanjut -->
+        <div class="space-y-3 text-xs">
+          <div class="border border-slate-300 p-3 rounded-lg">
+            <span class="font-bold block text-slate-900 mb-1">Catatan Evaluasi Kepala Sekolah:</span>
+            <p id="modal-rep-catatan" class="text-slate-700 whitespace-pre-line leading-relaxed italic">-</p>
+          </div>
+          <div class="border border-slate-300 p-3 rounded-lg">
+            <span class="font-bold block text-slate-900 mb-1">Rekomendasi Tindak Lanjut:</span>
+            <p id="modal-rep-tindak-lanjut" class="text-slate-700 whitespace-pre-line leading-relaxed italic">-</p>
+          </div>
+        </div>
+
+        <!-- Kolom Tanda Tangan -->
+        <div class="pt-6 grid grid-cols-2 gap-8 text-xs text-center">
+          <div>
+            <p class="text-slate-600 mb-16">Petugas yang Disupervisi,</p>
+            <p class="font-bold text-slate-900 underline" id="modal-sign-emp-name">Nama Petugas</p>
+            <p class="text-slate-600 font-mono" id="modal-sign-emp-nip">NIP. -</p>
+          </div>
+          <div>
+            <p class="text-slate-600 mb-16">
+              <span id="modal-sign-place">Genteng</span>, <span id="modal-sign-date">-</span><br>
+              Kepala Sekolah,
+            </p>
+            <p class="font-bold text-slate-900 underline" id="modal-sign-ks-name">Nama Kepala Sekolah</p>
+            <p class="text-slate-600 font-mono" id="modal-sign-ks-nip">NIP. -</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    let activeTendikUser = null;
+    let activeSchool = null;
+    let activeSupervisions = [];
+    let activeSchedules = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Check existing session (redirect to /portal/ if not authenticated)
+      checkSavedSession();
+
+      // 2. Render Guidelines Cards
+      renderGuidelinesCards();
+    });
+
+    // Check Saved Session & Redirect if Empty
+    function checkSavedSession() {
+      const saved = localStorage.getItem('ks_tendik_portal_session') || localStorage.getItem('supervisi_gtk_session');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          const emp = parsed.teacher || parsed.employee;
+          if (parsed && emp) {
+            activeTendikUser = emp;
+            activeSchool = parsed.school;
+            activeSupervisions = parsed.supervisiTendik || [];
+            activeSchedules = parsed.schedules || [];
+            showDashboardView();
+            return;
+          }
+        } catch (e) {}
+      }
+      redirectToPortal();
+    }
+
+    function redirectToPortal() {
+      const notice = document.getElementById('view-redirect-notice');
+      if (notice) notice.classList.remove('hidden');
+      const dash = document.getElementById('view-dashboard');
+      if (dash) dash.classList.add('hidden');
+      const badge = document.getElementById('header-user-badge');
+      if (badge) {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+      }
+      window.location.replace('../../portal/');
+    }
+
+    // Show Dashboard View
+    function showDashboardView() {
+      const notice = document.getElementById('view-redirect-notice');
+      if (notice) notice.classList.add('hidden');
+      document.getElementById('view-dashboard').classList.remove('hidden');
+      document.getElementById('header-user-badge').classList.remove('hidden');
+      document.getElementById('header-user-badge').classList.add('flex');
+
+      document.getElementById('top-school-name').textContent = activeSchool ? activeSchool.name : 'SMP Brighton';
+      document.getElementById('header-user-name').textContent = activeTendikUser ? activeTendikUser.name : 'Tendik';
+
+      // Fill profile card
+      document.getElementById('dash-emp-name').textContent = activeTendikUser.name;
+      document.getElementById('dash-emp-nip').textContent = activeTendikUser.nip ? `NIP. ${activeTendikUser.nip}` : 'NIP. -';
+      document.getElementById('dash-emp-task').textContent = `${activeTendikUser.role || 'Staff'} • ${activeTendikUser.task || '-'}`;
+      document.getElementById('dash-emp-role-badge').textContent = activeTendikUser.role || 'Staff';
+      document.getElementById('dash-disp-code').textContent = activeTendikUser.accessCode || 'XXXX-XXXX';
+      document.getElementById('dash-emp-photo').src = activeTendikUser.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeTendikUser.name)}&background=d97706&color=fff`;
+
+      renderResultsTab();
+      renderSchedulesTab();
+    }
+
+    // Show Login View / Redirect
+    function showLoginView() {
+      redirectToPortal();
+    }
+
+    // Logout
+    function logoutTendikSession() {
+      localStorage.removeItem('ks_tendik_portal_session');
+      localStorage.removeItem('supervisi_gtk_session');
+      activeTendikUser = null;
+      activeSchool = null;
+      activeSupervisions = [];
+      redirectToPortal();
+    }
+
+    // Switch Portal Tab
+    function switchPortalTab(tab) {
+      document.querySelectorAll('.portal-tab-btn').forEach(btn => {
+        btn.classList.remove('border-amber-500', 'text-amber-300', 'bg-amber-500/10');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      document.getElementById('portal-sec-results').classList.add('hidden');
+      document.getElementById('portal-sec-schedule').classList.add('hidden');
+      document.getElementById('portal-sec-guidelines').classList.add('hidden');
+
+      if (tab === 'results') {
+        document.getElementById('p-tab-btn-results').classList.add('border-amber-500', 'text-amber-300', 'bg-amber-500/10');
+        document.getElementById('portal-sec-results').classList.remove('hidden');
+      } else if (tab === 'schedule') {
+        document.getElementById('p-tab-btn-schedule').classList.add('border-amber-500', 'text-amber-300', 'bg-amber-500/10');
+        document.getElementById('portal-sec-schedule').classList.remove('hidden');
+      } else if (tab === 'guidelines') {
+        document.getElementById('p-tab-btn-guidelines').classList.add('border-amber-500', 'text-amber-300', 'bg-amber-500/10');
+        document.getElementById('portal-sec-guidelines').classList.remove('hidden');
+      }
+    }
+
+    // Render Results Tab
+    function renderResultsTab() {
+      const latestCard = document.getElementById('latest-result-card');
+      const historyList = document.getElementById('supervision-history-list');
+
+      if (activeSupervisions.length === 0) {
+        latestCard.innerHTML = `
+          <div class="text-center py-6 space-y-2">
+            <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+              <i class="fa-solid fa-file-circle-question text-xl"></i>
+            </div>
+            <h4 class="font-bold text-base text-white">Belum Ada Hasil Supervisi Tersimpan</h4>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Kepala Sekolah belum mencatatkan penilaian supervisi tendik untuk akun Anda pada semester ini. Anda dapat mengajukan jadwal supervisi mandiri melalui tab "Pengajuan Jadwal".
+            </p>
+            <button onclick="switchPortalTab('schedule')" class="mt-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-slate-950 font-bold text-xs rounded-xl shadow-md">
+              Ajukan Jadwal Sekarang
+            </button>
+          </div>
+        `;
+        historyList.innerHTML = '<p class="text-xs text-slate-500 text-center py-3">Tidak ada riwayat supervisi terdahulu.</p>';
+        return;
+      }
+
+      const latest = activeSupervisions[0];
+      const instMeta = window.KS_TENDIK ? window.KS_TENDIK.INSTRUMENTS[latest.instrumentType] : null;
+      const scoreCalc = window.KS_TENDIK ? window.KS_TENDIK.calculateScore(latest.scores || {}, latest.instrumentType) : { percentage: latest.percentage, predicate: latest.predicate };
+
+      latestCard.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                Supervisi Terakhir Selesai
+              </span>
+              <span class="text-xs text-slate-400 font-mono">${latest.supervisionDate || '-'}</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-1">
+              ${instMeta ? instMeta.title : (latest.instrumentTitle || 'Supervisi Tendik')}
+            </h3>
+            <p class="text-xs text-slate-300 mt-0.5">Penilai: ${latest.supervisorName || 'Kepala Sekolah'}</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <span class="text-[10px] font-bold text-slate-400 block uppercase">Nilai Akhir:</span>
+              <span class="font-mono font-black text-2xl text-amber-400">${scoreCalc.percentage}%</span>
+            </div>
+            <div class="px-3 py-1.5 rounded-xl font-black text-sm bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              Predikat ${scoreCalc.predicate}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="bg-black/30 p-3.5 rounded-xl border border-white/10 space-y-1">
+            <span class="font-bold text-amber-300 block">Catatan Evaluasi Kepala Sekolah:</span>
+            <p class="text-slate-300 whitespace-pre-line italic leading-relaxed">
+              ${latest.notesCatatan || 'Tugas telah dilaksanakan dengan baik dan sesuai target kerja operasional sekolah.'}
+            </p>
+          </div>
+          <div class="bg-black/30 p-3.5 rounded-xl border border-white/10 space-y-1">
+            <span class="font-bold text-purple-300 block">Rekomendasi Tindak Lanjut:</span>
+            <p class="text-slate-300 whitespace-pre-line italic leading-relaxed">
+              ${latest.notesTindakLanjut || 'Pertahankan ketertiban administrasi dan tingkatkan inovasi pelayanan.'}
+            </p>
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end">
+          <button onclick="openReportModal('${latest.id}')"
+            class="px-4 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition flex items-center gap-2 border border-white/20 shadow-md">
+            <i class="fa-solid fa-print"></i>
+            <span>Cetak / Unduh Lembar Laporan Lengkap (PDF)</span>
+          </button>
+        </div>
+      `;
+
+      // History List
+      historyList.innerHTML = activeSupervisions.map(s => {
+        const meta = window.KS_TENDIK ? window.KS_TENDIK.INSTRUMENTS[s.instrumentType] : null;
+        return `
+          <div class="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-amber-500/40 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <div>
+                <div class="font-bold text-xs text-white">${meta ? meta.title : (s.instrumentTitle || 'Supervisi Tendik')}</div>
+                <div class="text-[11px] text-slate-400 font-mono">${s.supervisionDate || '-'} • Tahun ${s.academicYear || '2026/2027'} (${s.semester || 'Ganjil'})</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-right font-mono font-bold text-xs text-amber-400">${s.percentage || 0}%</div>
+              <button onclick="openReportModal('${s.id}')" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold transition">
+                Lihat Laporan
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Schedules Tab
+    function renderSchedulesTab() {
+      const container = document.getElementById('portal-schedules-list');
+      document.getElementById('p-sched-date').value = new Date().toISOString().split('T')[0];
+
+      if (activeSchedules.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 py-6 text-center">Belum ada jadwal pengajuan supervisi yang tercatat.</p>';
+        return;
+      }
+
+      container.innerHTML = activeSchedules.map(sc => {
+        const status = sc.status || 'Pending';
+        let statusBadge = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+        if (status === 'Disetujui' || status === 'Approved') statusBadge = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+        else if (status === 'Ditolak' || status === 'Rejected') statusBadge = 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+
+        return `
+          <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-white">${sc.subject || 'Supervisi Tendik'}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusBadge}">${status}</span>
+            </div>
+            <div class="text-[11px] text-slate-300 font-mono flex items-center gap-3">
+              <span><i class="fa-solid fa-calendar text-amber-400 mr-1"></i> ${sc.obsDate || sc.rppDate || '-'}</span>
+              <span><i class="fa-solid fa-clock text-amber-400 mr-1"></i> ${sc.timeSlot || '09.00 WIB'}</span>
+            </div>
+            ${sc.notes ? `<p class="text-[11px] text-slate-400 italic">Catatan: "${sc.notes}"</p>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Handle Schedule Submit
+    async function handlePortalSubmitSchedule(e) {
+      e.preventDefault();
+      const instType = document.getElementById('p-sched-instrument').value;
+      const date = document.getElementById('p-sched-date').value;
+      const time = document.getElementById('p-sched-time').value;
+      const notes = document.getElementById('p-sched-notes').value;
+
+      const instMeta = window.KS_TENDIK ? window.KS_TENDIK.INSTRUMENTS[instType] : null;
+
+      const payload = {
+        id: 'SCH-TDK-' + Date.now(),
+        teacherId: activeTendikUser.id,
+        teacherName: activeTendikUser.name,
+        subject: `Supervisi Tendik: ${instMeta ? instMeta.title : instType}`,
+        gradeClass: `Tendik (${activeTendikUser.role || 'Staff'})`,
+        rppDate: date,
+        obsDate: date,
+        timeSlot: time || '09.00 WIB',
+        submittedBy: 'Tendik',
+        notes: notes,
+        status: 'Pending',
+        academicYear: activeSchool ? activeSchool.academicYear : '2026/2027',
+        semester: activeSchool ? activeSchool.semester : 'Ganjil'
+      };
+
+      Swal.fire({ title: 'Mengirim Pengajuan...', didOpen: () => Swal.showLoading() });
+
+      try {
+        await fetch('../../api.php?action=save_schedule', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        activeSchedules.unshift(payload);
+        renderSchedulesTab();
+        document.getElementById('portal-schedule-form').reset();
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Pengajuan Terkirim!',
+          text: 'Jadwal supervisi Anda telah diteruskan ke Kepala Sekolah untuk ditinjau & disetujui.',
+          confirmButtonColor: '#d97706'
+        });
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal mengirim pengajuan jadwal. Silakan coba kembali.' });
+      }
+    }
+
+    // Render Guidelines Cards
+    function renderGuidelinesCards() {
+      const container = document.getElementById('guidelines-cards-container');
+      if (!window.KS_TENDIK) return;
+
+      const insts = window.KS_TENDIK.INSTRUMENTS;
+      container.innerHTML = Object.keys(insts).map(k => {
+        const inst = insts[k];
+        const items = window.KS_TENDIK.getFlatItems(k);
+        return `
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2 hover:border-amber-400/40 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-300">${inst.roleBadge || 'Tendik'}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${items.length} Butir</span>
+            </div>
+            <h4 class="font-bold text-xs text-white">${inst.title}</h4>
+            <p class="text-[11px] text-slate-400 leading-relaxed">${inst.subtitle}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Modal Report View
+    function openReportModal(id) {
+      const rec = activeSupervisions.find(s => s.id === id);
+      if (!rec) return;
+
+      const instMeta = window.KS_TENDIK ? window.KS_TENDIK.INSTRUMENTS[rec.instrumentType] : null;
+      const items = window.KS_TENDIK ? window.KS_TENDIK.getFlatItems(rec.instrumentType) : [];
+
+      document.getElementById('modal-rep-school-name').textContent = activeSchool ? activeSchool.name : 'SMP BRIGHTON';
+      document.getElementById('modal-rep-school-addr').textContent = activeSchool ? activeSchool.address : 'Alamat Sekolah';
+      document.getElementById('modal-rep-npsn').textContent = activeSchool ? (activeSchool.npsn || '-') : '-';
+      document.getElementById('modal-rep-title').textContent = `INSTRUMEN SUPERVISI ${instMeta ? instMeta.title.toUpperCase() : 'TENAGA KEPENDIDIKAN'}`;
+      document.getElementById('modal-rep-year').textContent = rec.academicYear || '2026/2027';
+      document.getElementById('modal-rep-sem').textContent = (rec.semester || 'Ganjil').toUpperCase();
+
+      document.getElementById('modal-rep-name').textContent = rec.employeeName;
+      document.getElementById('modal-rep-nip').textContent = rec.nip || '-';
+      document.getElementById('modal-rep-task').textContent = `${rec.role || 'Staff'} (${rec.bidangTugas || '-'})`;
+      document.getElementById('modal-rep-date').textContent = rec.supervisionDate || '-';
+      document.getElementById('modal-rep-supervisor').textContent = rec.supervisorName || (activeSchool ? activeSchool.principalName : 'Kepala Sekolah');
+
+      // Table
+      const tbody = document.getElementById('modal-rep-table-body');
+      tbody.innerHTML = items.map(item => {
+        const val = rec.scores ? (rec.scores[item.no] || '-') : '-';
+        return `
+          <tr>
+            <td class="py-1.5 px-3 text-center border-r border-slate-300 font-bold">${item.no}</td>
+            <td class="py-1.5 px-3 border-r border-slate-300">${item.text}</td>
+            <td class="py-1.5 px-3 border-r border-slate-300 text-slate-500 italic text-[11px]">${item.evidence || '-'}</td>
+            <td class="py-1.5 px-3 text-center font-bold font-mono">${val}</td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('modal-rep-total-score').textContent = rec.totalScore || 0;
+      document.getElementById('modal-rep-final-score').textContent = `${rec.percentage || 0}%`;
+      document.getElementById('modal-rep-predicate').textContent = `${rec.predicate || 'D'} (${rec.predicateLabel || 'Kurang'})`;
+
+      document.getElementById('modal-rep-catatan').textContent = rec.notesCatatan || '-';
+      document.getElementById('modal-rep-tindak-lanjut').textContent = rec.notesTindakLanjut || '-';
+
+      document.getElementById('modal-sign-emp-name').textContent = rec.employeeName;
+      document.getElementById('modal-sign-emp-nip').textContent = rec.nip ? `NIP. ${rec.nip}` : 'NIP. -';
+      document.getElementById('modal-sign-ks-name').textContent = rec.supervisorName || (activeSchool ? activeSchool.principalName : 'Kepala Sekolah');
+      document.getElementById('modal-sign-ks-nip').textContent = rec.supervisorNip ? `NIP. ${rec.supervisorNip}` : 'NIP. -';
+      document.getElementById('modal-sign-date').textContent = rec.supervisionDate || '-';
+
+      document.getElementById('modal-report-view').classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+      document.getElementById('modal-report-view').classList.add('hidden');
+    }
+  </script>
+</body>
+
+</html>

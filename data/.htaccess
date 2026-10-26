@@ -1,0 +1,5 @@
+# Protect SQLite and internal database files from direct HTTP downloads
+<FilesMatch "\.(sqlite|db|json|log)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

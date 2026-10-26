@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html class="light" lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Konsol Super Admin - SupervisiSekolah.id</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Core Auth & Layout -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/includes.js"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0f172a",
+                        secondary: "#006c49",
+                        "admin-indigo": "#4338ca",
+                        surface: "#ffffff",
+                        "surface-container": "#f8fafc",
+                        "surface-dim": "#f1f5f9"
+                    },
+                    maxWidth: {
+                        'container-max': '1280px'
+                    },
+                    padding: {
+                        'margin-mobile': '1rem',
+                        'margin-desktop': '2rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .card-shadow { box-shadow: 0px 4px 12px rgba(15, 23, 42, 0.05); }
+    </style>
+</head>
+
+<body class="bg-surface-container text-slate-800 min-h-screen flex flex-col">
+    <!-- Top Bar Super Admin -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 border-b border-slate-800 shadow-md">
+        <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="../" class="flex items-center gap-2.5 group">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+                        <span class="material-symbols-outlined text-xl">shield</span>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-base tracking-tight block leading-tight text-white">Konsol Super Admin</span>
+                        <span class="text-[10px] text-indigo-300 font-mono">SupervisiSekolah.id &bull; Multi-Sekolah &amp; RBAC</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a href="../dashboard" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition">
+                    <span class="material-symbols-outlined text-sm">dashboard</span>
+                    <span>Dashboard KS</span>
+                </a>
+                <a href="../guru" target="_blank" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 text-xs font-semibold rounded-xl border border-emerald-800/60 transition">
+                    <span class="material-symbols-outlined text-sm">school</span>
+                    <span>Portal Guru</span>
+                </a>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-indigo-950/80 border border-indigo-700/50 rounded-xl text-xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="font-bold text-indigo-200" id="admin-user-display">superadmin</span>
+                    <span class="text-[9px] bg-indigo-600 text-white font-black px-1.5 py-0.5 rounded">ROOT</span>
+                </div>
+                <button onclick="window.KS_AUTH.logout()" class="px-2.5 py-1.5 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">logout</span>
+                    <span class="hidden sm:inline">Keluar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 flex-grow w-full space-y-6">
+        <!-- Hero Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-indigo-500/20">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-extrabold uppercase tracking-wider border border-indigo-400/30">
+                        Pusat Komando Yayasan / Dinas
+                    </span>
+                    <span class="text-xs text-slate-400">&bull; Jenjang Otoritas Penuh</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Manajemen Jenjang Role &amp; Multi-Sekolah</h1>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                    Kelola struktur otorisasi berjenjang (Super Admin &rarr; Kepala Sekolah &rarr; Guru &rarr; Pengawas/Tamu) dan kendalikan akun serta data sekolah binaan secara terpusat.
+                </p>
+            </div>
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <button onclick="openAddSchoolModal()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-2 border border-white/20 shadow-xs">
+                    <span class="material-symbols-outlined text-base">domain_add</span>
+                    <span>Tambah Sekolah</span>
+                </button>
+                <button onclick="openAddUserModal()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+                    <span class="material-symbols-outlined text-base">person_add</span>
+                    <span>Tambah Akun Pengguna</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Metric Counter Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Sekolah</span>
+                    <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg">apartment</span>
+                    </div>
+                </div>
+                <div class="text-2xl font-black text-slate-900" id="stat-total-schools">1</div>
+                <span class="text-[11px] text-slate-500 mt-1 block">Satuan pendidikan</span>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kepala Sekolah</span>
+                    <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg">shield_person</span>
+                    </div>
+                </div>
+                <div class="text-2xl font-black text-slate-900" id="stat-total-ks">1</div>
+                <span class="text-[11px] text-slate-500 mt-1 block">Pimpinan satuan aktif</span>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Guru Pendidik</span>
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg">school</span>
+                    </div>
+                </div>
+                <div class="text-2xl font-black text-slate-900" id="stat-total-teachers">12</div>
+                <span class="text-[11px] text-emerald-600 font-semibold mt-1 block">Tenaga pendidik aktif</span>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Staf &amp; Karyawan</span>
+                    <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg">badge</span>
+                    </div>
+                </div>
+                <div class="text-2xl font-black text-slate-900" id="stat-total-staff">6</div>
+                <span class="text-[11px] text-cyan-700 font-semibold mt-1 block">TU, Security &amp; OB</span>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pengawas / Tamu</span>
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </div>
+                </div>
+                <div class="text-2xl font-black text-slate-900" id="stat-total-pengawas">1</div>
+                <span class="text-[11px] text-blue-600 font-semibold mt-1 block">100% Read-Only Mode</span>
+            </div>
+        </div>
+
+        <!-- Role Hierarchy Architecture Explainer Strip -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 card-shadow">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-indigo-600 text-lg">account_tree</span>
+                <span>Hierarki &amp; Matriks Hak Akses (Role-Based Access Control)</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                <!-- Level 1 -->
+                <div class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-indigo-900 text-sm">1. Super Admin</span>
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-600 text-white font-black text-[9px]">ROOT</span>
+                    </div>
+                    <p class="text-slate-600 text-[11px] leading-relaxed">
+                        Mengelola data multi-sekolah, master user, integrasi database, dan konsol audit sistem.
+                    </p>
+                    <div class="pt-2 border-t border-indigo-200/80 text-[10px] text-indigo-800 font-mono">
+                        Akses: Seluruh Portal &amp; Sekolah
+                    </div>
+                </div>
+
+                <!-- Level 2 -->
+                <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-amber-900 text-sm">2. Kepala Sekolah</span>
+                        <span class="px-2 py-0.5 rounded-full bg-amber-500 text-slate-900 font-black text-[9px]">KS</span>
+                    </div>
+                    <p class="text-slate-600 text-[11px] leading-relaxed">
+                        Input jadwal &amp; telaah supervisi, observasi kelas, evaluasi 19 kompetensi, reset kode sekolah.
+                    </p>
+                    <div class="pt-2 border-t border-amber-200/80 text-[10px] text-amber-800 font-mono">
+                        Akses: Read &amp; Write Satuan Sekolah
+                    </div>
+                </div>
+
+                <!-- Level 3 -->
+                <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-emerald-900 text-sm">3. Guru Pendidik</span>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-black text-[9px]">GURU</span>
+                    </div>
+                    <p class="text-slate-600 text-[11px] leading-relaxed">
+                        Toolkit Generator Modul Ajar Word, ajukan jadwal supervisi, lihat hasil umpan balik kelas.
+                    </p>
+                    <div class="pt-2 border-t border-emerald-200/80 text-[10px] text-emerald-800 font-mono">
+                        Akses: Data Pribadi &amp; Toolkit AI
+                    </div>
+                </div>
+
+                <!-- Level 4 -->
+                <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-blue-900 text-sm">4. Pengawas / Tamu</span>
+                        <span class="px-2 py-0.5 rounded-full bg-blue-600 text-white font-black text-[9px]">AUDITOR</span>
+                    </div>
+                    <p class="text-slate-600 text-[11px] leading-relaxed">
+                        Monitoring laporan hasil supervisi, telaah perangkat ajar, dan capaian mutu akademik sekolah.
+                    </p>
+                    <div class="pt-2 border-t border-blue-200/80 text-[10px] text-blue-800 font-mono">
+                        Akses: 100% Read-Only (Audit)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nav Tabs (Sekolah vs Pengguna) -->
+        <div class="flex items-center gap-2 border-b border-slate-200">
+            <button id="tab-btn-users" onclick="switchTab('users')" 
+                class="px-5 py-3 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2 transition">
+                <span class="material-symbols-outlined text-lg">group</span>
+                <span>Daftar Pengguna &amp; Akun Role (<span id="tab-count-users">...</span>)</span>
+            </button>
+            <button id="tab-btn-schools" onclick="switchTab('schools')" 
+                class="px-5 py-3 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2 transition">
+                <span class="material-symbols-outlined text-lg">apartment</span>
+                <span>Daftar Satuan Pendidikan / Sekolah (<span id="tab-count-schools">...</span>)</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: USERS TABLE -->
+        <div id="tab-content-users" class="space-y-4">
+            <!-- Filter Bar -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 card-shadow">
+                <div class="flex items-center gap-2 flex-grow max-w-md">
+                    <span class="material-symbols-outlined text-slate-400 text-lg ml-2">search</span>
+                    <input type="text" id="filter-user-search" oninput="filterUsersTable()" 
+                        class="w-full bg-transparent text-xs py-1.5 border-none outline-none focus:ring-0 placeholder-slate-400" 
+                        placeholder="Cari berdasarkan nama, username, NIP, atau email..." />
+                </div>
+                <div class="flex items-center gap-2">
+                    <select id="filter-user-role" onchange="filterUsersTable()" 
+                        class="bg-slate-50 text-xs border border-slate-200 rounded-xl px-3 py-2 outline-none font-semibold text-slate-700">
+                        <option value="">Semua Peran (Role)</option>
+                        <option value="super_admin">Super Admin</option>
+                        <option value="kepala_sekolah">Kepala Sekolah</option>
+                        <option value="guru">Guru</option>
+                        <option value="staff">Staf / Karyawan (TU, Security, OB)</option>
+                        <option value="pengawas">Pengawas Pembina</option>
+                    </select>
+                    <button onclick="refreshData()" class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition" title="Muat Ulang Data">
+                        <span class="material-symbols-outlined text-lg">refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Users Table Container -->
+            <div class="bg-white rounded-3xl border border-slate-200 card-shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+                                <th class="p-4">Identitas &amp; GTK</th>
+                                <th class="p-4">Peran &amp; Penugasan</th>
+                                <th class="p-4">Satuan Sekolah</th>
+                                <th class="p-4">NIP, NUPTK &amp; Kontak</th>
+                                <th class="p-4">Status &amp; Kode Akses</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-slate-400">
+                                    <span class="material-symbols-outlined text-3xl animate-spin text-indigo-500 mb-2">sync</span>
+                                    <div>Memuat data pengguna terdaftar...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SCHOOLS TABLE -->
+        <div id="tab-content-schools" class="hidden space-y-4">
+            <!-- Schools Toolbar -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 card-shadow">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-indigo-600 text-xl ml-2">apartment</span>
+                    <span class="font-bold text-slate-800 text-xs">Daftar Satuan Pendidikan / Sekolah Terdaftar</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openAddSchoolModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition flex items-center gap-1.5 text-xs shadow-sm">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        <span>Tambah Sekolah</span>
+                    </button>
+                    <button onclick="refreshData()" class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition" title="Muat Ulang Data">
+                        <span class="material-symbols-outlined text-lg">refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200 card-shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+                                <th class="p-4">Nama Satuan Sekolah</th>
+                                <th class="p-4">NPSN &amp; Kode Akses</th>
+                                <th class="p-4">Kepala Sekolah</th>
+                                <th class="p-4">Running Siklus Supervisi</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4 text-center">Aksi &amp; Kelola</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schools-table-body" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-slate-400">
+                                    <span class="material-symbols-outlined text-3xl animate-spin text-indigo-500 mb-2">sync</span>
+                                    <div>Memuat data sekolah binaan...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Tambah/Edit Pengguna (13 Field GTK Lengkap & Kredensial) -->
+    <div id="modal-user" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full my-8 shadow-2xl border border-slate-100 relative flex flex-col max-h-[92vh]">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-2xl">person_edit</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-slate-900" id="modal-user-title">Kelola Data Pengguna &amp; GTK</h3>
+                        <p class="text-xs text-slate-500">Sinkronisasi 13 field data GTK ke Portal Guru &amp; Kepegawaian</p>
+                    </div>
+                </div>
+                <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <form id="form-user" onsubmit="saveUser(event)" class="overflow-y-auto p-6 space-y-5 text-xs flex-grow">
+                <input type="hidden" id="user-id" value="" />
+
+                <!-- Bagian 1: Identitas Pokok GTK (Field 1 - 5) -->
+                <div>
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider mb-2.5 flex items-center gap-1.5 pb-1 border-b border-indigo-50">
+                        <span class="material-symbols-outlined text-sm text-indigo-600">badge</span>
+                        <span>Identitas &amp; Data Pokok GTK</span>
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">1. Nama Lengkap &amp; Gelar <span class="text-rose-500">*</span></label>
+                            <input type="text" id="user-fullname" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-semibold" placeholder="Contoh: Ridar Kurnia Pratama, S.Pd., M.Pd." />
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">2. Nama Panggilan</label>
+                            <input type="text" id="user-nickname" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="Contoh: Pak Ridar" />
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">3. Jenis Kelamin <span class="text-rose-500">*</span></label>
+                            <select id="user-gender" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs">
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">4. Nomor Induk Pegawai (NIP)</label>
+                            <input type="text" id="user-nip" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-mono" placeholder="19850415 200902 1 004" />
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">5. NUPTK</label>
+                            <input type="text" id="user-nuptk" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-mono" placeholder="1934763665200012" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">6. Status Kepegawaian</label>
+                            <select id="user-employment-status" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-medium">
+                                <option value="PNS">PNS (Pegawai Negeri Sipil)</option>
+                                <option value="PPPK">PPPK (Pegawai Pemerintah dg Perjanjian Kerja)</option>
+                                <option value="GTT / Tetap Yayasan">GTT / Tetap Yayasan</option>
+                                <option value="GTT / Kontrak">GTT / Kontrak</option>
+                                <option value="PTT / Kontrak">PTT / Kontrak (Tata Usaha)</option>
+                                <option value="Honorer">Guru / Tenaga Honorer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 2: Penugasan & Kualifikasi (Field 7 - 9) -->
+                <div>
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider mb-2.5 flex items-center gap-1.5 pb-1 border-b border-indigo-50">
+                        <span class="material-symbols-outlined text-sm text-indigo-600">school</span>
+                        <span>Penugasan &amp; Kualifikasi</span>
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">7. Mata Pelajaran / Spesialisasi</label>
+                            <input type="text" id="user-subject" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="Contoh: Matematika / Kelas VIII" />
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">8. Pendidikan Terakhir</label>
+                            <input type="text" id="user-education" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="Contoh: S1 Pendidikan Matematika - UNJ" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">9. Tugas Tambahan / Peran Sekolah</label>
+                            <input type="text" id="user-task" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="Contoh: Wali Kelas VIII-A &amp; Pembina OSIS" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 3: Kontak & Domisili (Field 10 - 12) -->
+                <div>
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider mb-2.5 flex items-center gap-1.5 pb-1 border-b border-indigo-50">
+                        <span class="material-symbols-outlined text-sm text-indigo-600">contact_phone</span>
+                        <span>Kontak &amp; Domisili</span>
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">10. Email Resmi / Pribadi</label>
+                            <input type="email" id="user-email" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="nama.guru@sekolah.sch.id" />
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">11. No. WhatsApp / Telepon</label>
+                            <input type="text" id="user-phone" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="0812-3456-7890" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">12. Alamat Domisili</label>
+                            <textarea id="user-address" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="Alamat tempat tinggal saat ini..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 4: Akun Sistem & Akses Portal (Field 13 + Kredensial) -->
+                <div>
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider mb-2.5 flex items-center gap-1.5 pb-1 border-b border-indigo-50">
+                        <span class="material-symbols-outlined text-sm text-indigo-600">lock</span>
+                        <span>Akun Sistem &amp; Akses Portal</span>
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Username Login <span class="text-rose-500">*</span></label>
+                            <input type="text" id="user-username" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-mono" placeholder="username" />
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Peran Akses (Role) <span class="text-rose-500">*</span></label>
+                            <select id="user-role" onchange="onRoleChange()" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-bold text-slate-800">
+                                <option value="guru">Guru (Portal Guru /guru/)</option>
+                                <option value="staff">Staf / Tenaga Kependidikan (TU, Security, OB)</option>
+                                <option value="kepala_sekolah">Kepala Sekolah (Dashboard KS)</option>
+                                <option value="pengawas">Pengawas Pembina (Audit)</option>
+                                <option value="super_admin">Super Admin (Pusat Kendali)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Kata Sandi (Password)</label>
+                            <input type="password" id="user-password" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs" placeholder="Kosongkan jika tidak ubah" />
+                        </div>
+                        <div id="school-selection-container" class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1" id="label-school-id">Satuan Sekolah</label>
+                            <select id="user-school-id" onchange="onSchoolChangeInUserModal()" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs">
+                                <option value="SCH-001">SMP Brighton (SCH-001)</option>
+                            </select>
+                            <!-- Kepala Sekolah Info Box -->
+                            <div id="school-ks-box" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2.5 mt-2">
+                                <span class="material-symbols-outlined text-amber-600 text-xl flex-shrink-0">workspace_premium</span>
+                                <div>
+                                    <div class="font-bold text-amber-950">Penugasan Kepala Sekolah</div>
+                                    <div class="text-[11px] text-amber-800">Nama lengkap dan NIP pengguna ini akan otomatis terdaftar dan disinkronkan sebagai Kepala Sekolah pada data satuan pendidikan yang dipilih.</div>
+                                </div>
+                            </div>
+                            <!-- Super Admin Global Info Box -->
+                            <div id="school-superadmin-box" class="hidden p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs flex items-center gap-2.5">
+                                <span class="material-symbols-outlined text-indigo-600 text-xl flex-shrink-0">public</span>
+                                <div>
+                                    <div class="font-bold text-indigo-950">Akses Global (Semua Sekolah)</div>
+                                    <div class="text-[11px] text-indigo-700">Akun Super Admin memiliki wewenang lintas seluruh sekolah secara terpusat (tidak terikat pada satu sekolah).</div>
+                                </div>
+                            </div>
+                            <!-- Pengawas Multi-School Checklist -->
+                            <div id="school-pengawas-box" class="hidden space-y-2 mt-1">
+                                <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-[11px] text-blue-900 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg flex-shrink-0">domain_add</span>
+                                    <span><b>Relate to Many:</b> Pilih satu atau beberapa sekolah binaan yang diawasi oleh pengawas ini.</span>
+                                </div>
+                                <div id="pengawas-schools-checklist" class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 max-h-36 overflow-y-auto space-y-2 text-xs">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Status Akun</label>
+                            <select id="user-status" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs">
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Nonaktif</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">13. Kode Akses Portal Guru (/guru/)</label>
+                            <div class="flex items-center gap-1.5">
+                                <input type="text" id="user-access-code" class="w-full px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50/50 outline-none focus:border-emerald-600 text-xs font-mono font-bold text-emerald-800 tracking-wider uppercase text-center" placeholder="XXXX-XXXX" />
+                                <button type="button" onclick="generateUserAccessCode()" class="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex-shrink-0" title="Generate Kode Baru">
+                                    <span class="material-symbols-outlined text-sm align-middle">refresh</span>
+                                </button>
+                                <button type="button" onclick="copyCurrentModalCode()" class="px-2.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold transition flex-shrink-0" title="Salin Kode">
+                                    <span class="material-symbols-outlined text-sm align-middle">content_copy</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-[11px] text-slate-400">Semua perubahan langsung tersinkron ke portal Guru &amp; Karyawan</span>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition">Batal</button>
+                        <button type="submit" id="btn-save-user" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md transition flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm">save</span>
+                            <span>Simpan Perubahan</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Tambah/Edit Satuan Pendidikan / Sekolah (Hero Warning Cascade Relasi) -->
+    <div id="modal-school" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full my-8 shadow-2xl border border-slate-100 relative flex flex-col max-h-[92vh]">
+            <!-- Header -->
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-2xl">apartment</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-slate-900" id="modal-school-title">Kelola Satuan Pendidikan</h3>
+                        <p class="text-xs text-slate-500">Master data sekolah &amp; primary key multi-tenant database</p>
+                    </div>
+                </div>
+                <button onclick="closeSchoolModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <form id="form-school" onsubmit="saveSchool(event)" class="overflow-y-auto p-6 space-y-4 text-xs flex-grow">
+                <input type="hidden" id="school-old-id" value="" />
+
+                <!-- POP UP HERO PERINGATAN (Sesuai Permintaan User) -->
+                <div class="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-400 text-amber-950 flex items-start gap-3.5 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow">
+                        <span class="material-symbols-outlined text-2xl">warning</span>
+                    </div>
+                    <div>
+                        <div class="font-black text-xs uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                            <span>PERINGATAN HERO: DAMPAK PERUBAHAN ID SEKOLAH</span>
+                        </div>
+                        <div class="text-[11px] text-amber-900 font-medium mt-1 leading-relaxed">
+                            Perubahan atau penghapusan pada <b>ID Satuan Sekolah</b> akan secara langsung <b>berpengaruh ke semua users (Guru, Kepala Sekolah, Staf, Dokumen Telaah RPP, Observasi Supervisi, Jadwal &amp; Penugasan Pengawas)</b> yang terikat dengan sekolah ini! Pastikan integrasi data diperhatikan sebelum menyimpan.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block font-bold text-slate-700">
+                                ID Satuan Sekolah (Primary Key) <span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-[9px] bg-indigo-50 text-indigo-700 font-extrabold px-1.5 py-0.5 rounded border border-indigo-200 uppercase">Auto Berurutan</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" id="school-id" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-mono font-bold text-indigo-700 bg-slate-50/70" placeholder="SCH-001" />
+                            <button type="button" onclick="regenerateSchoolModalId()" class="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex-shrink-0" title="Generate Ulang ID Berurutan">
+                                <span class="material-symbols-outlined text-sm align-middle">refresh</span>
+                            </button>
+                        </div>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">Otomatis berurutan sesuai histori data (SCH-001, SCH-002, ...)</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block font-bold text-slate-700">
+                                Kode Unik Sekolah <span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-[9px] bg-amber-50 text-amber-800 font-extrabold px-1.5 py-0.5 rounded border border-amber-200 uppercase">Akses Guru</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" id="school-code" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-mono font-bold text-amber-800 bg-amber-50/30 uppercase tracking-wider" placeholder="BRI-TF8U" oninput="this.dataset.manuallyEdited='true'" />
+                            <button type="button" onclick="regenerateSchoolModalCode()" class="px-2.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold transition flex-shrink-0" title="Generate Ulang Kode Unik Sekolah">
+                                <span class="material-symbols-outlined text-sm align-middle">refresh</span>
+                            </button>
+                        </div>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">Sinkron dengan Kode Sekolah (Akses Masuk Guru) di /dashboard/</span>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block font-bold text-slate-700 mb-1">Nama Satuan Pendidikan <span class="text-rose-500">*</span></label>
+                        <input type="text" id="school-name" required oninput="onSchoolNameInput()" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-semibold" placeholder="Contoh: SMP Brighton" />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block font-bold text-slate-700 mb-1">NPSN</label>
+                        <input type="text" id="school-npsn" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:border-indigo-600 text-xs font-mono" placeholder="20269341" />
+                    </div>
+
+                    <!-- Setup Awal Siklus Supervisi -->
+                    <div class="sm:col-span-2 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5 font-bold text-slate-800 text-xs">
+                                <span class="material-symbols-outlined text-indigo-600 text-base">event_repeat</span>
+                                <span>Setup Awal Siklus Supervisi</span>
+                            </div>
+                            <span class="text-[10px] text-indigo-700 font-semibold bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">Konfigurasi Awal</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Tahun Ajaran Awal</label>
+                                <input type="text" id="school-ay" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none focus:border-indigo-600 text-xs font-mono font-bold" placeholder="2026/2027" value="2026/2027" />
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Semester Awal</label>
+                                <select id="school-semester" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none focus:border-indigo-600 text-xs font-bold">
+                                    <option value="Ganjil">Semester Ganjil</option>
+                                    <option value="Genap">Semester Genap</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed flex items-start gap-1 pt-0.5">
+                            <span class="material-symbols-outlined text-[14px] align-middle text-indigo-500 flex-shrink-0 mt-0.5">info</span>
+                            <span>Setup awal siklus supervisi yang nantinya dapat diganti atau diperbarui sewaktu-waktu oleh Kepala Sekolah melalui menu <b>Pengaturan</b> setelah akun kepala sekolah terdaftar.</span>
+                        </p>
+                    </div>
+
+                    <!-- Step 1 Notice: KS Added Later Via User Accounts -->
+                    <div class="sm:col-span-2 p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-2xl flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                            <span class="material-symbols-outlined text-lg">person_add</span>
+                        </div>
+                        <div class="text-[11px] leading-relaxed">
+                            <div class="font-bold text-indigo-950 text-xs">Langkah 1: Registrasi Satuan Pendidikan</div>
+                            <p class="text-indigo-900 mt-0.5">
+                                Pop up ini berfungsi untuk mendaftarkan sekolah dan menerbitkan <b>ID Satuan Sekolah</b> di database. Data Kepala Sekolah (Nama &amp; NIP) <b>tidak diinputkan di sini</b>, melainkan dapat ditambahkan dari fitur <b>Akun Pengguna &amp; GTK</b> dengan memilih nama sekolah yang sudah terdaftar.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-[11px] text-slate-400">Database MySQL `supervisisekolah_id` Single Source of Truth</span>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeSchoolModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition">Batal</button>
+                        <button type="submit" id="btn-save-school" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md transition flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm">save</span>
+                            <span>Simpan Satuan Sekolah</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        let allUsers = [];
+        let allSchools = [];
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('supervisi_auth_token') || 
+                          localStorage.getItem('ks_auth_token') || 
+                          (window.KS_AUTH ? window.KS_AUTH.getUser()?.token : '') || '';
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = 'Bearer ' + token;
+            }
+            return headers;
+        }
+
+        function getAuthParams() {
+            const user = (window.KS_AUTH ? window.KS_AUTH.getUser() : null) || {};
+            const token = localStorage.getItem('supervisi_auth_token') || 
+                          localStorage.getItem('ks_auth_token') || 
+                          user?.token || '';
+            return {
+                token: token,
+                auth_user_id: user?.id || 'usr-superadmin',
+                auth_username: user?.username || 'superadmin'
+            };
+        }
+
+        // Auth Guard: Require Super Admin Role
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = window.KS_AUTH.requireAuth(['super_admin']);
+            if (!user) return;
+
+            document.getElementById('admin-user-display').innerText = user.fullName || user.username;
+            await refreshData();
+        });
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        async function refreshData() {
+            const baseUrl = window.KS_AUTH.getBaseUrl();
+            const authInfo = getAuthParams();
+            const authQuery = `&token=${encodeURIComponent(authInfo.token)}&auth_user_id=${encodeURIComponent(authInfo.auth_user_id)}&auth_username=${encodeURIComponent(authInfo.auth_username)}`;
+            try {
+                const [rUsers, rSchools] = await Promise.all([
+                    fetch(baseUrl + 'api.php?action=get_users' + authQuery, { headers: getAuthHeaders() }),
+                    fetch(baseUrl + 'api.php?action=get_schools' + authQuery, { headers: getAuthHeaders() })
+                ]);
+                const dUsers = await rUsers.json();
+                const dSchools = await rSchools.json();
+
+                if (dSchools.success) {
+                    allSchools = dSchools.schools || [];
+                    renderSchoolsTable(allSchools);
+                    updateSchoolSelectOptions();
+                }
+                if (dUsers.success) {
+                    allUsers = dUsers.users || [];
+                    renderUsersTable(allUsers);
+                }
+                updateCounters();
+            } catch(e) {
+                console.error('Fetch error:', e);
+            }
+        }
+
+        function updateCounters() {
+            document.getElementById('stat-total-schools').innerText = allSchools.length;
+            document.getElementById('stat-total-ks').innerText = allUsers.filter(u => u.role === 'kepala_sekolah').length;
+            document.getElementById('stat-total-teachers').innerText = allUsers.filter(u => u.role === 'guru').length;
+            const staffCountEl = document.getElementById('stat-total-staff');
+            if (staffCountEl) staffCountEl.innerText = allUsers.filter(u => u.role === 'staff').length;
+            document.getElementById('stat-total-pengawas').innerText = allUsers.filter(u => u.role === 'pengawas').length;
+            document.getElementById('tab-count-users').innerText = allUsers.length;
+            document.getElementById('tab-count-schools').innerText = allSchools.length;
+        }
+
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('users-table-body');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Tidak ada pengguna yang cocok dengan pencarian.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = users.map(u => {
+                let badge = '';
+                if (u.role === 'super_admin') badge = '<span class="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 font-bold text-[10px]">Super Admin</span>';
+                else if (u.role === 'kepala_sekolah') badge = '<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">Kepala Sekolah</span>';
+                else if (u.role === 'guru') badge = '<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Guru</span>';
+                else if (u.role === 'staff') badge = '<span class="px-2.5 py-1 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">Staf / TU / Karyawan</span>';
+                else if (u.role === 'pengawas') badge = '<span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">Pengawas (Audit)</span>';
+
+                const statusBadge = u.status === 'active' 
+                    ? '<span class="inline-flex items-center gap-1 text-emerald-700 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>'
+                    : '<span class="inline-flex items-center gap-1 text-slate-400 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif</span>';
+
+                const accessCodeBadge = u.accessCode 
+                    ? `<div class="mt-1.5">
+                         <button type="button" onclick="copyCode('${u.accessCode}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-mono font-bold text-[10px] border border-emerald-200 transition" title="Klik untuk salin kode portal">
+                           <span class="material-symbols-outlined text-[12px]">key</span>
+                           <span>${u.accessCode}</span>
+                         </button>
+                       </div>`
+                    : ((u.role === 'guru' || u.role === 'staff' || u.role === 'kepala_sekolah') ? '<div class="text-[10px] text-slate-400 italic mt-0.5">Belum ada kode</div>' : '');
+
+                const subjectInfo = u.subject 
+                    ? `<div class="font-semibold text-slate-700 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs text-indigo-500">menu_book</span> ${escapeHtml(u.subject)}</div>` 
+                    : '';
+                const taskInfo = u.task 
+                    ? `<div class="text-[10px] text-slate-500 italic mt-0.5 max-w-xs truncate" title="${escapeHtml(u.task)}">${escapeHtml(u.task)}</div>` 
+                    : '';
+                const statusPegawai = u.employmentStatus && u.employmentStatus !== '-'
+                    ? `<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-bold text-[9px] uppercase tracking-wider">${escapeHtml(u.employmentStatus)}</span>`
+                    : '';
+
+                // Penanganan tampilan Satuan Sekolah (Multi-Tenant Scoping)
+                let schoolDisplay = '';
+                if (u.role === 'super_admin') {
+                    schoolDisplay = `
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs shadow-xs">
+                            <span class="material-symbols-outlined text-sm text-indigo-600">public</span>
+                            <span>Semua Sekolah (Global)</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">Otoritas Pusat Super Admin</div>
+                    `;
+                } else if (u.role === 'pengawas') {
+                    const assigned = u.assigned_schools || [];
+                    if (assigned.length === 0) {
+                        schoolDisplay = `
+                            <div>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-semibold">
+                                    <span class="material-symbols-outlined text-xs">info</span> Belum ada binaan
+                                </span>
+                                <button type="button" onclick="openManagePengawasModal('${u.id}')" class="mt-1 text-[11px] text-blue-600 hover:text-blue-800 font-bold flex items-center gap-0.5">
+                                    <span class="material-symbols-outlined text-[13px]">add_link</span> Atur Binaan
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        const badges = assigned.map(s => 
+                            `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold" title="ID: ${s.id}">
+                                <span class="material-symbols-outlined text-[11px] text-blue-500">apartment</span>
+                                ${escapeHtml(s.name)}
+                            </span>`
+                        ).join('');
+                        schoolDisplay = `
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="font-bold text-[11px] text-blue-900 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs text-blue-600">domain_add</span>
+                                        <span>${assigned.length} Sekolah Binaan</span>
+                                    </span>
+                                    <button type="button" onclick="openManagePengawasModal('${u.id}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold hover:underline" title="Kelola Sekolah Binaan">
+                                        Ubah
+                                    </button>
+                                </div>
+                                <div class="flex flex-wrap gap-1 max-w-xs">
+                                    ${badges}
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    const sch = allSchools.find(s => s.id === u.school_id);
+                    const schName = sch ? sch.name : (u.school_id || '—');
+                    schoolDisplay = `
+                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(schName)}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">ID: ${escapeHtml(u.school_id || '—')}</div>
+                    `;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="p-4">
+                            <div class="flex items-center gap-2.5">
+                                <img src="${u.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.full_name || 'User') + '&background=6366f1&color=fff'}" class="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0" onerror="this.src='https://ui-avatars.com/api/?name=U&background=6366f1&color=fff'" />
+                                <div>
+                                    <div class="font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
+                                        <span>${escapeHtml(u.full_name || '—')}</span>
+                                        ${u.nickname ? `<span class="text-[11px] text-slate-400 font-normal">(${escapeHtml(u.nickname)})</span>` : ''}
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5 font-mono">
+                                        <span>@${escapeHtml(u.username)}</span>
+                                        ${statusPegawai}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div>${badge}</div>
+                            ${subjectInfo}
+                            ${taskInfo}
+                        </td>
+                        <td class="p-4">
+                            ${schoolDisplay}
+                        </td>
+                        <td class="p-4">
+                            <div class="font-mono text-slate-700 text-xs">NIP: ${u.nip && u.nip !== '-' ? escapeHtml(u.nip) : '<span class="text-slate-400">—</span>'}</div>
+                            <div class="font-mono text-slate-500 text-[10px]">NUPTK: ${u.nuptk && u.nuptk !== '-' ? escapeHtml(u.nuptk) : '—'}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(u.email || u.phone || '—')}</div>
+                        </td>
+                        <td class="p-4">
+                            <div>${statusBadge}</div>
+                            ${accessCodeBadge}
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="editUser('${u.id}')" class="px-3 py-1.5 text-indigo-600 hover:bg-indigo-50 border border-indigo-200 rounded-xl font-bold transition flex items-center gap-1 mx-auto text-xs">
+                                <span class="material-symbols-outlined text-sm">edit</span>
+                                <span>Edit</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function copyCode(code) {
+            if (!code) return;
+            navigator.clipboard.writeText(code).then(() => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: `Kode akses ${code} disalin!`,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }).catch(() => {
+                prompt('Salin kode akses:', code);
+            });
+        }
+
+        function copyCurrentModalCode() {
+            const el = document.getElementById('user-access-code');
+            if (el && el.value) {
+                copyCode(el.value.trim());
+            } else {
+                Swal.fire('Info', 'Kode akses belum diisi atau belum dibuat.', 'info');
+            }
+        }
+
+        function generateUserAccessCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const seg = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+            const code = `${seg()}-${seg()}`;
+            document.getElementById('user-access-code').value = code;
+        }
+
+        function renderSchoolsTable(schools) {
+            const tbody = document.getElementById('schools-table-body');
+            if (!schools || schools.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Belum ada sekolah terdaftar.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = schools.map(s => `
+                <tr class="hover:bg-slate-50/80 transition">
+                    <td class="p-4">
+                        <div class="font-bold text-slate-900 text-sm">${escapeHtml(s.name)}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">ID: <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-700 font-bold">${escapeHtml(s.id)}</code></div>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-slate-600">NPSN: <span class="font-mono font-bold">${escapeHtml(s.npsn || '—')}</span></div>
+                        <div class="text-amber-700 font-mono font-bold text-xs mt-0.5">Kode: ${escapeHtml(s.code || '—')}</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-semibold text-slate-800">${escapeHtml(s.principal_name || 'Belum diset')}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">NIP: ${escapeHtml(s.principal_nip || '—')}</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>${escapeHtml(s.academic_year || '2026/2027')} &bull; Sem ${escapeHtml(s.semester || 'Ganjil')}</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 mt-1">Siklus Aktif Berjalan</div>
+                    </td>
+                    <td class="p-4">
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[10px]">Aktif</span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                            <a href="../dashboard" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold transition inline-flex items-center gap-1 text-xs" title="Buka Portal Sekolah">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                                <span>Portal</span>
+                            </a>
+                            <button onclick="editSchool('${s.id}')" class="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold transition inline-flex items-center gap-1 text-xs" title="Edit Data & ID Sekolah">
+                                <span class="material-symbols-outlined text-sm">edit</span>
+                                <span>Edit</span>
+                            </button>
+                            <button onclick="confirmDeleteSchool('${s.id}', '${escapeHtml(s.name)}')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold transition inline-flex items-center gap-1 text-xs" title="Hapus Satuan Sekolah">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                                <span>Hapus</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterUsersTable() {
+            const q = (document.getElementById('filter-user-search').value || '').toLowerCase().trim();
+            const r = document.getElementById('filter-user-role').value;
+
+            const filtered = allUsers.filter(u => {
+                const matchQ = !q || (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+                               (u.nickname && u.nickname.toLowerCase().includes(q)) ||
+                               (u.username && u.username.toLowerCase().includes(q)) ||
+                               (u.nip && u.nip.toLowerCase().includes(q)) ||
+                               (u.nuptk && u.nuptk.toLowerCase().includes(q)) ||
+                               (u.email && u.email.toLowerCase().includes(q)) ||
+                               (u.subject && u.subject.toLowerCase().includes(q)) ||
+                               (u.task && u.task.toLowerCase().includes(q)) ||
+                               (u.education && u.education.toLowerCase().includes(q)) ||
+                               (u.phone && u.phone.toLowerCase().includes(q));
+                const matchR = !r || u.role === r;
+                return matchQ && matchR;
+            });
+
+            renderUsersTable(filtered);
+        }
+
+        function switchTab(tab) {
+            const btnUsers = document.getElementById('tab-btn-users');
+            const btnSchools = document.getElementById('tab-btn-schools');
+            const contentUsers = document.getElementById('tab-content-users');
+            const contentSchools = document.getElementById('tab-content-schools');
+
+            if (tab === 'users') {
+                btnUsers.className = "px-5 py-3 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2 transition";
+                btnSchools.className = "px-5 py-3 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2 transition";
+                contentUsers.classList.remove('hidden');
+                contentSchools.classList.add('hidden');
+            } else {
+                btnSchools.className = "px-5 py-3 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2 transition";
+                btnUsers.className = "px-5 py-3 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2 transition";
+                contentSchools.classList.remove('hidden');
+                contentUsers.classList.add('hidden');
+            }
+        }
+
+        function updateSchoolSelectOptions() {
+            const sel = document.getElementById('user-school-id');
+            if (!sel) return;
+            sel.innerHTML = allSchools.map(s => `<option value="${s.id}">${s.name} (${s.id})</option>`).join('');
+        }
+
+        function onSchoolChangeInUserModal() {
+            const role = document.getElementById('user-role').value;
+            const selSchool = document.getElementById('user-school-id');
+            const sid = selSchool ? selSchool.value : '';
+            const school = allSchools.find(s => s.id === sid);
+            if (school) {
+                const codeInput = document.getElementById('user-access-code');
+                if (codeInput && (!codeInput.value || role === 'kepala_sekolah')) {
+                    codeInput.value = school.code || '';
+                }
+            }
+        }
+
+        function onRoleChange() {
+            const role = document.getElementById('user-role').value;
+            const selSchool = document.getElementById('user-school-id');
+            const labelSchool = document.getElementById('label-school-id');
+            const superAdminBox = document.getElementById('school-superadmin-box');
+            const pengawasBox = document.getElementById('school-pengawas-box');
+            const ksBox = document.getElementById('school-ks-box');
+
+            if (role === 'super_admin') {
+                labelSchool.innerText = 'Cakupan Satuan Sekolah:';
+                selSchool.classList.add('hidden');
+                pengawasBox.classList.add('hidden');
+                if (ksBox) ksBox.classList.add('hidden');
+                superAdminBox.classList.remove('hidden');
+            } else if (role === 'pengawas') {
+                labelSchool.innerText = 'Cakupan Satuan Sekolah (Binaan):';
+                selSchool.classList.add('hidden');
+                superAdminBox.classList.add('hidden');
+                if (ksBox) ksBox.classList.add('hidden');
+                pengawasBox.classList.remove('hidden');
+                renderPengawasChecklist();
+            } else if (role === 'kepala_sekolah') {
+                labelSchool.innerText = 'Satuan Sekolah yang Dipimpin *';
+                selSchool.classList.remove('hidden');
+                superAdminBox.classList.add('hidden');
+                pengawasBox.classList.add('hidden');
+                if (ksBox) ksBox.classList.remove('hidden');
+                onSchoolChangeInUserModal();
+            } else {
+                labelSchool.innerText = 'Satuan Sekolah *';
+                selSchool.classList.remove('hidden');
+                superAdminBox.classList.add('hidden');
+                pengawasBox.classList.add('hidden');
+                if (ksBox) ksBox.classList.add('hidden');
+            }
+        }
+
+        function renderPengawasChecklist(selectedIds = []) {
+            const container = document.getElementById('pengawas-schools-checklist');
+            if (!container) return;
+            container.innerHTML = allSchools.map(s => {
+                const checked = selectedIds.includes(s.id) ? 'checked' : '';
+                return `
+                    <label class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white transition cursor-pointer">
+                        <input type="checkbox" name="user-pengawas-schools" value="${s.id}" ${checked} class="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
+                        <span class="font-bold text-slate-800 text-[11px]">${escapeHtml(s.name)}</span>
+                        <span class="font-mono text-slate-400 text-[10px]">(${s.id})</span>
+                    </label>
+                `;
+            }).join('');
+        }
+
+        function openAddUserModal() {
+            document.getElementById('modal-user-title').innerText = 'Tambah Pengguna & GTK Baru';
+            document.getElementById('user-id').value = '';
+            document.getElementById('user-fullname').value = '';
+            document.getElementById('user-nickname').value = '';
+            document.getElementById('user-username').value = '';
+            document.getElementById('user-role').value = 'guru';
+            document.getElementById('user-password').value = '';
+            document.getElementById('user-password').placeholder = 'Wajib diisi untuk akun baru';
+            document.getElementById('user-gender').value = 'Laki-laki';
+            document.getElementById('user-employment-status').value = 'PNS';
+            document.getElementById('user-nip').value = '';
+            document.getElementById('user-nuptk').value = '';
+            document.getElementById('user-subject').value = '';
+            document.getElementById('user-education').value = '';
+            document.getElementById('user-task').value = '';
+            document.getElementById('user-email').value = '';
+            document.getElementById('user-phone').value = '';
+            document.getElementById('user-address').value = '';
+            document.getElementById('user-status').value = 'active';
+            generateUserAccessCode();
+            onRoleChange();
+            document.getElementById('modal-user').classList.remove('hidden');
+        }
+
+        function editUser(userId) {
+            const u = allUsers.find(x => x.id === userId);
+            if (!u) return;
+            document.getElementById('modal-user-title').innerText = 'Edit Pengguna: ' + (u.full_name || u.username);
+            document.getElementById('user-id').value = u.id;
+            document.getElementById('user-fullname').value = u.full_name || '';
+            document.getElementById('user-nickname').value = u.nickname || '';
+            document.getElementById('user-username').value = u.username || '';
+            document.getElementById('user-role').value = u.role || 'guru';
+            document.getElementById('user-password').value = '';
+            document.getElementById('user-password').placeholder = 'Kosongkan jika tidak ingin mengubah';
+            document.getElementById('user-gender').value = u.gender || 'Laki-laki';
+            document.getElementById('user-employment-status').value = u.employmentStatus || 'PNS';
+            document.getElementById('user-nip').value = u.nip && u.nip !== '-' ? u.nip : '';
+            document.getElementById('user-nuptk').value = u.nuptk && u.nuptk !== '-' ? u.nuptk : '';
+            document.getElementById('user-subject').value = u.subject && u.subject !== '-' ? u.subject : '';
+            document.getElementById('user-education').value = u.education && u.education !== '-' ? u.education : '';
+            document.getElementById('user-task').value = u.task && u.task !== '-' ? u.task : '';
+            document.getElementById('user-email').value = u.email || '';
+            document.getElementById('user-phone').value = u.phone || '';
+            document.getElementById('user-address').value = u.address && u.address !== '-' ? u.address : '';
+            document.getElementById('user-status').value = u.status || 'active';
+            document.getElementById('user-access-code').value = u.accessCode || '';
+            if (!u.accessCode && u.role === 'guru') {
+                generateUserAccessCode();
+            }
+            if (u.school_id) document.getElementById('user-school-id').value = u.school_id;
+
+            onRoleChange();
+            if (u.role === 'pengawas') {
+                const assignedIds = (u.assigned_schools || []).map(s => s.id);
+                renderPengawasChecklist(assignedIds);
+            }
+            document.getElementById('modal-user').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('modal-user').classList.add('hidden');
+        }
+
+        async function saveUser(event) {
+            event.preventDefault();
+            const uid = document.getElementById('user-id').value;
+            const existingUser = allUsers.find(x => x.id === uid);
+            const role = document.getElementById('user-role').value;
+
+            const payload = {
+                id: uid,
+                full_name: document.getElementById('user-fullname').value.trim(),
+                nickname: document.getElementById('user-nickname').value.trim(),
+                username: document.getElementById('user-username').value.trim(),
+                role: role,
+                password: document.getElementById('user-password').value.trim(),
+                gender: document.getElementById('user-gender').value,
+                employmentStatus: document.getElementById('user-employment-status').value,
+                nip: document.getElementById('user-nip').value.trim() || '-',
+                nuptk: document.getElementById('user-nuptk').value.trim() || '-',
+                subject: document.getElementById('user-subject').value.trim(),
+                education: document.getElementById('user-education').value.trim(),
+                task: document.getElementById('user-task').value.trim(),
+                email: document.getElementById('user-email').value.trim(),
+                phone: document.getElementById('user-phone').value.trim(),
+                address: document.getElementById('user-address').value.trim(),
+                accessCode: document.getElementById('user-access-code').value.trim(),
+                school_id: (role === 'super_admin' || role === 'pengawas') ? null : document.getElementById('user-school-id').value,
+                status: document.getElementById('user-status').value,
+                employee_id: existingUser ? (existingUser.employee_id || '') : ''
+            };
+
+            // If Pengawas, gather assigned schools checkboxes
+            if (role === 'pengawas') {
+                const checkedCbs = document.querySelectorAll('input[name="user-pengawas-schools"]:checked');
+                payload.assigned_schools = Array.from(checkedCbs).map(cb => cb.value);
+            }
+
+            const btn = document.getElementById('btn-save-user');
+            const origText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> Menyimpan &amp; Sinkron...';
+            btn.disabled = true;
+
+            const authInfo = getAuthParams();
+            Object.assign(payload, authInfo);
+            const authQuery = `&token=${encodeURIComponent(authInfo.token)}&auth_user_id=${encodeURIComponent(authInfo.auth_user_id)}&auth_username=${encodeURIComponent(authInfo.auth_username)}`;
+
+            try {
+                const res = await fetch(window.KS_AUTH.getBaseUrl() + 'api.php?action=save_user' + authQuery, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                const d = await res.json();
+                if (d.success) {
+                    Swal.fire({ 
+                        icon: 'success', 
+                        title: 'Berhasil Disimpan & Sinkron!', 
+                        text: d.message || 'Data pengguna & GTK berhasil diperbarui ke seluruh portal.', 
+                        timer: 2000, 
+                        showConfirmButton: false 
+                    });
+                    closeUserModal();
+                    await refreshData();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: d.error || 'Terjadi kesalahan saat menyimpan' });
+                }
+            } catch(e) {
+                Swal.fire({ icon: 'error', title: 'Error', text: e.message });
+            } finally {
+                btn.innerHTML = origText;
+                btn.disabled = false;
+            }
+        }
+
+        function openManagePengawasModal(pengawasUserId) {
+            const pengawas = allUsers.find(u => u.id === pengawasUserId);
+            if (!pengawas) return;
+
+            const currentAssigned = (pengawas.assigned_schools || []).map(s => s.id);
+
+            const schoolOptionsHtml = allSchools.map(s => {
+                const checked = currentAssigned.includes(s.id) ? 'checked' : '';
+                return `
+                    <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition cursor-pointer text-left">
+                        <input type="checkbox" name="swal-pengawas-schools" value="${s.id}" ${checked} class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
+                        <div class="flex-grow">
+                            <div class="font-bold text-slate-900 text-xs">${escapeHtml(s.name)}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">ID: ${s.id} &bull; Kode: ${s.code || '—'}</div>
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            Swal.fire({
+                title: `Penugasan Sekolah Binaan`,
+                html: `
+                    <div class="text-left text-xs space-y-3">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900">
+                            <div class="font-bold">Pengawas Pembina: ${escapeHtml(pengawas.full_name || pengawas.username)}</div>
+                            <div class="text-[11px] text-blue-700 mt-0.5">Pengawas memiliki hubungan <b>Relate to Many</b> (dapat membina beberapa sekolah binaan sekaligus).</div>
+                        </div>
+                        <div class="font-bold text-slate-700">Pilih Satuan Pendidikan Binaan:</div>
+                        <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                            ${schoolOptionsHtml}
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Simpan Penugasan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#4338ca',
+                preConfirm: () => {
+                    const checkedBoxes = document.querySelectorAll('input[name="swal-pengawas-schools"]:checked');
+                    return Array.from(checkedBoxes).map(cb => cb.value);
+                }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const selectedSchoolIds = result.value || [];
+                    const authInfo = getAuthParams();
+                    const authQuery = `&token=${encodeURIComponent(authInfo.token)}&auth_user_id=${encodeURIComponent(authInfo.auth_user_id)}&auth_username=${encodeURIComponent(authInfo.auth_username)}`;
+                    try {
+                        const res = await fetch(window.KS_AUTH.getBaseUrl() + 'api.php?action=save_user' + authQuery, {
+                            method: 'POST',
+                            headers: getAuthHeaders(),
+                            body: JSON.stringify({
+                                ...authInfo,
+                                id: pengawas.id,
+                                full_name: pengawas.full_name,
+                                username: pengawas.username,
+                                role: 'pengawas',
+                                assigned_schools: selectedSchoolIds,
+                                status: pengawas.status || 'active'
+                            })
+                        });
+                        const d = await res.json();
+                        if (d.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Penugasan Berhasil!',
+                                text: `Sekolah binaan untuk ${pengawas.full_name} berhasil diperbarui.`,
+                                timer: 1800,
+                                showConfirmButton: false
+                            });
+                            await refreshData();
+                        } else {
+                            Swal.fire('Gagal', d.error, 'error');
+                        }
+                    } catch(e) {
+                        Swal.fire('Error', e.message, 'error');
+                    }
+                }
+            });
+        }
+
+        // --- SCHOOL CRUD HANDLERS WITH SEQUENTIAL ID & SYNCED CODE ---
+
+        function getNextSchoolId() {
+            let maxNum = 0;
+            (allSchools || []).forEach(s => {
+                if (s && s.id) {
+                    const m = String(s.id).match(/^SCH-(\d+)$/i);
+                    if (m) {
+                        const num = parseInt(m[1], 10);
+                        if (num > maxNum) maxNum = num;
+                    }
+                }
+            });
+            return 'SCH-' + String(maxNum + 1).padStart(3, '0');
+        }
+
+        function generateSchoolCode(schoolName = '') {
+            let prefix = 'SCH';
+            const ignored = ['SMP', 'SMA', 'SMK', 'SD', 'NEGERI', 'SWASTA', 'ISLAM', 'KRISTEN', 'KATHOLIK', 'NASIONAL', 'TERPADU'];
+            const words = (schoolName || '').trim().split(/\s+/);
+            for (const w of words) {
+                const clean = w.toUpperCase().replace(/[^A-Z]/g, '');
+                if (!ignored.includes(clean) && clean.length >= 3) {
+                    prefix = clean.substring(0, 3);
+                    break;
+                }
+            }
+            if (prefix.length < 3) {
+                const cleanAll = (schoolName || '').toUpperCase().replace(/[^A-Z]/g, '');
+                prefix = cleanAll.length >= 3 ? cleanAll.substring(0, 3) : 'SCH';
+            }
+            const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+            let rand = '';
+            for (let i = 0; i < 4; i++) {
+                rand += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return prefix + '-' + rand;
+        }
+
+        function regenerateSchoolModalId() {
+            document.getElementById('school-id').value = getNextSchoolId();
+        }
+
+        function regenerateSchoolModalCode() {
+            const name = document.getElementById('school-name').value;
+            const codeInput = document.getElementById('school-code');
+            codeInput.value = generateSchoolCode(name);
+            delete codeInput.dataset.manuallyEdited;
+        }
+
+        function onSchoolNameInput() {
+            const oldId = document.getElementById('school-old-id').value;
+            const codeInput = document.getElementById('school-code');
+            if (!oldId && (!codeInput.dataset.manuallyEdited || codeInput.value === '')) {
+                codeInput.value = generateSchoolCode(document.getElementById('school-name').value);
+            }
+        }
+
+        function openAddSchoolModal() {
+            document.getElementById('modal-school-title').innerText = 'Tambah Satuan Pendidikan Baru';
+            document.getElementById('school-old-id').value = '';
+            document.getElementById('school-id').value = getNextSchoolId();
+            const codeInput = document.getElementById('school-code');
+            codeInput.value = generateSchoolCode('');
+            delete codeInput.dataset.manuallyEdited;
+            document.getElementById('school-name').value = '';
+            document.getElementById('school-npsn').value = '';
+            document.getElementById('school-ay').value = '2026/2027';
+            document.getElementById('school-semester').value = 'Ganjil';
+            document.getElementById('modal-school').classList.remove('hidden');
+        }
+
+        function editSchool(schoolId) {
+            const s = allSchools.find(x => x.id === schoolId);
+            if (!s) return;
+            document.getElementById('modal-school-title').innerText = 'Edit Satuan Pendidikan: ' + s.name;
+            document.getElementById('school-old-id').value = s.id;
+            document.getElementById('school-id').value = s.id;
+            const codeInput = document.getElementById('school-code');
+            codeInput.value = s.code || '';
+            codeInput.dataset.manuallyEdited = "true";
+            document.getElementById('school-name').value = s.name || '';
+            document.getElementById('school-npsn').value = s.npsn || '';
+            document.getElementById('school-ay').value = s.academic_year || '2026/2027';
+            document.getElementById('school-semester').value = s.semester || 'Ganjil';
+            document.getElementById('modal-school').classList.remove('hidden');
+        }
+
+        function closeSchoolModal() {
+            document.getElementById('modal-school').classList.add('hidden');
+        }
+
+        async function saveSchool(event) {
+            event.preventDefault();
+            const oldId = document.getElementById('school-old-id').value.trim();
+            const newId = document.getElementById('school-id').value.trim();
+            const name = document.getElementById('school-name').value.trim();
+            const code = document.getElementById('school-code').value.trim();
+            const npsn = document.getElementById('school-npsn').value.trim();
+            const academic_year = document.getElementById('school-ay').value.trim();
+            const semester = document.getElementById('school-semester').value.trim();
+
+            // Preserve existing principal if editing
+            const existingSchool = allSchools.find(x => x.id === oldId);
+            const principal_name = existingSchool ? (existingSchool.principal_name || '') : '';
+            const principal_nip = existingSchool ? (existingSchool.principal_nip || '') : '';
+
+            if (!newId || !name) {
+                Swal.fire('Perhatian', 'ID dan Nama Sekolah wajib diisi.', 'warning');
+                return;
+            }
+
+            // POP UP HERO PERINGATAN jika ID sekolah diubah
+            if (oldId && oldId !== newId) {
+                const confirmResult = await Swal.fire({
+                    title: 'PERINGATAN PERUBAHAN ID SEKOLAH!',
+                    html: `
+                        <div class="text-left text-xs space-y-2 text-slate-700 bg-amber-50 p-4 rounded-xl border border-amber-300">
+                            <div class="font-bold text-amber-900 text-sm flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-amber-600">warning</span>
+                                <span>PERINGATAN HERO KONSISTENSI DATA</span>
+                            </div>
+                            <div>Anda mengubah ID Satuan Sekolah dari <b>${escapeHtml(oldId)}</b> menjadi <b>${escapeHtml(newId)}</b>.</div>
+                            <div class="text-amber-800 font-semibold">
+                                Perubahan ini akan secara otomatis di-cascade pada database MySQL ke seluruh:
+                                <ul class="list-disc pl-5 mt-1 space-y-0.5">
+                                    <li>Akun Pengguna (Guru, Kepala Sekolah, Staf)</li>
+                                    <li>Jadwal Supervisi &amp; Dokumen Telaah RPP</li>
+                                    <li>Hasil Observasi Kelas &amp; Evaluasi</li>
+                                    <li>Daftar Penugasan Pengawas Sekolah</li>
+                                </ul>
+                            </div>
+                            <div class="text-slate-500 pt-2 border-t border-amber-200">Apakah Anda yakin ingin memigrasikan seluruh relasi ke ID baru?</div>
+                        </div>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Migrasikan & Simpan',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#4f46e5'
+                });
+
+                if (!confirmResult.isConfirmed) {
+                    return;
+                }
+            }
+
+            const authInfo = getAuthParams();
+            const payload = {
+                ...authInfo,
+                old_id: oldId,
+                id: newId,
+                name: name,
+                code: code,
+                npsn: npsn,
+                principal_name: principal_name,
+                principal_nip: principal_nip,
+                academic_year: academic_year,
+                semester: semester
+            };
+
+            const btn = document.getElementById('btn-save-school');
+            const origText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> Menyimpan...';
+            btn.disabled = true;
+
+            const authQuery = `&token=${encodeURIComponent(authInfo.token)}&auth_user_id=${encodeURIComponent(authInfo.auth_user_id)}&auth_username=${encodeURIComponent(authInfo.auth_username)}`;
+
+            try {
+                const res = await fetch(window.KS_AUTH.getBaseUrl() + 'api.php?action=save_school' + authQuery, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                const d = await res.json();
+                if (d.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Data Sekolah Berhasil Disimpan!',
+                        text: d.message || 'Data satuan sekolah dan relasi database berhasil diperbarui.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    closeSchoolModal();
+                    await refreshData();
+                } else {
+                    Swal.fire('Gagal Menyimpan', d.error || 'Terjadi kesalahan sistem', 'error');
+                }
+            } catch(e) {
+                Swal.fire('Error', e.message, 'error');
+            } finally {
+                btn.innerHTML = origText;
+                btn.disabled = false;
+            }
+        }
+
+        async function confirmDeleteSchool(schoolId, schoolName) {
+            if (allSchools.length <= 1) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Penghapusan Ditolak',
+                    text: 'Sistem harus memiliki setidaknya satu (1) satuan pendidikan yang aktif.'
+                });
+                return;
+            }
+
+            const { value: confirmText } = await Swal.fire({
+                title: 'HAPUS SATUAN PENDIDIKAN?',
+                html: `
+                    <div class="text-left text-xs space-y-3 text-slate-700 bg-rose-50 p-4 rounded-xl border border-rose-300">
+                        <div class="font-black text-rose-800 text-sm flex items-center gap-1.5 uppercase">
+                            <span class="material-symbols-outlined text-rose-600 text-xl">dangerous</span>
+                            <span>PERINGATAN HERO: TINDAKAN PERMANEN</span>
+                        </div>
+                        <div>
+                            Anda akan menghapus satuan sekolah: <b>${escapeHtml(schoolName)}</b> (ID: <code>${escapeHtml(schoolId)}</code>).
+                        </div>
+                        <div class="text-rose-900 font-semibold bg-white/80 p-2.5 rounded-lg border border-rose-200">
+                            Semua akun GTK (Guru, Kepala Sekolah, Staf), jadwal supervisi, dokumen telaah RPP, observasi kelas, dan penugasan pengawas yang terikat secara eksklusif dengan sekolah ini <b>AKAN DIHAPUS PERMANEN</b> dari database MySQL!
+                        </div>
+                        <div class="text-slate-600 pt-1">
+                            Ketik nama persis sekolah <b>${escapeHtml(schoolName)}</b> untuk melanjutkan:
+                        </div>
+                    </div>
+                `,
+                input: 'text',
+                inputPlaceholder: schoolName,
+                showCancelButton: true,
+                confirmButtonText: 'Hapus Sekolah & Semua Data Terkait',
+                cancelButtonText: 'Batalkan',
+                confirmButtonColor: '#e11d48',
+                inputValidator: (val) => {
+                    if (!val || val.trim() !== schoolName.trim()) {
+                        return 'Nama sekolah yang diketik tidak cocok!';
+                    }
+                }
+            });
+
+            if (confirmText) {
+                const authInfo = getAuthParams();
+                const authQuery = `&token=${encodeURIComponent(authInfo.token)}&auth_user_id=${encodeURIComponent(authInfo.auth_user_id)}&auth_username=${encodeURIComponent(authInfo.auth_username)}`;
+                try {
+                    const res = await fetch(window.KS_AUTH.getBaseUrl() + 'api.php?action=delete_school' + authQuery, {
+                        method: 'POST',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify({ ...authInfo, id: schoolId })
+                    });
+                    const d = await res.json();
+                    if (d.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sekolah Berhasil Dihapus',
+                            text: d.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        await refreshData();
+                    } else {
+                        Swal.fire('Gagal Menghapus', d.error, 'error');
+                    }
+                } catch(e) {
+                    Swal.fire('Error', e.message, 'error');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

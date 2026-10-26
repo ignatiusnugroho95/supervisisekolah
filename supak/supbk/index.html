@@ -1,0 +1,3546 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supervisi Guru BK — SupervisiSekolah.id</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Material Symbols -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Path normalization: ensure trailing slash so ../../ always references the root -->
+  <script>
+    if (!window.location.pathname.endsWith('/') && !window.location.pathname.endsWith('.html')) {
+      window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+    }
+  </script>
+
+  <!-- App Modules -->
+  <script src="../../js/auth.js?v=20261018"></script>
+  <script src="../../js/includes.js?v=20261018"></script>
+  <script src="../../js/supervision-indicators.js?v=20261018"></script>
+  <script src="../../js/supervision-bk.js?v=20261018"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#0f172a",
+            secondary: "#0284c7",
+            "secondary-container": "#e0f2fe",
+            "on-secondary-container": "#0369a1",
+            surface: "#ffffff",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#64748b",
+            "surface-container": "#f8fafc",
+            outline: "#cbd5e1"
+          },
+          maxWidth: {
+            'container-max': '1280px'
+          },
+          padding: {
+            'margin-mobile': '1rem',
+            'margin-desktop': '2rem'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .font-display {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .print-only {
+      display: none !important;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      #print-area,
+      #print-area * {
+        visibility: visible;
+      }
+
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        background: white;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .print-only {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Universal Header Navigation -->
+  <header id="app-header"></header>
+
+  <!-- Main Container -->
+  <main class="flex-1 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-6 space-y-6">
+
+    <!-- Breadcrumbs (Hierarchy: Dashboard > Supervisi Akademik > Supervisi Guru BK) -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+      <a href="../../dashboard" class="hover:text-teal-600 transition flex items-center gap-1 font-medium">
+        <span class="material-symbols-outlined text-sm">dashboard</span>
+        <span>Dashboard KS</span>
+      </a>
+      <span class="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
+      <a href="../" class="hover:text-teal-600 transition flex items-center gap-1 font-medium">
+        <span class="material-symbols-outlined text-sm">school</span>
+        <span>Supervisi Akademik</span>
+      </a>
+      <span class="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
+      <span class="text-teal-700 font-bold flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">psychology</span>
+        <span>Supervisi Guru BK</span>
+      </span>
+    </nav>
+
+    <!-- Top Hero Banner: Supervisi Guru BK -->
+    <div
+      class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-xl border border-teal-800/30">
+      <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none">
+      </div>
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span
+              class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-400/30 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">psychology</span>
+              Supervisi Khusus Guru BK
+            </span>
+            <span id="badge-active-period"
+              class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/10">
+              2026/2027 • Ganjil
+            </span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold font-display tracking-tight text-white">
+            Instrumen Supervisi Guru Bimbingan dan Konseling (BK)
+          </h1>
+          <p class="text-xs md:text-sm text-slate-300 max-w-3xl leading-relaxed">
+            Pilihan fleksibel 3 jenis supervisi mandiri Guru BK: <strong>1. Supervisi Pelaksanaan &amp; Administrasi
+              BK</strong>, <strong>2. Telaah Dokumen RPL BK</strong>, atau <strong>3. Coaching BK &amp;
+              Refleksi</strong>. Lembar laporan hasil supervisi secara dinamis hanya memuat jenis supervisi yang
+            dipilih.
+          </p>
+        </div>
+
+        <!-- Right Quick Stats: Active Elements Badge -->
+        <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-3 flex-shrink-0">
+          <div
+            class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/10 text-left sm:text-right">
+            <span class="text-[10px] uppercase font-bold text-teal-300 block tracking-wider">Elemen BK Aktif (Diatur di
+              Pengaturan):</span>
+            <div id="hero-active-categories" class="flex flex-wrap gap-1 mt-1 justify-start sm:justify-end">
+              <span class="text-xs font-semibold text-slate-200">Memuat...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs: 3 Pilihan Jenis Supervisi Mandiri -->
+      <div
+        class="mt-8 pt-4 border-t border-teal-700/30 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
+        <button type="button" onclick="switchTab('rekap')" id="tab-btn-rekap"
+          class="px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap bg-teal-500 text-white shadow-md">
+          <span class="material-symbols-outlined text-base">fact_check</span>
+          <span>1. Rekap &amp; Jadwal Supervisi BK</span>
+        </button>
+        <button type="button" onclick="switchTab('tahap1')" id="tab-btn-tahap1"
+          class="px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:text-white hover:bg-white/10">
+          <span class="material-symbols-outlined text-base">checklist</span>
+          <span id="tab-title-tahap1">2. Supervisi Pelaksanaan &amp; Adm BK</span>
+        </button>
+        <button type="button" onclick="switchTab('tahap2')" id="tab-btn-tahap2"
+          class="px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:text-white hover:bg-white/10">
+          <span class="material-symbols-outlined text-base">description</span>
+          <span id="tab-title-tahap2">3. Telaah Dokumen RPL</span>
+        </button>
+        <button type="button" onclick="switchTab('tahap3')" id="tab-btn-tahap3"
+          class="px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:text-white hover:bg-white/10">
+          <span class="material-symbols-outlined text-base">handshake</span>
+          <span id="tab-title-tahap3">4. Coaching BK</span>
+        </button>
+        <button type="button" onclick="switchTab('laporan')" id="tab-btn-laporan"
+          class="px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap text-slate-300 hover:text-white hover:bg-white/10">
+          <span class="material-symbols-outlined text-base">article</span>
+          <span>5. Lembar Laporan Hasil Supervisi</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 1: REKAP & DAFTAR SUPERVISI BK ==================== -->
+    <div id="tab-content-rekap" class="space-y-6">
+      <!-- KPI Stats Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center gap-4">
+          <div
+            class="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center text-2xl flex-shrink-0">
+            <span class="material-symbols-outlined">group</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Guru BK Terjadwal</span>
+            <span id="kpi-total-bk" class="text-xl font-bold font-display text-slate-800">0 Guru</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center gap-4">
+          <div
+            class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-2xl flex-shrink-0">
+            <span class="material-symbols-outlined">checklist</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Rata-rata Supervisi BK</span>
+            <span id="kpi-avg-supervisi" class="text-xl font-bold font-display text-blue-700">0.0%</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center gap-4">
+          <div
+            class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-2xl flex-shrink-0">
+            <span class="material-symbols-outlined">description</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Rata-rata Telaah RPL</span>
+            <span id="kpi-avg-rpl" class="text-xl font-bold font-display text-indigo-700">0.0%</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center gap-4">
+          <div
+            class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl flex-shrink-0">
+            <span class="material-symbols-outlined">verified</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Predikat Mutu Sekolah</span>
+            <span id="kpi-school-predicate" class="text-xl font-bold font-display text-emerald-700">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Penjadwalan & Pengisian Identitas Supervisi Guru BK (Diisi di Awal) -->
+      <div id="rekap-session-setup-card"
+        class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-teal-200/90 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-2xl bg-teal-100 text-teal-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+              <span class="material-symbols-outlined">person_pin</span>
+            </div>
+            <div>
+              <h3 class="text-base font-bold font-display text-slate-800">1. Penjadwalan &amp; Identitas Supervisi Guru
+                BK</h3>
+              <p class="text-xs text-slate-400">Pilih identitas guru BK dan jenis supervisi di awal sebelum melakukan
+                penilaian instrumen.</p>
+            </div>
+          </div>
+          <div id="rekap-active-session-badge" class="hidden items-center gap-2">
+            <!-- Rendered dynamically when a session is active -->
+          </div>
+        </div>
+
+        <!-- Form Grid: Identitas Guru BK -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama Guru BK (Khusus Role Guru BK) *</label>
+            <select id="rekap-teacher-select" onchange="handleRekapTeacherSelect(this.value)"
+              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:bg-white focus:border-teal-500 outline-none">
+              <option value="">-- Memuat Guru BK... --</option>
+            </select>
+            <p id="rekap-bk-filter-hint" class="text-[10px] text-teal-700 mt-1 font-semibold flex items-center gap-1">
+              <span class="material-symbols-outlined text-[13px]">filter_alt</span>
+              <span>Menampilkan khusus personil dengan role Guru BK</span>
+            </p>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">NIP Guru BK</label>
+            <input type="text" id="rekap-teacher-nip" placeholder="NIP otomatis terisi..." readonly
+              class="w-full px-3 py-2.5 bg-slate-100 border border-slate-200 rounded-xl font-medium text-slate-600 outline-none" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Kelas Asuh / Binaan</label>
+            <input type="text" id="rekap-target-class" placeholder="Contoh: Kelas VII-A s.d VII-E"
+              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:border-teal-500 outline-none" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tanggal Pelaksanaan Supervisi</label>
+            <input type="date" id="rekap-supervision-date"
+              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:border-teal-500 outline-none" />
+          </div>
+        </div>
+
+        <!-- Pilihan 3 Jenis Supervisi BK Mandiri -->
+        <div class="pt-3 border-t border-slate-100 space-y-2">
+          <label class="block font-bold text-slate-700 text-xs">Pilih Jenis Supervisi yang Akan Dilaksanakan: *</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <label
+              class="p-3.5 rounded-2xl border-2 border-teal-500 bg-teal-50/50 hover:bg-teal-50 cursor-pointer flex items-start gap-3 transition"
+              id="card-type-supervisi_bk">
+              <input type="radio" name="rekap_sup_type" value="supervisi_bk" checked
+                onchange="updateSelectedTypeStyle(this.value)" class="mt-0.5 text-teal-600 focus:ring-teal-500" />
+              <div>
+                <span class="font-bold text-teal-900 block">1. Supervisi Pelaksanaan &amp; Adm BK</span>
+                <span class="text-[11px] text-slate-500 leading-snug block mt-0.5">Penilaian 33 butir pelaksanaan
+                  layanan dasar, peminatan, responsif, dan dukungan sistem.</span>
+              </div>
+            </label>
+
+            <label
+              class="p-3.5 rounded-2xl border-2 border-slate-200 hover:border-indigo-400 bg-white cursor-pointer flex items-start gap-3 transition"
+              id="card-type-telaah_rpl">
+              <input type="radio" name="rekap_sup_type" value="telaah_rpl"
+                onchange="updateSelectedTypeStyle(this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500" />
+              <div>
+                <span class="font-bold text-indigo-900 block">2. Telaah Dokumen RPL BK</span>
+                <span class="text-[11px] text-slate-500 leading-snug block mt-0.5">Analisis keterpenuhan 30 butir
+                  rencana pelayanan, Deep Learning, &amp; Literasi-Numerasi.</span>
+              </div>
+            </label>
+
+            <label
+              class="p-3.5 rounded-2xl border-2 border-slate-200 hover:border-amber-400 bg-white cursor-pointer flex items-start gap-3 transition"
+              id="card-type-coaching_bk">
+              <input type="radio" name="rekap_sup_type" value="coaching_bk"
+                onchange="updateSelectedTypeStyle(this.value)" class="mt-0.5 text-amber-600 focus:ring-amber-500" />
+              <div>
+                <span class="font-bold text-amber-900 block">3. Coaching BK (TIRTA &amp; Refleksi)</span>
+                <span class="text-[11px] text-slate-500 leading-snug block mt-0.5">Wawancara kemitraan 6 tahap TIRTA,
+                  tindak lanjut, &amp; lembar refleksi diri guru BK.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Submit Button -->
+        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p class="text-[11px] text-slate-500 italic">
+            *Hasil supervisi hanya dapat disimpan jika identitas Guru BK telah terisi di form ini.
+          </p>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="startSupervisionFromRekap()"
+              class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm active:scale-95">
+              <span>Buka &amp; Nilai Instrumen Supervisi</span>
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action & Table Card -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-base md:text-lg font-bold font-display text-slate-800">Daftar Hasil &amp; Jadwal Supervisi
+              Guru BK</h3>
+            <p class="text-xs text-slate-400">Pilih salah satu dari 3 jenis supervisi mandiri atau siklus gabungan
+              sesuai penjadwalan.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button type="button" onclick="openStartModal()"
+              class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm active:scale-95">
+              <span class="material-symbols-outlined text-base">add</span>
+              <span>+ Mulai Supervisi Guru BK Baru</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr
+                class="bg-slate-50 text-slate-600 border-b border-slate-200 font-bold uppercase tracking-wider text-[11px]">
+                <th class="py-3 px-4">Guru BK</th>
+                <th class="py-3 px-4">Tanggal &amp; Periode</th>
+                <th class="py-3 px-4 text-center">Jenis Supervisi</th>
+                <th class="py-3 px-4 text-center">Capaian / Skor</th>
+                <th class="py-3 px-4 text-center">Predikat Mutu</th>
+                <th class="py-3 px-4 text-center">Refleksi Pasca-Coaching</th>
+                <th class="py-3 px-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="table-rekap-body" class="divide-y divide-slate-100 font-medium text-slate-700">
+              <tr>
+                <td colspan="7" class="py-12 text-center text-slate-400 text-xs">
+                  <i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-teal-500"></i>
+                  <p>Memuat data supervisi guru BK...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: JENIS 1 - SUPERVISI BK (PELAKSANAAN & ADM) ==================== -->
+    <div id="tab-content-tahap1" class="hidden space-y-6">
+      <!-- Session Setup Header Card -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-2xl bg-teal-100 text-teal-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+              1
+            </div>
+            <div>
+              <h2 class="text-lg font-bold font-display text-slate-800">Supervisi Pelaksanaan &amp; Administrasi Layanan
+                BK</h2>
+              <p class="text-xs text-slate-400">Penilaian instrumen supervisi dengan skala 0 (Tidak Ada) hingga 5
+                (Sangat Baik).</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="badge-tahap1-counter"
+              class="px-3 py-1 rounded-full text-xs font-black bg-teal-50 text-teal-800 border border-teal-200">
+              33 Butir Aktif
+            </span>
+          </div>
+        </div>
+
+        <!-- Active Session Identity Display (Diisi di Laman Rekap & Jadwal) -->
+        <div id="session-identity-card-t1"
+          class="rounded-2xl border border-teal-200/90 bg-gradient-to-r from-teal-50/70 via-slate-50 to-white p-4">
+          <!-- Populated by updateActiveSessionDisplay() -->
+        </div>
+      </div>
+
+      <!-- AI Assistant Tool: Supervisi BK -->
+      <div
+        class="bg-gradient-to-r from-teal-50 via-slate-50 to-indigo-50/30 rounded-3xl p-5 md:p-6 border border-teal-200/80 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span
+              class="w-7 h-7 rounded-lg bg-teal-600 text-white flex items-center justify-center text-sm shadow-xs font-bold">AI</span>
+            <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">Bantuan AI: Penilaian Cepat Supervisi
+              BK</h4>
+          </div>
+          <span
+            class="text-[11px] text-teal-800 font-semibold bg-teal-100/70 px-2.5 py-0.5 rounded-full border border-teal-200">
+            Powered by Google Gemini / Smart Heuristic
+          </span>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Tempelkan catatan observasi fisik atau temuan berkas BK. AI akan menganalisis dan merekomendasikan skor 0-5
+          beserta catatan temuan di setiap butir indikator aktif.
+        </p>
+        <div class="space-y-2">
+          <textarea id="ai-tahap1-notes" rows="2"
+            placeholder="Contoh: Guru BK memiliki dokumen program tahunan dan semester lengkap. Layanan klasikal rutin dilakukan di kelas VII..."
+            class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs focus:ring-2 focus:ring-teal-400 outline-none leading-relaxed"></textarea>
+          <div class="flex items-center justify-end gap-2">
+            <button type="button" onclick="runAiAutoScoreTahap1()" id="btn-ai-tahap1"
+              class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+              <span class="material-symbols-outlined text-sm">auto_fix_high</span>
+              <span>Analisis &amp; Beri Skor Otomatis</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicators List Container (Unified Section C & Subsections) -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-6">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">Daftar Aspek &amp; Indikator Supervisi
+              BK</h3>
+            <p class="text-xs text-slate-400">Bagian C telah disatukan secara elegan ke dalam sub-bagian C.1 s.d C.4.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="fillAllScores(4)"
+              class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold">Isi
+              Cepat: Baik (4)</button>
+            <button type="button" onclick="fillAllScores(5)"
+              class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold">Isi
+              Cepat: Amat Baik (5)</button>
+          </div>
+        </div>
+
+        <div id="tahap1-indicators-container" class="space-y-6">
+          <!-- Rendered dynamically with unified Section C -->
+        </div>
+      </div>
+
+      <!-- Kesimpulan, Rekomendasi, dan Aksi Tindak Lanjut Supervisi BK -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-teal-950 flex items-center gap-2">
+              <span class="material-symbols-outlined text-teal-600">rate_review</span>
+              <span>Kesimpulan, Rekomendasi, &amp; Aksi Tindak Lanjut Supervisi BK</span>
+            </h3>
+            <p class="text-xs text-slate-400">Bisa diisi manual atau dibantu penyusunannya dengan AI berdasarkan
+              sintesis data penilaian yang telah dimasukkan.</p>
+          </div>
+          <button type="button" onclick="handleAiSynthesizeSupervisiBk()" id="btn-ai-synthesize-t1"
+            class="px-4 py-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <span class="material-symbols-outlined text-sm">wand_sparkles</span>
+            <span>Bantu AI Susun Kesimpulan, Rekomendasi &amp; Tindak Lanjut</span>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+              <span>1. Kesimpulan Supervisi Pelaksanaan &amp; Administrasi BK:</span>
+            </label>
+            <textarea id="t1-kesimpulan" rows="3" placeholder="Tuliskan kesimpulan menyeluruh hasil supervisi BK..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span>2. Rekomendasi Supervisi BK (Kepala Sekolah):</span>
+            </label>
+            <textarea id="t1-rekomendasi" rows="3"
+              placeholder="Tuliskan rekomendasi perbaikan dan penguatan mutu layanan BK..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              <span>3. Rencana Aksi Tindak Lanjut Supervisi BK:</span>
+            </label>
+            <textarea id="t1-tindak-lanjut" rows="3"
+              placeholder="Tuliskan komitmen aksi konkret tindak lanjut yang akan dilaksanakan guru BK..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Score Footer Banner -->
+      <div
+        class="sticky bottom-4 z-40 bg-white/95 backdrop-blur-md rounded-2xl p-4 md:p-5 border-2 border-teal-500 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-4">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Skor Diperoleh</span>
+            <div class="flex items-baseline gap-1">
+              <span id="t1-score-earned" class="text-2xl font-bold font-display text-teal-700">0</span>
+              <span id="t1-score-max" class="text-xs text-slate-400 font-bold">/ 165</span>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Persentase Capaian</span>
+            <span id="t1-score-percentage" class="text-2xl font-bold font-display text-slate-800">0.0%</span>
+          </div>
+          <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Predikat Kelayakan</span>
+            <span id="t1-score-predicate"
+              class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 inline-block mt-0.5">Sangat
+              Kurang (E)</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="saveTahap1Only()"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+            Simpan Draf
+          </button>
+          <button type="button" onclick="saveAndGoToReport()"
+            class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-2 active:scale-95">
+            <span class="material-symbols-outlined text-sm">description</span>
+            <span>Simpan &amp; Lihat Laporan</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: JENIS 2 - TELAAH DOKUMEN RPL BK ==================== -->
+    <div id="tab-content-tahap2" class="hidden space-y-6">
+      <!-- RPL Header Card -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+              2
+            </div>
+            <div>
+              <h2 class="text-lg font-bold font-display text-slate-800">Telaah Dokumen Rencana Pelaksanaan Layanan (RPL
+                BK)</h2>
+              <p class="text-xs text-slate-400">Verifikasi kelengkapan dan keselarasan komponen RPL BK dengan opsi Ada
+                (1) atau Tidak Ada (0).</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="badge-tahap2-counter"
+              class="px-3 py-1 rounded-full text-xs font-black bg-indigo-50 text-indigo-800 border border-indigo-200">
+              30 Butir Aktif
+            </span>
+          </div>
+        </div>
+
+        <!-- Active Session Identity Display (Diisi di Laman Rekap & Jadwal) -->
+        <div id="session-identity-card-t2"
+          class="rounded-2xl border border-indigo-200/90 bg-gradient-to-r from-indigo-50/70 via-slate-50 to-white p-4">
+          <!-- Populated by updateActiveSessionDisplay() -->
+        </div>
+
+        <!-- RPL Topic & Target Inputs -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Topik / Tema Layanan BK yang Ditelaah *</label>
+            <input type="text" id="t2-topic" placeholder="Contoh: Eksplorasi Peminatan Karir & Studi Lanjut"
+              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:border-indigo-500 outline-none" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Jenis Layanan BK</label>
+            <select id="t2-service-type"
+              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:border-indigo-500 outline-none">
+              <option value="Bimbingan Klasikal">Bimbingan Klasikal</option>
+              <option value="Bimbingan Kelompok">Bimbingan Kelompok</option>
+              <option value="Konseling Individual">Konseling Individual</option>
+              <option value="Konseling Kelompok">Konseling Kelompok</option>
+              <option value="Layanan Kolaborasi">Layanan Kolaborasi / Advokasi</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Alokasi Waktu Layanan</label>
+            <input type="text" id="t2-duration" placeholder="Contoh: 2 x 40 Menit (1 Pertemuan)"
+              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:bg-white focus:border-indigo-500 outline-none" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== BANNER TELAAH OTOMATIS RPL DENGAN AI GEMINI (PARITAS DENGAN /OBSERVASI) ==================== -->
+      <div
+        class="bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-950 rounded-3xl p-6 text-white shadow-xl space-y-4 border border-indigo-700/50">
+        <!-- Header Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-700/60 pb-3">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl bg-amber-400 text-indigo-950 flex items-center justify-center font-black text-lg shadow-md shadow-amber-400/20 flex-shrink-0">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div>
+              <h3 class="text-base sm:text-lg font-black tracking-tight flex items-center gap-2">
+                <span>Telaah Otomatis Dokumen RPL Menggunakan AI Gemini</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-indigo-950">30 Indikator
+                  Aktif</span>
+              </h3>
+              <p class="text-xs text-indigo-200 mt-0.5">
+                Unggah file dokumen, tempel link URL Google Docs, atau ketik naskah RPL — AI Gemini akan memeriksa
+                seluruh indikator aktif secara otomatis.
+              </p>
+            </div>
+          </div>
+          <button type="button" onclick="loadSampleRplText()"
+            class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition border border-white/20 flex items-center gap-1.5 self-start sm:self-auto">
+            <i class="fa-solid fa-paste text-amber-300"></i>
+            <span>Contoh Teks RPL BK Siap Uji</span>
+          </button>
+        </div>
+
+        <!-- Input Method Tabs -->
+        <div>
+          <div class="flex gap-1 bg-indigo-950/60 rounded-xl p-1 mb-4">
+            <button type="button" id="rplInputTab-upload" onclick="switchRplInputTab('upload')"
+              class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-indigo-900 shadow-sm">
+              <i class="fa-solid fa-file-arrow-up text-indigo-600"></i>
+              <span>Unggah File</span>
+            </button>
+            <button type="button" id="rplInputTab-url" onclick="switchRplInputTab('url')"
+              class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition text-indigo-200 hover:bg-white/10">
+              <i class="fa-brands fa-google-drive text-emerald-400"></i>
+              <span>Link / URL</span>
+            </button>
+            <button type="button" id="rplInputTab-paste" onclick="switchRplInputTab('paste')"
+              class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition text-indigo-200 hover:bg-white/10">
+              <i class="fa-solid fa-keyboard text-amber-400"></i>
+              <span>Ketik / Tempel</span>
+            </button>
+          </div>
+
+          <!-- TAB 1: Upload File -->
+          <div id="rplInputPanel-upload">
+            <label for="rplFileInput"
+              class="flex flex-col items-center justify-center gap-3 w-full border-2 border-dashed border-indigo-500/60 rounded-2xl p-7 cursor-pointer hover:border-amber-400/70 hover:bg-indigo-950/40 transition group">
+              <div
+                class="w-12 h-12 rounded-2xl bg-indigo-800/60 group-hover:bg-amber-400/20 flex items-center justify-center transition">
+                <i class="fa-solid fa-file-arrow-up text-2xl text-indigo-300 group-hover:text-amber-400 transition"></i>
+              </div>
+              <div class="text-center">
+                <p class="text-sm font-bold text-white">Klik untuk memilih file RPL atau seret ke sini</p>
+                <p class="text-xs text-indigo-300 mt-1">Mendukung file: <strong class="text-amber-300">DOCX
+                    (Word)</strong>, <strong class="text-amber-300">PDF</strong>, <strong
+                    class="text-amber-300">TXT</strong> — Maks. 15 MB</p>
+              </div>
+              <input type="file" id="rplFileInput" accept=".docx,.pdf,.txt" class="hidden"
+                onchange="handleRplFileSelect(this)">
+            </label>
+
+            <!-- File preview -->
+            <div id="rplFilePreview"
+              class="hidden mt-3 p-3 bg-emerald-950/70 border border-emerald-500/40 rounded-xl flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <i id="rplFileIcon" class="fa-solid fa-file-word text-2xl text-blue-400"></i>
+                <div>
+                  <p id="rplFileName" class="text-xs font-bold text-white">dokumen_rpl.docx</p>
+                  <p id="rplFileSize" class="text-[11px] text-emerald-300">0 KB</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="triggerRplFileExtract()" id="btnExtractRplFile"
+                  class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                  <i class="fa-solid fa-file-import"></i>
+                  <span>Ekstrak Teks</span>
+                </button>
+                <button type="button" onclick="clearRplFile()"
+                  class="w-7 h-7 rounded-lg bg-rose-700/60 hover:bg-rose-600 text-rose-200 flex items-center justify-center transition text-xs">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: Link / URL -->
+          <div id="rplInputPanel-url" class="hidden space-y-3">
+            <p class="text-xs text-indigo-300 flex items-start gap-2">
+              <i class="fa-brands fa-google-drive text-emerald-400 mt-0.5 flex-shrink-0"></i>
+              <span>Tempel link <strong class="text-white">Google Docs</strong> (pastikan link dapat dilihat publik
+                "Anyone with the link can view"), atau URL langsung ke file RPL publik.</span>
+            </p>
+            <div class="flex gap-2">
+              <input type="url" id="rplUrlInput"
+                placeholder="https://docs.google.com/document/d/...  atau  https://sekolah.id/rpl.docx"
+                class="flex-1 px-4 py-3 text-xs bg-indigo-950/60 border border-indigo-600/50 rounded-xl text-white placeholder:text-indigo-400/60 focus:outline-none focus:ring-2 focus:ring-amber-400 transition" />
+              <button type="button" onclick="triggerRplUrlFetch()" id="btnFetchRplUrl"
+                class="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-2 flex-shrink-0 shadow-md">
+                <i class="fa-solid fa-download"></i>
+                <span>Ambil Teks</span>
+              </button>
+            </div>
+            <div id="rplUrlStatus" class="hidden text-xs rounded-lg px-3 py-2 border"></div>
+          </div>
+
+          <!-- TAB 3: Ketik / Tempel -->
+          <div id="rplInputPanel-paste" class="hidden">
+            <label class="block text-xs font-bold text-indigo-200 uppercase tracking-wider mb-1.5">
+              Tempel atau ketik teks Rencana Pelaksanaan Layanan (RPL BK)
+            </label>
+            <textarea id="telaahPastedRplText" rows="6"
+              placeholder="Tempelkan naskah RPL di sini (Mencakup Identitas, Sasaran, Bidang BK, Tujuan Layanan, Langkah-langkah Mindful/Meaningful/Joyful, Penguatan Literasi Numerasi, dan Evaluasi)..."
+              class="w-full p-3.5 text-xs bg-indigo-950/70 border border-indigo-600/50 rounded-xl text-white placeholder:text-indigo-300/60 focus:outline-none focus:ring-2 focus:ring-amber-400 transition leading-relaxed font-sans"></textarea>
+          </div>
+
+          <!-- Extracted Preview Container -->
+          <div id="rplExtractedPreview" class="hidden mt-3 p-3 bg-indigo-950/80 border border-indigo-600/50 rounded-xl">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check"></i>
+                <span id="rplExtractedLabel">Teks RPL berhasil diekstrak</span>
+              </span>
+              <button type="button" onclick="clearExtractedRplText()"
+                class="text-[11px] text-indigo-400 hover:text-rose-400 transition flex items-center gap-1">
+                <i class="fa-solid fa-trash-can text-[10px]"></i> Hapus
+              </button>
+            </div>
+            <p id="rplExtractedChars" class="text-[11px] text-indigo-300 mb-1.5"></p>
+            <div class="max-h-28 overflow-y-auto">
+              <pre id="rplExtractedSnippet"
+                class="text-[11px] text-indigo-200 whitespace-pre-wrap leading-relaxed font-sans"></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Trigger Button -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-indigo-700/50">
+          <div class="text-[11px] text-indigo-200 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+            <span>AI akan memeriksa seluruh 30 butir indikator RPL dari aspek A s.d F secara mendalam.</span>
+          </div>
+          <button type="button" id="btnAutoAnalyzeRpl" onclick="triggerAutoAnalyzeRpl()"
+            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-indigo-950 text-xs font-black transition flex items-center justify-center gap-2 shadow-lg shadow-amber-400/25">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Analisis RPL dengan AI Gemini Sekarang</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- RPL Indicators List -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-6">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">Daftar Poin Telaah RPL BK</h3>
+            <p class="text-xs text-slate-400">Centang "Ada" (Skor 1) atau "Tidak Ada" (Skor 0), sertakan catatan bukti
+              fisik.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="fillAllRpl(1)"
+              class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold">Pilih
+              Semua: Ada (1)</button>
+          </div>
+        </div>
+
+        <div id="tahap2-indicators-container" class="space-y-4">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Kesimpulan, Rekomendasi, dan Aksi Tindak Lanjut Telaah RPL -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-indigo-950 flex items-center gap-2">
+              <span class="material-symbols-outlined text-indigo-600">rate_review</span>
+              <span>Kesimpulan, Rekomendasi, &amp; Aksi Tindak Lanjut Telaah RPL BK</span>
+            </h3>
+            <p class="text-xs text-slate-400">Bisa diisi manual atau dibantu penyusunannya dengan AI berdasarkan data
+              telaah komponen yang telah dimasukkan.</p>
+          </div>
+          <button type="button" onclick="handleAiSynthesizeTelaahRpl()" id="btn-ai-synthesize-t2"
+            class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <span class="material-symbols-outlined text-sm">wand_sparkles</span>
+            <span>Bantu AI Susun Kesimpulan, Rekomendasi &amp; Tindak Lanjut</span>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              <span>1. Kesimpulan Telaah Dokumen RPL BK:</span>
+            </label>
+            <textarea id="t2-kesimpulan" rows="3" placeholder="Tuliskan kesimpulan kelayakan dokumen RPL BK..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span>2. Rekomendasi Penyempurnaan RPL BK (Supervisor):</span>
+            </label>
+            <textarea id="t2-rekomendasi" rows="3" placeholder="Tuliskan saran dan perbaikan komponen RPL BK..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+              <span>3. Rencana Aksi Tindak Lanjut Perbaikan RPL:</span>
+            </label>
+            <textarea id="t2-tindak-lanjut" rows="3" placeholder="Tuliskan komitmen perbaikan RPL oleh Guru BK..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Score Footer Banner: Tahap 2 -->
+      <div
+        class="sticky bottom-4 z-40 bg-white/95 backdrop-blur-md rounded-2xl p-4 md:p-5 border-2 border-indigo-500 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-4">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Butir Terpenuhi</span>
+            <div class="flex items-baseline gap-1">
+              <span id="t2-score-earned" class="text-2xl font-bold font-display text-indigo-700">0</span>
+              <span id="t2-score-max" class="text-xs text-slate-400 font-bold">/ 30</span>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Persentase
+              Keterpenuhan</span>
+            <span id="t2-score-percentage" class="text-2xl font-bold font-display text-slate-800">0.0%</span>
+          </div>
+          <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Predikat Kelayakan</span>
+            <span id="t2-score-predicate"
+              class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 inline-block mt-0.5">Sangat
+              Kurang (E)</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="saveTahap2Only()"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+            Simpan Draf RPL
+          </button>
+          <button type="button" onclick="saveAndGoToReport()"
+            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-2 active:scale-95">
+            <span class="material-symbols-outlined text-sm">description</span>
+            <span>Simpan &amp; Lihat Laporan</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: JENIS 3 - COACHING BK (MODEL TIRTA & REFLEKSI) ==================== -->
+    <div id="tab-content-tahap3" class="hidden space-y-6">
+      <!-- Coaching Header Card -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+              3
+            </div>
+            <div>
+              <h2 class="text-lg font-bold font-display text-slate-800">Percakapan Wawancara Coaching BK (Alur TIRTA)
+              </h2>
+              <p class="text-xs text-slate-400">Pemberdayaan guru BK melalui coaching reflektif kemitraan dan penyusunan
+                Rencana Tindak Lanjut (RTL).</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="handleAiGenerateCoachingRecommendations()" id="btn-generate-coaching-ai"
+              class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5 active:scale-95">
+              <span class="material-symbols-outlined text-sm">psychology</span>
+              <span>Bantu AI: Generate Rekomendasi Jawaban Coaching</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Session Identity Display (Diisi di Laman Rekap & Jadwal) -->
+        <div id="session-identity-card-t3"
+          class="rounded-2xl border border-amber-200/90 bg-gradient-to-r from-amber-50/70 via-slate-50 to-white p-4">
+          <!-- Populated by updateActiveSessionDisplay() -->
+        </div>
+
+        <!-- Gap Analysis Alert Card -->
+        <div id="coaching-gap-analysis"
+          class="p-4 rounded-2xl bg-gradient-to-r from-slate-50 via-teal-50/40 to-amber-50/40 border border-slate-200 text-xs space-y-2">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Tabel Wawancara Coaching (3 Kolom Format Pasca-Observasi) -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">Panduan Percakapan Wawancara Coaching
+              6 Tahap TIRTA</h3>
+            <p class="text-xs text-slate-400">Disusun dengan format panduan wawancara coaching, jawaban rekomendasi AI,
+              dan catatan wawancara KS.</p>
+          </div>
+          <span class="text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+            Estimasi: 40 Menit
+          </span>
+        </div>
+
+        <!-- Coaching Table (Strict Format Matching /observasi Pasca-Obs) -->
+        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white font-bold">
+                  <th class="p-3.5 w-12 text-center border-r border-slate-800">NO</th>
+                  <th class="p-3.5 w-2/5 border-r border-slate-800">PERTANYAAN PANDUAN WAWANCARA COACHING</th>
+                  <th class="p-3.5 w-1/3 border-r border-slate-800 bg-teal-900/40">
+                    <div class="flex items-center gap-1.5">
+                      <i class="fa-solid fa-robot text-amber-300"></i>
+                      <span>1. JAWABAN REKOMENDASI AI</span>
+                    </div>
+                  </th>
+                  <th class="p-3.5 bg-slate-800/40">
+                    <div class="flex items-center gap-1.5">
+                      <i class="fa-solid fa-pen-nib text-emerald-300"></i>
+                      <span>2. CATATAN WAWANCARA (DIISI KS SAAT COACHING)</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="coaching-tirta-table-body" class="divide-y divide-slate-100 font-medium">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kesimpulan, Rekomendasi, dan Aksi Tindak Lanjut Coaching BK -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-amber-950 flex items-center gap-2">
+              <span class="material-symbols-outlined text-amber-600">rate_review</span>
+              <span>Kesimpulan, Rekomendasi, &amp; Aksi Tindak Lanjut Coaching BK</span>
+            </h3>
+            <p class="text-xs text-slate-400">Bisa diisi manual atau dibantu penyusunannya dengan AI memadukan hasil
+              dialog percakapan coaching.</p>
+          </div>
+          <button type="button" onclick="handleAiSynthesizeCoachingBk()" id="btn-ai-synthesize-t3"
+            class="px-4 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <span class="material-symbols-outlined text-sm">wand_sparkles</span>
+            <span>Bantu AI Susun Kesimpulan, Rekomendasi &amp; Tindak Lanjut</span>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span>1. Kesimpulan Wawancara Coaching BK:</span>
+            </label>
+            <textarea id="t3-kesimpulan" rows="3"
+              placeholder="Tuliskan kesimpulan hasil refleksi coaching bersama Guru BK..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+              <span>2. Rekomendasi Pemberdayaan Guru BK:</span>
+            </label>
+            <textarea id="t3-rekomendasi" rows="3"
+              placeholder="Tuliskan rekomendasi dukungan kepala sekolah untuk pemberdayaan guru..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              <span>3. Rencana Aksi Tindak Lanjut Coaching (Manual/AI):</span>
+            </label>
+            <textarea id="t3-tindak-lanjut" rows="3"
+              placeholder="Tuliskan ringkasan rencana tindak lanjut komitmen guru..."
+              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none leading-relaxed text-slate-800"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabel Rencana Tindak Lanjut (RTL) Interaktif -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">Tabel Rincian Rencana Tindak Lanjut
+              (RTL) Supervisi Guru BK</h3>
+            <p class="text-xs text-slate-400">Dapat ditambahkan atau diedit secara manual sebagaimana komitmen yang
+              disepakati bersama.</p>
+          </div>
+          <button type="button" onclick="addRtlRow()"
+            class="px-3 py-1.5 bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200 rounded-xl text-xs font-bold transition flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">add</span>
+            <span>+ Tambah Baris RTL</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
+            <thead
+              class="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="p-3 w-1/4">Fokus Pengembangan</th>
+                <th class="p-3 w-1/3">Rencana Kegiatan / Tindakan</th>
+                <th class="p-3 w-1/6">Target Waktu</th>
+                <th class="p-3 w-1/5">Bukti / Indikator Sukses</th>
+                <th class="p-3 w-1/6">Dukungan Dibutuhkan</th>
+                <th class="p-3 text-center w-12">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="rtl-table-body" class="divide-y divide-slate-100 font-medium">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Status Lembar Refleksi Diri Guru BK Pasca-Coaching -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xs border border-slate-200/80 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+              <span class="material-symbols-outlined text-emerald-600">psychology</span>
+              <span>Lembar Refleksi Diri Guru BK Pasca-Coaching (12 Butir)</span>
+            </h3>
+            <p class="text-xs text-slate-400">Diisi oleh Guru BK secara mandiri di Portal Guru setelah coaching
+              dilakukan.</p>
+          </div>
+          <div id="reflection-status-badge"
+            class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            <span id="reflection-status-text">Menunggu Pengisian di Portal Guru</span>
+          </div>
+        </div>
+
+        <!-- Banner Portal Guru BK Notification -->
+        <div
+          class="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 border border-emerald-200/80 flex items-start gap-3 text-xs">
+          <div
+            class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <div class="space-y-1">
+            <h4 class="font-bold text-slate-800 text-xs">Notifikasi Otomatis untuk Guru BK Telah Aktif</h4>
+            <p class="text-slate-600 leading-relaxed">
+              Begitu sesi coaching ini disimpan, pemberitahuan pengisian <strong>Lembar Refleksi Diri
+                Pasca-Coaching</strong> akan otomatis muncul di akun Portal Guru BK (<code
+                class="bg-white px-1.5 py-0.5 rounded border text-emerald-700">/guru/supervisi/</code>). Skor dan
+              catatan refleksi guru akan langsung tersinkronisasi ke lembar laporan ini.
+            </p>
+          </div>
+        </div>
+
+        <!-- Expandable Preview of Reflection Items -->
+        <details class="group bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs">
+          <summary class="font-bold text-slate-700 cursor-pointer flex items-center justify-between">
+            <span>Lihat 12 Indikator Refleksi Diri Guru BK (atau Bantu Input Manual Jika Diisi di Lembar Cetak)</span>
+            <span class="material-symbols-outlined text-sm group-open:rotate-180 transition">expand_more</span>
+          </summary>
+          <div class="pt-4 space-y-3" id="reflection-indicators-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </details>
+      </div>
+
+      <!-- Navigation & Save Bar: Tahap 3 -->
+      <div
+        class="bg-white rounded-2xl p-4 md:p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs text-slate-500 font-semibold">Status Sesi Coaching:</span>
+          <span id="coaching-live-status-pill"
+            class="ml-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">Siap
+            Disimpan</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="saveTahap3Only()"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+            Simpan Sesi Coaching
+          </button>
+          <button type="button" onclick="saveAndGoToReport()"
+            class="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-2 active:scale-95">
+            <span class="material-symbols-outlined text-sm">description</span>
+            <span>Simpan &amp; Lihat Laporan</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: LEMBAR LAPORAN HASIL SUPERVISI BK ==================== -->
+    <div id="tab-content-laporan" class="hidden space-y-6">
+      <!-- Report Header Action Bar -->
+      <div
+        class="bg-white rounded-2xl p-4 md:p-6 shadow-xs border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center text-xl font-bold">
+            <span class="material-symbols-outlined">print</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">Dokumen Lembar Laporan Hasil Supervisi Guru BK</h3>
+            <p class="text-xs text-slate-400" id="rpt-subtitle-scope">Hanya memuat rincian jenis supervisi yang dipilih.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="window.print()"
+            class="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <span class="material-symbols-outlined text-sm">print</span>
+            <span>Cetak / Simpan PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Official Report Paper Container -->
+      <div id="print-area"
+        class="bg-white rounded-3xl p-8 md:p-12 shadow-md border border-slate-200 text-slate-900 space-y-8 max-w-4xl mx-auto">
+        <!-- Official School Letterhead (Kop Surat) -->
+        <div class="flex items-center gap-6 pb-6 border-b-4 border-double border-slate-800">
+          <img id="rpt-school-logo"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNTv4FAsIOr1hBEM5LAM0NnLPM-kUMfynR2mknlt4PfJiWY6mx-yCZhG5Ti36lafu9qTnwy8l2Qu6mSG_fpUPnN4ogGjhEpXpSQ4nkv9PHb3AnQl6YRXx2QdkNogHZENml34xg-kqJkOy62MgFDx60WdkjpZYnG4FhzRnjREYepiqzNVcgpn0EyeIp2pPkkOFF_S2-yGFBE3qhXnM3AFAS9a-ZHbCofVY2iNdwxJ7tIDqxJVike7z_hw"
+            alt="Logo Sekolah" class="w-20 h-20 object-contain flex-shrink-0" />
+          <div class="text-center flex-1 space-y-1">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">PEMERINTAH DAERAH PROVINSI / KOTA
+            </h2>
+            <h1 id="rpt-school-name" class="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-900">SMP
+              BRIGHTON</h1>
+            <p id="rpt-school-address" class="text-xs text-slate-600">Jl. Pendidikan No. 45, Kompleks Akademik Terpadu
+            </p>
+            <p class="text-[11px] text-slate-500">NPSN: <span id="rpt-school-npsn">10293847</span> • Email: <span
+                id="rpt-school-email">info@sekolah.sch.id</span> • Telepon: <span id="rpt-school-phone">(021)
+                7894561</span></p>
+          </div>
+        </div>
+
+        <!-- Document Title -->
+        <div class="text-center space-y-1">
+          <h2 id="rpt-document-main-title"
+            class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-900 underline underline-offset-4">
+            LEMBAR LAPORAN HASIL SUPERVISI GURU BK
+          </h2>
+          <p class="text-xs text-slate-500 font-semibold">Nomor Berkas: <span id="rpt-doc-number"
+              class="font-mono">BK/2026/001</span></p>
+        </div>
+
+        <!-- Section 1: Identitas Guru & Supervisi -->
+        <div class="space-y-3">
+          <h3
+            class="text-xs font-black uppercase tracking-wider text-slate-800 bg-slate-100 px-3 py-1.5 rounded-lg border-l-4 border-teal-600">
+            I. IDENTITAS GURU BIMBINGAN DAN KONSELING
+          </h3>
+          <div class="grid grid-cols-2 gap-y-2 text-xs">
+            <div class="flex"><span class="w-40 font-bold text-slate-600">Nama Guru BK</span><span
+                class="font-bold text-slate-900">: <span id="rpt-teacher-name">—</span></span></div>
+            <div class="flex"><span class="w-40 font-bold text-slate-600">Tahun Ajaran / Sem</span><span
+                class="font-semibold text-slate-800">: <span id="rpt-academic-period">—</span></span></div>
+            <div class="flex"><span class="w-40 font-bold text-slate-600">NIP / NUPTK</span><span
+                class="font-mono text-slate-800">: <span id="rpt-teacher-nip">—</span></span></div>
+            <div class="flex"><span class="w-40 font-bold text-slate-600">Tanggal Supervisi</span><span
+                class="font-semibold text-slate-800">: <span id="rpt-supervision-date">—</span></span></div>
+            <div class="flex"><span class="w-40 font-bold text-slate-600">Kelas Binaan / Asuh</span><span
+                class="font-semibold text-slate-800">: <span id="rpt-target-class">—</span></span></div>
+            <div class="flex"><span class="w-40 font-bold text-slate-600">Nama Supervisor</span><span
+                class="font-semibold text-slate-800">: <span id="rpt-supervisor-name">—</span></span></div>
+            <div class="flex"><span class="w-40 font-bold text-slate-600">Jenis Supervisi</span><span
+                class="font-bold text-teal-800">: <span id="rpt-supervision-type-name">—</span></span></div>
+          </div>
+        </div>
+
+        <!-- DYNAMIC REPORT SECTION: ONLY SELECTED TYPE IS DISPLAYED -->
+
+        <!-- === REPORT BLOCK A: SUPERVISI PELAKSANAAN & ADM BK === -->
+        <div id="rpt-block-supervisi-bk" class="space-y-6">
+          <div class="space-y-3">
+            <h3
+              class="text-xs font-black uppercase tracking-wider text-slate-800 bg-slate-100 px-3 py-1.5 rounded-lg border-l-4 border-teal-600">
+              II. REKAPITULASI HASIL SUPERVISI PELAKSANAAN &amp; ADMINISTRASI BK
+            </h3>
+            <table class="w-full text-left text-xs border border-slate-300 border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-300">
+                  <th class="p-2.5 border-r border-slate-300">Instrumen Supervisi</th>
+                  <th class="p-2.5 border-r border-slate-300 text-center w-28">Skor Perolehan</th>
+                  <th class="p-2.5 border-r border-slate-300 text-center w-28">Skor Maksimal</th>
+                  <th class="p-2.5 border-r border-slate-300 text-center w-28">Persentase</th>
+                  <th class="p-2.5 text-center w-36">Kategori Mutu</th>
+                </tr>
+              </thead>
+              <tbody class="font-medium">
+                <tr>
+                  <td class="p-2.5 border-r border-slate-300 font-bold">Pelaksanaan &amp; Administrasi Layanan BK (33
+                    Indikator)</td>
+                  <td id="rpt-s1-earned" class="p-2.5 border-r border-slate-300 text-center font-bold text-teal-800">0
+                  </td>
+                  <td id="rpt-s1-max" class="p-2.5 border-r border-slate-300 text-center text-slate-600">165</td>
+                  <td id="rpt-s1-pct" class="p-2.5 border-r border-slate-300 text-center font-bold">0.0%</td>
+                  <td id="rpt-s1-pred" class="p-2.5 text-center font-black bg-teal-50 text-teal-900">Baik (B)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Rincian Capaian per Sub-Bagian (Termasuk C.1 s.d C.4) -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800">Distribusi Ketercapaian per Bagian
+              &amp; Sub-Bagian:</h4>
+            <div id="rpt-s1-subsections-summary" class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Kesimpulan, Rekomendasi & Tindak Lanjut Supervisi BK -->
+          <div class="space-y-4 pt-2">
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">A. Kesimpulan Supervisi Pelaksanaan &amp; Administrasi BK:
+              </h4>
+              <p id="rpt-s1-kesimpulan"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">B. Rekomendasi Supervisi BK (Kepala Sekolah):</h4>
+              <p id="rpt-s1-rekomendasi"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">C. Rencana Aksi Tindak Lanjut Supervisi BK:</h4>
+              <p id="rpt-s1-tindak-lanjut"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- === REPORT BLOCK B: TELAAH DOKUMEN RPL BK === -->
+        <div id="rpt-block-telaah-rpl" class="space-y-6 hidden">
+          <div class="space-y-3">
+            <h3
+              class="text-xs font-black uppercase tracking-wider text-slate-800 bg-slate-100 px-3 py-1.5 rounded-lg border-l-4 border-indigo-600">
+              II. REKAPITULASI HASIL TELAAH DOKUMEN RPL BK
+            </h3>
+            <div
+              class="bg-indigo-50/60 p-3 rounded-xl border border-indigo-200 text-xs flex flex-wrap items-center justify-between gap-2">
+              <div><span class="font-bold text-indigo-900">Topik RPL:</span> <span id="rpt-rpl-topic">—</span></div>
+              <div><span class="font-bold text-indigo-900">Jenis Layanan:</span> <span id="rpt-rpl-service">—</span>
+              </div>
+              <div><span class="font-bold text-indigo-900">Durasi:</span> <span id="rpt-rpl-duration">—</span></div>
+            </div>
+
+            <table class="w-full text-left text-xs border border-slate-300 border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-300">
+                  <th class="p-2.5 border-r border-slate-300">Instrumen Telaah Dokumen</th>
+                  <th class="p-2.5 border-r border-slate-300 text-center w-28">Butir Terpenuhi</th>
+                  <th class="p-2.5 border-r border-slate-300 text-center w-28">Total Butir</th>
+                  <th class="p-2.5 border-r border-slate-300 text-center w-28">Keterpenuhan (%)</th>
+                  <th class="p-2.5 text-center w-36">Predikat Kelayakan</th>
+                </tr>
+              </thead>
+              <tbody class="font-medium">
+                <tr>
+                  <td class="p-2.5 border-r border-slate-300 font-bold">Telaah RPL BK (30 Butir Aspek A s.d F)</td>
+                  <td id="rpt-s2-earned" class="p-2.5 border-r border-slate-300 text-center font-bold text-indigo-800">0
+                  </td>
+                  <td id="rpt-s2-max" class="p-2.5 border-r border-slate-300 text-center text-slate-600">30</td>
+                  <td id="rpt-s2-pct" class="p-2.5 border-r border-slate-300 text-center font-bold">0.0%</td>
+                  <td id="rpt-s2-pred" class="p-2.5 text-center font-black bg-indigo-50 text-indigo-900">Baik (B)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Kesimpulan, Rekomendasi & Tindak Lanjut Telaah RPL -->
+          <div class="space-y-4 pt-2">
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">A. Kesimpulan Telaah Dokumen RPL BK:</h4>
+              <p id="rpt-s2-kesimpulan"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">B. Rekomendasi Penyempurnaan RPL BK (Supervisor):</h4>
+              <p id="rpt-s2-rekomendasi"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">C. Rencana Aksi Tindak Lanjut Perbaikan RPL:</h4>
+              <p id="rpt-s2-tindak-lanjut"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- === REPORT BLOCK C: COACHING BK (MODEL TIRTA & REFLEKSI) === -->
+        <div id="rpt-block-coaching-bk" class="space-y-6 hidden">
+          <div class="space-y-3">
+            <h3
+              class="text-xs font-black uppercase tracking-wider text-slate-800 bg-slate-100 px-3 py-1.5 rounded-lg border-l-4 border-amber-600">
+              II. REKAPITULASI SESI COACHING SUPERVISI GURU BK
+            </h3>
+
+            <!-- Tabel Catatan Wawancara Coaching -->
+            <table class="w-full text-left text-xs border border-slate-300 border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-300">
+                  <th class="p-2.5 border-r border-slate-300 w-12 text-center">No</th>
+                  <th class="p-2.5 border-r border-slate-300 w-1/4">Tahap TIRTA</th>
+                  <th class="p-2.5 border-r border-slate-300 w-1/3">Pertanyaan Panduan Coach</th>
+                  <th class="p-2.5">Catatan Kesepakatan &amp; Solusi (KS)</th>
+                </tr>
+              </thead>
+              <tbody id="rpt-coaching-table-body" class="divide-y divide-slate-200">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tabel RTL dalam Laporan -->
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-800 text-xs">Rencana Tindak Lanjut (RTL) Komitmen Guru BK:</h4>
+            <div id="rpt-rtl-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Status / Rekap Refleksi Diri Guru BK -->
+          <div class="space-y-2 pt-2">
+            <h4 class="font-bold text-slate-800 text-xs">Hasil Refleksi Diri Guru BK Pasca-Coaching:</h4>
+            <div id="rpt-refleksi-summary" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Kesimpulan, Rekomendasi & Tindak Lanjut Coaching BK -->
+          <div class="space-y-4 pt-2">
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">A. Kesimpulan Percakapan Coaching BK:</h4>
+              <p id="rpt-s3-kesimpulan"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">B. Rekomendasi Pemberdayaan Guru BK:</h4>
+              <p id="rpt-s3-rekomendasi"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+            <div class="space-y-1 text-xs">
+              <h4 class="font-bold text-slate-800 text-xs">C. Rencana Aksi Tindak Lanjut Coaching:</h4>
+              <p id="rpt-s3-tindak-lanjut"
+                class="text-slate-700 leading-relaxed text-justify bg-slate-50 p-3 rounded-xl border border-slate-200">
+                -
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Tanda Tangan Resmi Pengesahan -->
+        <div class="pt-8 border-t border-slate-300">
+          <div class="flex justify-between items-start text-xs">
+            <div class="text-center w-64 space-y-1">
+              <p class="font-semibold text-slate-600">Guru Bimbingan dan Konseling,</p>
+              <div class="h-20 flex items-end justify-center">
+                <span class="text-slate-300 italic text-[11px]">(Tanda Tangan)</span>
+              </div>
+              <p id="rpt-sign-teacher-name" class="font-bold text-slate-900 underline underline-offset-2">GURU BK</p>
+              <p class="text-slate-500 text-[11px]">NIP. <span id="rpt-sign-teacher-nip">-</span></p>
+            </div>
+
+            <div class="text-center w-64 space-y-1">
+              <p class="text-slate-600 font-semibold"><span id="rpt-sign-city">Depok</span>, <span id="rpt-sign-date">17
+                  Oktober 2026</span></p>
+              <p class="font-semibold text-slate-600">Kepala Sekolah,</p>
+              <div class="h-20 flex items-end justify-center">
+                <span class="text-slate-300 italic text-[11px]">(Tanda Tangan &amp; Cap Resmi)</span>
+              </div>
+              <p id="rpt-sign-principal-name" class="font-bold text-slate-900 underline underline-offset-2">KEPALA
+                SEKOLAH</p>
+              <p class="text-slate-500 text-[11px]">NIP. <span id="rpt-sign-principal-nip">-</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Universal Footer -->
+  <footer id="app-footer"></footer>
+
+  <!-- Universal Mobile Bottom Navigation -->
+  <nav id="app-mobile-nav"></nav>
+
+  <!-- MODAL: MULAI SUPERVISI BARU & PILIH JENIS SUPERVISI -->
+  <div id="modalStartSupervision"
+    class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-teal-500 text-white flex items-center justify-center font-bold text-sm">
+            <span class="material-symbols-outlined text-base">add</span>
+          </span>
+          <h3 class="font-bold text-base text-slate-800">Mulai Supervisi Guru BK Baru</h3>
+        </div>
+        <button type="button" onclick="closeStartModal()"
+          class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">1. Pilih Guru BK Terdaftar *</label>
+          <select id="modal-select-teacher"
+            onchange="document.getElementById('modal-input-teacher-name').value = this.value"
+            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 outline-none focus:bg-white focus:border-teal-500">
+            <option value="">-- Memuat Guru BK... --</option>
+          </select>
+          <input type="text" id="modal-input-teacher-name"
+            placeholder="Atau ketik nama guru manual jika belum terdaftar..."
+            class="w-full mt-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 outline-none" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">2. Pilih Jenis Supervisi BK yang Dilaksanakan *</label>
+          <div class="grid grid-cols-1 gap-2">
+            <label
+              class="p-3 rounded-xl border border-teal-200 bg-teal-50/50 hover:bg-teal-50 cursor-pointer flex items-center gap-3">
+              <input type="radio" name="modal_sup_type" value="supervisi_bk" checked class="text-teal-600" />
+              <div>
+                <p class="font-bold text-teal-900">1. Supervisi Pelaksanaan &amp; Administrasi BK</p>
+                <p class="text-[11px] text-slate-500">Evaluasi 33 indikator pelaksanaan layanan dasar, peminatan,
+                  responsif, dan dukungan sistem.</p>
+              </div>
+            </label>
+            <label
+              class="p-3 rounded-xl border border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 cursor-pointer flex items-center gap-3">
+              <input type="radio" name="modal_sup_type" value="telaah_rpl" class="text-indigo-600" />
+              <div>
+                <p class="font-bold text-indigo-900">2. Telaah Dokumen RPL BK</p>
+                <p class="text-[11px] text-slate-500">Inspeksi 30 indikator perencanaan layanan, pembelajaran mendalam,
+                  literasi-numerasi, &amp; evaluasi.</p>
+              </div>
+            </label>
+            <label
+              class="p-3 rounded-xl border border-amber-200 bg-amber-50/50 hover:bg-amber-50 cursor-pointer flex items-center gap-3">
+              <input type="radio" name="modal_sup_type" value="coaching_bk" class="text-amber-600" />
+              <div>
+                <p class="font-bold text-amber-900">3. Coaching BK &amp; Refleksi</p>
+                <p class="text-[11px] text-slate-500">Percakapan coaching reflektif 6 tahap TIRTA, penyusunan RTL, dan
+                  refleksi diri guru.</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Kelas Asuh / Binaan</label>
+            <input type="text" id="modal-input-class" placeholder="Contoh: Kelas VII"
+              class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium outline-none" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tanggal Supervisi</label>
+            <input type="date" id="modal-input-date"
+              class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium outline-none" />
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+        <button type="button" onclick="closeStartModal()"
+          class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">Batal</button>
+        <button type="button" onclick="confirmStartSupervision()"
+          class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95">
+          <span>Buka Instrumen Supervisi</span>
+          <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal Footer -->
+  <footer id="app-footer"></footer>
+
+  <!-- Page Logic Script -->
+  <script>
+    // State Variables
+    let currentConfig = null;
+    let currentRecord = {
+      id: null,
+      teacherName: '',
+      teacherNip: '-',
+      targetClass: '',
+      supervisionDate: new Date().toISOString().split('T')[0],
+      academicYear: '2026/2027',
+      semester: 'Ganjil',
+      supervisionType: 'supervisi_bk', // 'supervisi_bk' | 'telaah_rpl' | 'coaching_bk' | 'semua'
+
+      // Tahap 1 (Supervisi Pelaksanaan & Adm BK)
+      tahap1Scores: {},
+      tahap1Notes: {},
+      supervisiKesimpulan: '',
+      supervisiRekomendasi: '',
+      supervisiTindakLanjut: '',
+      supervisiScore: null,
+
+      // Tahap 2 (Telaah RPL BK)
+      tahap2Topic: '',
+      tahap2ServiceType: 'Bimbingan Klasikal',
+      tahap2Duration: '2 x 40 Menit',
+      tahap2Checklist: {},
+      tahap2Notes: {},
+      rplKesimpulan: '',
+      rplRekomendasi: '',
+      rplTindakLanjut: '',
+      rplScore: null,
+
+      // Tahap 3 (Coaching BK)
+      tahap3TirtaNotes: {},
+      coachingAiRecommendations: {},
+      coachingKesimpulan: '',
+      coachingRekomendasi: '',
+      coachingTindakLanjut: '',
+      tahap3RtlList: [],
+      tahap3ReflectionScores: {},
+      reflectionStatus: 'menunggu_guru', // 'menunggu_guru' | 'selesai'
+      refleksiScore: null,
+
+      aiNarrative: null
+    };
+
+    let allSupervisiRecords = [];
+    let dbEmployees = [];
+    let bkEmployees = [];
+
+    // Helper State for RPL Extraction (Parity with Observasi RPP)
+    let _currentRplInputTab = 'upload';
+    let _extractedRplText = '';
+    let _selectedRplFile = null;
+
+    // Initialize Page
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Render Universal Header & Footer
+      function initLayout() {
+        if (window.KS_INCLUDES) {
+          window.KS_INCLUDES.init({ type: 'dashboard', activeNav: 'supbk' });
+        }
+      }
+      initLayout();
+      if (!document.getElementById('app-header')?.innerHTML) {
+        setTimeout(initLayout, 150);
+      }
+
+      // Render immediate default categories while network request resolves
+      renderHeroActiveCategories();
+
+      // 2. Set Period Badges
+      const prof = (window.KS_AUTH) ? window.KS_AUTH.getProfile() : {};
+      const year = prof.academicYear || '2026/2027';
+      const sem = prof.semester || 'Ganjil';
+      const badgePeriod = document.getElementById('badge-active-period');
+      if (badgePeriod) badgePeriod.innerText = `${year} • ${sem}`;
+
+      currentRecord.academicYear = year;
+      currentRecord.semester = sem;
+      const dateRekap = document.getElementById('rekap-supervision-date');
+      if (dateRekap) dateRekap.value = currentRecord.supervisionDate;
+      const dateModal = document.getElementById('modal-input-date');
+      if (dateModal) dateModal.value = currentRecord.supervisionDate;
+
+      // 3. Load BK Config (Master Indicators & Active Categories from Pengaturan)
+      if (window.KS_BK_MANAGER) {
+        try {
+          currentConfig = await window.KS_BK_MANAGER.loadConfig(year, sem, true);
+        } catch (e) {
+          console.warn('Gagal memuat BK config:', e);
+        }
+        renderHeroActiveCategories();
+      }
+
+      // 4. Load Employees List (Filtered strictly to Guru BK)
+      await loadEmployeesList();
+
+      // 5. Load All Past BK Supervision Records
+      await loadAllSupervisiRecords();
+
+      // 6. Build DOM Components
+      buildTahap1IndicatorsDOM();
+      buildTahap2IndicatorsDOM();
+      buildTahap3TirtaDOM();
+      buildTahap3ReflectionDOM();
+      initDefaultRtlTable();
+      updateActiveSessionDisplay();
+    });
+
+    function renderHeroActiveCategories() {
+      const container = document.getElementById('hero-active-categories');
+      if (!container) return;
+
+      const active = (currentConfig && Array.isArray(currentConfig.active_categories) && currentConfig.active_categories.length > 0)
+        ? currentConfig.active_categories
+        : ['Indikator Dasar', 'Deep Learning', 'Literasi Numerasi'];
+
+      const getTheme = (window.KS_BK_MANAGER && typeof window.KS_BK_MANAGER.getCategoryTheme === 'function')
+        ? window.KS_BK_MANAGER.getCategoryTheme
+        : (cat) => ({ bg: 'bg-teal-500/20', text: 'text-teal-200', border: 'border-teal-400/30' });
+
+      container.innerHTML = active.map(cat => {
+        const theme = getTheme(cat);
+        return `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${theme.bg} ${theme.text} border ${theme.border}">${cat}</span>`;
+      }).join('');
+
+      if (window.KS_BK_MANAGER) {
+        const supInds = window.KS_BK_MANAGER.getSupervisiIndicators();
+        const rplInds = window.KS_BK_MANAGER.getRplIndicators();
+        const b1 = document.getElementById('badge-tahap1-counter');
+        const b2 = document.getElementById('badge-tahap2-counter');
+        if (b1) b1.innerText = `${supInds.length} Butir Aktif`;
+        if (b2) b2.innerText = `${rplInds.length} Butir Aktif`;
+      }
+    }
+
+    /**
+     * Load Employees and filter strictly to Guru BK
+     */
+    async function loadEmployeesList() {
+      try {
+        const apiBase = (window.KS_BK_MANAGER && typeof window.KS_BK_MANAGER.getBaseUrl === 'function')
+          ? window.KS_BK_MANAGER.getBaseUrl()
+          : ((window.KS_AUTH) ? window.KS_AUTH.getBaseUrl() : '../../');
+        const res = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(apiBase + 'api.php?action=get_employees') : fetch(apiBase + 'api.php?action=get_employees'));
+        const data = await res.json();
+        if (data.success && Array.isArray(data.employees)) {
+          dbEmployees = data.employees;
+
+          // STRICT FILTER: Hanya personil yang memiliki role 'Guru BK' / 'guru_bk' atau mapel BK
+          bkEmployees = dbEmployees.filter(emp => {
+            const r = (emp.role || '').toLowerCase().trim();
+            const s = (emp.subject || '').toLowerCase().trim();
+            return r === 'guru bk' || r === 'guru_bk' || r === 'gurubk' || r.includes('bk') || s.includes('bimbingan konseling') || s.includes('guru bk');
+          });
+
+          const selectRekap = document.getElementById('rekap-teacher-select');
+          const selectModal = document.getElementById('modal-select-teacher');
+          const hintRekap = document.getElementById('rekap-bk-filter-hint');
+
+          if (hintRekap) {
+            hintRekap.innerHTML = (bkEmployees.length > 0)
+              ? `<span class="material-symbols-outlined text-[13px] text-teal-600">verified</span><span class="text-teal-700">Menampilkan ${bkEmployees.length} personil dengan role Guru BK</span>`
+              : `<span class="material-symbols-outlined text-[13px] text-rose-600">warning</span><span class="text-rose-700">Belum ada karyawan dengan role Guru BK. <a href="../../karyawan/" class="underline font-bold text-rose-800">Atur Role di Data Karyawan</a></span>`;
+          }
+
+          let optHtml = '';
+          if (bkEmployees.length > 0) {
+            optHtml = '<option value="">-- Pilih Guru BK --</option>' +
+              bkEmployees.map(emp => {
+                return `<option value="${emp.name}" data-nip="${emp.nip || '-'}">${emp.name} ⭐ (Guru BK) - NIP: ${emp.nip || '-'}</option>`;
+              }).join('');
+          } else {
+            optHtml = '<option value="">-- Belum ada personil ber-role Guru BK --</option>';
+          }
+
+          if (selectRekap) selectRekap.innerHTML = optHtml;
+          if (selectModal) selectModal.innerHTML = optHtml;
+        }
+      } catch (e) {
+        console.warn('Gagal load daftar guru:', e);
+      }
+    }
+
+    function handleRekapTeacherSelect(name) {
+      const inputNip = document.getElementById('rekap-teacher-nip');
+      if (!name) {
+        if (inputNip) inputNip.value = '';
+        currentRecord.teacherName = '';
+        currentRecord.teacherNip = '-';
+        updateActiveSessionDisplay();
+        return;
+      }
+      const emp = bkEmployees.find(e => e.name === name) || dbEmployees.find(e => e.name === name);
+      const nip = emp ? (emp.nip || '-') : '-';
+      if (inputNip) inputNip.value = nip;
+      currentRecord.teacherName = name;
+      currentRecord.teacherNip = nip;
+      updateActiveSessionDisplay();
+    }
+
+    function updateSelectedTypeStyle(type) {
+      ['supervisi_bk', 'telaah_rpl', 'coaching_bk'].forEach(t => {
+        const card = document.getElementById(`card-type-${t}`);
+        if (!card) return;
+        if (t === type) {
+          if (t === 'supervisi_bk') card.className = 'p-3.5 rounded-2xl border-2 border-teal-500 bg-teal-50/50 hover:bg-teal-50 cursor-pointer flex items-start gap-3 transition';
+          else if (t === 'telaah_rpl') card.className = 'p-3.5 rounded-2xl border-2 border-indigo-500 bg-indigo-50/50 hover:bg-indigo-50 cursor-pointer flex items-start gap-3 transition';
+          else if (t === 'coaching_bk') card.className = 'p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50/50 hover:bg-amber-50 cursor-pointer flex items-start gap-3 transition';
+        } else {
+          card.className = 'p-3.5 rounded-2xl border-2 border-slate-200 hover:border-slate-300 bg-white cursor-pointer flex items-start gap-3 transition';
+        }
+      });
+    }
+
+    function startSupervisionFromRekap() {
+      const teacherName = document.getElementById('rekap-teacher-name-manual')?.value.trim() || document.getElementById('rekap-teacher-select')?.value;
+      if (!teacherName) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Pilih Guru BK',
+          text: 'Silakan pilih atau ketik nama Guru BK terlebih dahulu sebelum membuka instrumen supervisi.',
+          confirmButtonColor: '#0d9488'
+        });
+        return;
+      }
+
+      const emp = dbEmployees.find(e => e.name === teacherName);
+      const supType = document.querySelector('input[name="rekap_sup_type"]:checked')?.value || 'supervisi_bk';
+      const targetClass = document.getElementById('rekap-target-class')?.value.trim() || 'Semua Kelas Binaan';
+      const supDate = document.getElementById('rekap-supervision-date')?.value || new Date().toISOString().split('T')[0];
+
+      currentRecord.id = currentRecord.id || ('BK-' + Date.now() + '-' + Math.floor(Math.random() * 900 + 100));
+      currentRecord.teacherName = teacherName;
+      currentRecord.teacherNip = emp ? (emp.nip || '-') : (document.getElementById('rekap-teacher-nip')?.value || '-');
+      currentRecord.targetClass = targetClass;
+      currentRecord.supervisionDate = supDate;
+      currentRecord.supervisionType = supType;
+
+      updateActiveSessionDisplay();
+
+      // Jump directly to the chosen supervision type tab
+      if (supType === 'telaah_rpl') {
+        switchTab('tahap2');
+      } else if (supType === 'coaching_bk') {
+        switchTab('tahap3');
+      } else {
+        switchTab('tahap1');
+      }
+    }
+
+    function updateActiveSessionDisplay() {
+      const hasTeacher = (currentRecord.teacherName && currentRecord.teacherName.trim() !== '' && currentRecord.teacherName !== 'Guru BK' && currentRecord.teacherName !== '-- Pilih Guru BK --');
+
+      // Update Rekap Active Session Badge
+      const rekapBadge = document.getElementById('rekap-active-session-badge');
+      if (rekapBadge) {
+        if (hasTeacher) {
+          rekapBadge.className = 'flex items-center gap-2 p-2 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 text-xs font-semibold';
+          rekapBadge.innerHTML = `
+            <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse"></span>
+            <span>Sesi Aktif: <b>${currentRecord.teacherName}</b></span>
+            <button type="button" onclick="resumeActiveSession()" class="ml-1 px-2.5 py-1 bg-teal-600 text-white rounded-lg text-[10px] font-bold hover:bg-teal-700">Lanjutkan</button>
+          `;
+        } else {
+          rekapBadge.className = 'hidden';
+          rekapBadge.innerHTML = '';
+        }
+      }
+
+      // Session banner HTML template for Tahap 1, 2, 3
+      const makeBannerHtml = (accentTheme) => {
+        if (!hasTeacher) {
+          return `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs bg-amber-50 border border-amber-300 rounded-xl p-3.5 text-amber-900">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-amber-600 text-xl flex-shrink-0">warning</span>
+                <div>
+                  <p class="font-bold text-amber-950">Identitas Guru BK Belum Diisi</p>
+                  <p class="text-[11px] text-amber-800">Kepala Sekolah hanya bisa menyimpan hasil supervisi jika sudah mengisi identitas guru BK di awal pada laman Rekap &amp; Jadwal.</p>
+                </div>
+              </div>
+              <button type="button" onclick="switchTab('rekap')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow-xs flex-shrink-0 flex items-center gap-1.5 transition">
+                <span class="material-symbols-outlined text-sm">edit_calendar</span>
+                <span>Isi di Rekap &amp; Jadwal</span>
+              </button>
+            </div>
+          `;
+        }
+
+        const typeLabels = {
+          'supervisi_bk': '1. Supervisi Pelaksanaan & Adm BK',
+          'telaah_rpl': '2. Telaah Dokumen RPL BK',
+          'coaching_bk': '3. Coaching BK (TIRTA & Refleksi)',
+          'semua': 'Semua Jenis (Siklus Lengkap)'
+        };
+
+        return `
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-xs">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm">
+                  <span class="material-symbols-outlined text-base">person</span>
+                </span>
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Guru BK Terpilih</span>
+                  <span class="font-bold text-sm text-slate-900">${currentRecord.teacherName}</span>
+                </div>
+              </div>
+
+              <div class="border-l border-slate-200 pl-4 hidden sm:block">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">NIP Guru</span>
+                <span class="font-semibold text-slate-700">${currentRecord.teacherNip || '-'}</span>
+              </div>
+
+              <div class="border-l border-slate-200 pl-4 hidden md:block">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Kelas Binaan</span>
+                <span class="font-semibold text-slate-700">${currentRecord.targetClass || 'Semua Kelas Binaan'}</span>
+              </div>
+
+              <div class="border-l border-slate-200 pl-4">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Tanggal Supervisi</span>
+                <span class="font-semibold text-slate-700">${currentRecord.supervisionDate || '-'}</span>
+              </div>
+
+              <div class="border-l border-slate-200 pl-4">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Jenis Supervisi</span>
+                <span class="font-bold text-teal-800 bg-teal-100/70 px-2.5 py-0.5 rounded-full border border-teal-200 text-[11px] inline-block mt-0.5">
+                  ${typeLabels[currentRecord.supervisionType] || currentRecord.supervisionType}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <button type="button" onclick="switchTab('rekap')" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">edit_calendar</span>
+                <span>Ubah di Rekap &amp; Jadwal</span>
+              </button>
+            </div>
+          </div>
+        `;
+      };
+
+      const c1 = document.getElementById('session-identity-card-t1');
+      if (c1) c1.innerHTML = makeBannerHtml('teal');
+
+      const c2 = document.getElementById('session-identity-card-t2');
+      if (c2) c2.innerHTML = makeBannerHtml('indigo');
+
+      const c3 = document.getElementById('session-identity-card-t3');
+      if (c3) c3.innerHTML = makeBannerHtml('amber');
+    }
+
+    function resumeActiveSession() {
+      const type = currentRecord.supervisionType || 'supervisi_bk';
+      if (type === 'telaah_rpl') switchTab('tahap2');
+      else if (type === 'coaching_bk') switchTab('tahap3');
+      else switchTab('tahap1');
+    }
+
+    function handleSupervisionTypeChange(type) {
+      currentRecord.supervisionType = type;
+    }
+
+    async function loadAllSupervisiRecords() {
+      if (!window.KS_BK_MANAGER) return;
+      const year = currentRecord.academicYear;
+      const sem = currentRecord.semester;
+
+      allSupervisiRecords = await window.KS_BK_MANAGER.fetchRecords(year, sem);
+      renderRekapTable();
+      updateKpiStats();
+    }
+
+    function getSupervisionTypeBadge(type) {
+      switch (type) {
+        case 'supervisi_bk':
+          return `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-teal-100 text-teal-800 border border-teal-200">Supervisi Pelaksanaan &amp; Adm</span>`;
+        case 'telaah_rpl':
+          return `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-800 border border-indigo-200">Telaah Dokumen RPL</span>`;
+        case 'coaching_bk':
+          return `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200">Coaching BK (TIRTA)</span>`;
+        default:
+          return `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 border border-purple-200">Semua Jenis (Lengkap)</span>`;
+      }
+    }
+
+    function updateKpiStats() {
+      const total = allSupervisiRecords.length;
+      document.getElementById('kpi-total-bk').innerText = `${total} Guru`;
+
+      if (total === 0) {
+        document.getElementById('kpi-avg-supervisi').innerText = '0.0%';
+        document.getElementById('kpi-avg-rpl').innerText = '0.0%';
+        document.getElementById('kpi-school-predicate').innerText = '—';
+        return;
+      }
+
+      let sumSup = 0, countSup = 0;
+      let sumRpl = 0, countRpl = 0;
+
+      allSupervisiRecords.forEach(r => {
+        if (r.supervisiScore?.percentage) {
+          sumSup += r.supervisiScore.percentage;
+          countSup++;
+        }
+        if (r.rplScore?.percentage) {
+          sumRpl += r.rplScore.percentage;
+          countRpl++;
+        }
+      });
+
+      const avgSup = countSup > 0 ? Math.round((sumSup / countSup) * 10) / 10 : 0;
+      const avgRpl = countRpl > 0 ? Math.round((sumRpl / countRpl) * 10) / 10 : 0;
+      const composite = Math.max(avgSup, avgRpl);
+
+      document.getElementById('kpi-avg-supervisi').innerText = `${avgSup}%`;
+      document.getElementById('kpi-avg-rpl').innerText = `${avgRpl}%`;
+
+      let pred = 'Kurang (D)';
+      if (composite >= 86) pred = 'Amat Baik (A)';
+      else if (composite >= 71) pred = 'Baik (B)';
+      else if (composite >= 56) pred = 'Cukup (C)';
+
+      document.getElementById('kpi-school-predicate').innerText = pred;
+    }
+
+    function renderRekapTable() {
+      const tbody = document.getElementById('table-rekap-body');
+      if (!tbody) return;
+
+      if (allSupervisiRecords.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-12 text-center text-slate-400">
+              <span class="material-symbols-outlined text-4xl block mb-2 text-slate-300">psychology_alt</span>
+              <p class="font-bold text-slate-600">Belum ada data supervisi Guru BK untuk periode ini.</p>
+              <p class="text-[11px] text-slate-400 mt-1">Klik tombol "+ Mulai Supervisi Guru BK Baru" di atas untuk memulai evaluasi.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allSupervisiRecords.map(r => {
+        const type = r.supervisionType || 'supervisi_bk';
+        let mainScoreText = '—';
+        let mainPredicate = '—';
+
+        if (type === 'supervisi_bk' && r.supervisiScore) {
+          mainScoreText = `${r.supervisiScore.percentage}%`;
+          mainPredicate = r.supervisiScore.predicate;
+        } else if (type === 'telaah_rpl' && r.rplScore) {
+          mainScoreText = `${r.rplScore.percentage}%`;
+          mainPredicate = r.rplScore.predicate;
+        } else if (type === 'coaching_bk') {
+          mainScoreText = 'Coaching Selesai';
+          mainPredicate = 'TIRTA Terpenuhi';
+        } else {
+          mainScoreText = `${r.supervisiScore?.percentage || 0}%`;
+          mainPredicate = r.supervisiScore?.predicate || 'Baik';
+        }
+
+        const isReflectionDone = (r.reflectionStatus === 'selesai' || (r.refleksiScore && r.refleksiScore.average > 0));
+        const reflectionBadge = isReflectionDone
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center gap-1"><i class="fa-solid fa-check"></i> Telah Diisi (${r.refleksiScore?.average || '3.5'}/4)</span>`
+          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center gap-1"><i class="fa-solid fa-clock"></i> Menunggu Guru BK</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-900">${r.teacherName || 'Guru BK'}</div>
+              <div class="text-[11px] text-slate-400">NIP: ${r.teacherNip || '-'} • ${r.targetClass || 'Semua Kelas'}</div>
+            </td>
+            <td class="py-3.5 px-4">
+              <div class="font-medium text-slate-700">${r.supervisionDate || '-'}</div>
+              <div class="text-[10px] text-slate-400">${r.academicYear || ''} (${r.semester || ''})</div>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              ${getSupervisionTypeBadge(type)}
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="font-bold text-teal-800">${mainScoreText}</span>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="text-xs font-semibold text-slate-700">${mainPredicate}</span>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              ${reflectionBadge}
+            </td>
+            <td class="py-3.5 px-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button type="button" onclick="editSupervisionRecord('${r.id}')" class="p-1.5 rounded-lg text-slate-600 hover:text-teal-700 hover:bg-teal-50 font-bold" title="Lanjutkan / Edit Supervisi">
+                  <span class="material-symbols-outlined text-base">edit_document</span>
+                </button>
+                <button type="button" onclick="viewReport('${r.id}')" class="p-1.5 rounded-lg text-teal-700 hover:text-teal-900 hover:bg-teal-50 font-bold" title="Lihat Lembar Laporan Hasil">
+                  <span class="material-symbols-outlined text-base">description</span>
+                </button>
+                <button type="button" onclick="deleteSupervisionRecord('${r.id}')" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 font-bold" title="Hapus Berkas">
+                  <span class="material-symbols-outlined text-base">delete</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ==================== TAB 2: JENIS 1 - SUPERVISI BK (UNIFIED SECTION C) ====================
+    function buildTahap1IndicatorsDOM() {
+      const container = document.getElementById('tahap1-indicators-container');
+      if (!container || !window.KS_BK_MANAGER) return;
+
+      const indicators = window.KS_BK_MANAGER.getSupervisiIndicators();
+      if (indicators.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400">Tidak ada butir indikator aktif.</div>`;
+        return;
+      }
+
+      // Group strictly by Main Section
+      const sections = {};
+      indicators.forEach(ind => {
+        let sec = ind.section || 'A. PERSIAPAN PENYUSUNAN PROGRAM BK';
+        // Normalize any remnant sub-tags into unified main Section C or D
+        if (sec.includes('MELAKSANAKAN KEGIATAN BK') || sec.includes('PELAKSANAAN LAYANAN')) {
+          sec = 'C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING';
+        } else if (sec.includes('DUKUNGAN SISTEM')) {
+          sec = 'D. DUKUNGAN SISTEM';
+        }
+        if (!sections[sec]) sections[sec] = [];
+        sections[sec].push(ind);
+      });
+
+      let html = '';
+      Object.keys(sections).forEach(secTitle => {
+        const isSectionC = secTitle.includes('C. PELAKSANAAN LAYANAN');
+        const isSectionD = secTitle.includes('D. DUKUNGAN SISTEM');
+
+        html += `
+          <div class="rounded-2xl border ${isSectionC ? 'border-teal-300 shadow-sm' : 'border-slate-200'} overflow-hidden bg-white">
+            <!-- Main Section Header -->
+            <div class="${isSectionC ? 'bg-gradient-to-r from-teal-900 to-slate-900 text-white' : 'bg-slate-100 text-slate-800'} p-4 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-lg ${isSectionC ? 'bg-teal-500 text-white' : 'bg-slate-300 text-slate-800'} flex items-center justify-center font-black text-xs">
+                  ${secTitle.charAt(0)}
+                </span>
+                <h4 class="font-bold text-xs sm:text-sm tracking-wide uppercase">${secTitle}</h4>
+              </div>
+              <span class="text-[11px] font-bold ${isSectionC ? 'bg-teal-800 text-teal-200' : 'bg-white text-slate-600'} px-2.5 py-0.5 rounded-full border border-teal-500/30">
+                ${sections[secTitle].length} Indikator
+              </span>
+            </div>
+
+            <div class="p-4 sm:p-6 space-y-6">
+        `;
+
+        // Group into Subsections within this section
+        const subGroups = {};
+        sections[secTitle].forEach(ind => {
+          let sub = ind.subsection;
+          if (!sub) {
+            if (ind.number >= 8 && ind.number <= 12) sub = 'C.1 Layanan Dasar';
+            else if (ind.number === 13) sub = 'C.2 Layanan Peminatan dan Perencanaan Individual';
+            else if (ind.number >= 14 && ind.number <= 15) sub = 'C.3 Layanan Responsif';
+            else if (ind.number === 16) sub = 'C.4 Bahan dan Sumber Pendukung Layanan BK';
+            else if (ind.number >= 17 && ind.number <= 21) sub = 'D.1 Kegiatan Administrasi';
+            else if (ind.number === 22) sub = 'D.2 Kegiatan Kolaborasi';
+            else if (ind.number >= 23 && ind.number <= 27) sub = 'D.3 Kegiatan Tambahan & Pengembangan Profesi';
+            else sub = secTitle;
+          }
+          if (!subGroups[sub]) subGroups[sub] = [];
+          subGroups[sub].push(ind);
+        });
+
+        Object.keys(subGroups).forEach(subTitle => {
+          const showSubHeader = (subTitle !== secTitle);
+          if (showSubHeader) {
+            html += `
+              <div class="pt-2 border-t border-slate-100 first:border-t-0 first:pt-0">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
+                  <h5 class="font-bold text-xs text-teal-950 uppercase tracking-wider">${subTitle}</h5>
+                  <span class="text-[10px] text-teal-700 bg-teal-50 font-semibold px-2 py-0.5 rounded-md border border-teal-200">
+                    ${subGroups[subTitle].length} Butir
+                  </span>
+                </div>
+                <div class="space-y-3">
+            `;
+          } else {
+            html += `<div class="space-y-3">`;
+          }
+
+          subGroups[subTitle].forEach(ind => {
+            const theme = window.KS_BK_MANAGER.getCategoryTheme(ind.category);
+            const score = currentRecord.tahap1Scores[ind.number] !== undefined ? currentRecord.tahap1Scores[ind.number] : 0;
+            const note = currentRecord.tahap1Notes[ind.number] || '';
+
+            html += `
+              <div class="p-4 rounded-xl border border-slate-200 hover:border-teal-400 transition-all bg-white space-y-3" id="ind-card-${ind.number}">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="w-6 h-6 rounded-full bg-teal-50 text-teal-900 border border-teal-200 text-[11px] font-black flex items-center justify-center flex-shrink-0">
+                        ${ind.number}
+                      </span>
+                      <h5 class="text-xs font-bold text-slate-800 leading-snug">${ind.title}</h5>
+                    </div>
+                    <p class="text-[11px] text-slate-500 pl-8 leading-relaxed">${ind.description || ''}</p>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${theme.badge} border flex-shrink-0">
+                    ${ind.category}
+                  </span>
+                </div>
+
+                <!-- Rating Radio Scale 0-5 -->
+                <div class="pl-8 pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-[11px] font-bold text-slate-400 mr-1">Skor:</span>
+                    ${[0, 1, 2, 3, 4, 5].map(v => `
+                      <label class="cursor-pointer">
+                        <input type="radio" name="t1_score_${ind.number}" value="${v}" ${score === v ? 'checked' : ''} onchange="updateTahap1Score(${ind.number}, ${v})" class="peer sr-only" />
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold border peer-checked:bg-teal-600 peer-checked:text-white peer-checked:border-teal-600 border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition inline-block text-center min-w-[32px]">
+                          ${v}
+                        </span>
+                      </label>
+                    `).join('')}
+                    <span class="text-[10px] text-slate-400 ml-2 hidden lg:inline-block">
+                      (0: Tdk Ada • 3: Cukup • 4: Baik • 5: Amat Baik)
+                    </span>
+                  </div>
+
+                  <!-- Note input -->
+                  <div class="w-full sm:w-1/3">
+                    <input type="text" id="t1_note_${ind.number}" value="${note.replace(/"/g, '&quot;')}" onchange="updateTahap1Note(${ind.number}, this.value)" placeholder="Catatan bukti / temuan khusus..." class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] focus:bg-white focus:border-teal-400 outline-none" />
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          html += `</div>`; // Close subGroup div
+          if (showSubHeader) html += `</div>`;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      recalculateTahap1();
+    }
+
+    function updateTahap1Score(indNumber, score) {
+      currentRecord.tahap1Scores[indNumber] = score;
+      recalculateTahap1();
+    }
+
+    function updateTahap1Note(indNumber, note) {
+      currentRecord.tahap1Notes[indNumber] = note;
+    }
+
+    function fillAllScores(val) {
+      const indicators = window.KS_BK_MANAGER.getSupervisiIndicators();
+      indicators.forEach(ind => {
+        currentRecord.tahap1Scores[ind.number] = val;
+      });
+      buildTahap1IndicatorsDOM();
+    }
+
+    function recalculateTahap1() {
+      const res = window.KS_BK_MANAGER.calculateSupervisiScore(currentRecord.tahap1Scores);
+      currentRecord.supervisiScore = res;
+
+      document.getElementById('t1-score-earned').innerText = res.totalEarned;
+      document.getElementById('t1-score-max').innerText = `/ ${res.totalMax}`;
+      document.getElementById('t1-score-percentage').innerText = `${res.percentage}%`;
+      document.getElementById('t1-score-predicate').innerText = res.predicate;
+    }
+
+    async function runAiAutoScoreTahap1() {
+      const notes = document.getElementById('ai-tahap1-notes').value.trim();
+      if (!notes) {
+        Swal.fire({ icon: 'info', title: 'Tulis Catatan Terlebih Dahulu', text: 'Masukkan catatan temuan hasil observasi atau telaah dokumen agar AI dapat menilai.' });
+        return;
+      }
+
+      const btn = document.getElementById('btn-ai-tahap1');
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Sedang Menganalisis...</span>`;
+      btn.disabled = true;
+
+      try {
+        const indicators = window.KS_BK_MANAGER.getSupervisiIndicators();
+        const result = await window.KS_BK_AI.autoScoreSupervisi(notes, indicators);
+
+        if (result && result.scores) {
+          Object.keys(result.scores).forEach(num => {
+            currentRecord.tahap1Scores[num] = result.scores[num];
+            if (result.notes && result.notes[num]) {
+              currentRecord.tahap1Notes[num] = result.notes[num];
+            }
+          });
+          buildTahap1IndicatorsDOM();
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Penilaian AI Selesai!',
+            html: `<p class="text-xs text-slate-600 mb-2">${result.overallSummary}</p><span class="text-[10px] text-teal-800 font-bold uppercase">Sumber: ${result.source === 'gemini' ? 'Google Gemini API' : 'Smart Heuristic Offline'}</span>`,
+            timer: 3000
+          });
+        }
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Gagal Menilai AI', text: err.message });
+      } finally {
+        btn.innerHTML = `<span class="material-symbols-outlined text-sm">auto_fix_high</span><span>Analisis &amp; Beri Skor Otomatis</span>`;
+        btn.disabled = false;
+      }
+    }
+
+    async function handleAiSynthesizeSupervisiBk() {
+      const btn = document.getElementById('btn-ai-synthesize-t1');
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>AI Menyusun...</span>`;
+      btn.disabled = true;
+
+      try {
+        const res = await window.KS_BK_AI.synthesizeSupervisiBkConclusions(
+          currentRecord,
+          currentRecord.tahap1Scores,
+          window.KS_BK_MANAGER.getSupervisiIndicators()
+        );
+
+        if (res) {
+          if (res.kesimpulan) document.getElementById('t1-kesimpulan').value = currentRecord.supervisiKesimpulan = res.kesimpulan;
+          if (res.rekomendasi) document.getElementById('t1-rekomendasi').value = currentRecord.supervisiRekomendasi = res.rekomendasi;
+          if (res.tindakLanjut) document.getElementById('t1-tindak-lanjut').value = currentRecord.supervisiTindakLanjut = res.tindakLanjut;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Kesimpulan & Rekomendasi Disusun!',
+            text: 'AI berhasil merumuskan kesimpulan, rekomendasi, dan rencana tindak lanjut memadukan data penilaian.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      } catch (err) {
+        Swal.fire('Gagal', err.message, 'error');
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    // ==================== TAB 3: JENIS 2 - TELAAH DOKUMEN RPL BK ====================
+    function switchRplInputTab(tabName) {
+      _currentRplInputTab = tabName;
+      ['upload', 'url', 'paste'].forEach(t => {
+        const btn = document.getElementById(`rplInputTab-${t}`);
+        const panel = document.getElementById(`rplInputPanel-${t}`);
+        if (t === tabName) {
+          if (btn) btn.className = 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-indigo-900 shadow-sm';
+          if (panel) panel.classList.remove('hidden');
+        } else {
+          if (btn) btn.className = 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition text-indigo-200 hover:bg-white/10';
+          if (panel) panel.classList.add('hidden');
+        }
+      });
+    }
+
+    function handleRplFileSelect(input) {
+      const file = input.files?.[0];
+      if (!file) return;
+      _selectedRplFile = file;
+      clearExtractedRplText();
+
+      const preview = document.getElementById('rplFilePreview');
+      const nameEl = document.getElementById('rplFileName');
+      const sizeEl = document.getElementById('rplFileSize');
+      const iconEl = document.getElementById('rplFileIcon');
+
+      if (preview && nameEl && sizeEl) {
+        nameEl.textContent = file.name;
+        const sizeKb = (file.size / 1024).toFixed(1);
+        sizeEl.textContent = sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(2)} MB` : `${sizeKb} KB`;
+
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (iconEl) {
+          if (ext === 'pdf') iconEl.className = 'fa-solid fa-file-pdf text-2xl text-rose-400';
+          else if (ext === 'docx') iconEl.className = 'fa-solid fa-file-word text-2xl text-blue-400';
+          else iconEl.className = 'fa-solid fa-file-lines text-2xl text-slate-300';
+        }
+        preview.classList.remove('hidden');
+      }
+    }
+
+    function clearRplFile() {
+      _selectedRplFile = null;
+      const input = document.getElementById('rplFileInput');
+      if (input) input.value = '';
+      const preview = document.getElementById('rplFilePreview');
+      if (preview) preview.classList.add('hidden');
+      clearExtractedRplText();
+    }
+
+    async function triggerRplFileExtract() {
+      if (!_selectedRplFile) {
+        Swal.fire('Perhatian', 'Pilih file terlebih dahulu.', 'warning');
+        return;
+      }
+      const btn = document.getElementById('btnExtractRplFile');
+      const origHtml = btn?.innerHTML;
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Mengekstrak...</span>';
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('rpp_file', _selectedRplFile);
+
+        const baseUrl = window.KS_BK_MANAGER.getBaseUrl();
+        const resp = await fetch(baseUrl + 'api.php?action=parse_rpp_file', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await resp.json();
+
+        if (data.success && data.text) {
+          _extractedRplText = data.text;
+          showExtractedRplPreview(data.text, `File "${_selectedRplFile.name}" berhasil diekstrak`);
+          Swal.fire({
+            icon: 'success',
+            title: 'Teks RPL Berhasil Diekstrak!',
+            text: `${data.chars || data.text.length} karakter berhasil diekstrak dari ${_selectedRplFile.name}. Siap dianalisis AI.`,
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire('Gagal Mengekstrak', data.error || 'Terjadi kesalahan saat mengekstrak teks file.', 'error');
+        }
+      } catch (err) {
+        Swal.fire('Kesalahan Jaringan', 'Gagal menghubungi server: ' + err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      }
+    }
+
+    async function triggerRplUrlFetch() {
+      const urlInput = document.getElementById('rplUrlInput');
+      const url = urlInput?.value?.trim();
+      if (!url) {
+        Swal.fire('Perhatian', 'Masukkan URL terlebih dahulu.', 'warning');
+        return;
+      }
+
+      const statusEl = document.getElementById('rplUrlStatus');
+      const btn = document.getElementById('btnFetchRplUrl');
+      const origHtml = btn?.innerHTML;
+
+      if (statusEl) {
+        statusEl.className = 'text-xs rounded-lg px-3 py-2 border bg-amber-900/40 border-amber-500/40 text-amber-200';
+        statusEl.textContent = 'Mengambil dokumen dari URL...';
+        statusEl.classList.remove('hidden');
+      }
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Mengambil...</span>';
+      }
+
+      try {
+        const baseUrl = window.KS_BK_MANAGER.getBaseUrl();
+        const resp = await fetch(baseUrl + 'api.php?action=parse_rpp_file', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        const data = await resp.json();
+
+        if (data.success && data.text) {
+          _extractedRplText = data.text;
+          showExtractedRplPreview(data.text, 'Teks berhasil diambil dari URL Google Docs');
+          if (statusEl) {
+            statusEl.className = 'text-xs rounded-lg px-3 py-2 border bg-emerald-900/40 border-emerald-500/40 text-emerald-200';
+            statusEl.textContent = `✓ Berhasil: ${data.text.length} karakter diambil dari URL.`;
+          }
+        } else {
+          if (statusEl) {
+            statusEl.className = 'text-xs rounded-lg px-3 py-2 border bg-rose-900/40 border-rose-500/40 text-rose-300';
+            statusEl.textContent = '✗ Gagal: ' + (data.error || 'Tidak dapat mengambil isi dokumen.');
+          }
+          Swal.fire('Gagal Mengambil URL', data.error || 'Pastikan link Google Docs dibagikan publik.', 'error');
+        }
+      } catch (err) {
+        if (statusEl) {
+          statusEl.className = 'text-xs rounded-lg px-3 py-2 border bg-rose-900/40 border-rose-500/40 text-rose-300';
+          statusEl.textContent = '✗ Kesalahan: ' + err.message;
+        }
+        Swal.fire('Kesalahan Jaringan', err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      }
+    }
+
+    function showExtractedRplPreview(text, label) {
+      const preview = document.getElementById('rplExtractedPreview');
+      const labelEl = document.getElementById('rplExtractedLabel');
+      const charsEl = document.getElementById('rplExtractedChars');
+      const snippetEl = document.getElementById('rplExtractedSnippet');
+      if (!preview) return;
+
+      if (labelEl) labelEl.textContent = label || 'Teks berhasil diekstrak';
+      if (charsEl) charsEl.textContent = `${text.length.toLocaleString()} karakter · Siap untuk ditelaah AI`;
+      if (snippetEl) snippetEl.textContent = text.substring(0, 500) + (text.length > 500 ? '...' : '');
+      preview.classList.remove('hidden');
+    }
+
+    function clearExtractedRplText() {
+      _extractedRplText = '';
+      const preview = document.getElementById('rplExtractedPreview');
+      if (preview) preview.classList.add('hidden');
+    }
+
+    function getActiveRplText() {
+      if (_extractedRplText && _extractedRplText.trim()) {
+        return _extractedRplText.trim();
+      }
+      const pasteEl = document.getElementById('telaahPastedRplText');
+      if (pasteEl && pasteEl.value.trim()) {
+        return pasteEl.value.trim();
+      }
+      return '';
+    }
+
+    function loadSampleRplText() {
+      const sample = `RENCANA PELAKSANAAN LAYANAN (RPL) BIMBINGAN KLASIKAL
+SEMESTER GANJIL TAHUN AJARAN 2026/2027
+
+A. IDENTITAS LAYANAN
+1. Sekolah: SMP BRIGHTON
+2. Sasaran Layanan: Kelas VIII-A s.d VIII-E (Fase D)
+3. Bidang Layanan: Belajar & Pengembangan Diri
+4. Komponen Layanan: Layanan Dasar
+5. Topik Layanan: Manajemen Waktu dan Resiliensi Diri Menghadapi Ujian
+6. Alokasi Waktu: 2 x 40 Menit (1 Pertemuan)
+
+B. TUJUAN LAYANAN
+1. Peserta didik mampu menganalisis jadwal aktivitas harian dan pola penggunaan waktu secara mandiri.
+2. Penguatan Literasi: Peserta didik mampu membaca dan merefleksikan artikel pendek tentang resiliensi belajar menghadapi tekanan ujian.
+3. Penguatan Numerasi: Peserta didik mampu membaca data tabel hasil asesmen diri (persentase waktu produktif vs non-produktif) untuk merumuskan target belajar.
+4. Nilai Karakter: Mandiri, bernalar kritis, dan mindful (kesadaran diri penuh).
+
+C. LANGKAH-LANGKAH KEGIATAN LAYANAN
+1. Tahap Awal (10 Menit):
+   - Guru BK membuka dengan salam hangat, presensi, dan teknik pernapasan STOP (Mindful).
+   - Menyampaikan pertanyaan pemantik: "Pernahkah kalian merasa 24 jam sehari terasa sangat cepat namun tugas belum selesai? Apa yang sebenarnya terjadi?"
+   - Menjelaskan tujuan dan asas kerahasiaan dalam bimbingan.
+
+2. Tahap Inti (60 Menit - Meaningful & Joyful):
+   - Peserta didik mengamati grafik infografik "Matriks Eisenhower: Penting vs Mendesak".
+   - Aktivitas Numerasi: Setiap siswa menghitung rasio waktu belajar berbanding waktu bermain gawai menggunakan lembar kerja berangka sederhana.
+   - Aktivitas Literasi: Siswa membaca teks narasi pendek tentang kegagalan dan resiliensi tokoh ilmuwan, lalu menuliskan 1 hikmah pada sticky note.
+   - Diskusi interaktif kelompok berpasangan untuk merumuskan jadwal prioritas mingguan.
+
+3. Tahap Penutup (10 Menit):
+   - Siswa mengisi jurnal refleksi singkat 3 menit: "Satu hal penting yang saya pelajari tentang waktu saya hari ini."
+   - Guru BK merangkum, mengapresiasi keaktifan, dan menutup dengan doa bersama.
+
+D. MEDIA DAN ALAT BANTU
+- Media multimodal: Lembar Kerja Analisis Waktu (berbasis tabel data), tayangan slide infografik, dan kartu refleksi.
+
+E. EVALUASI DAN TINDAK LANJUT
+1. Evaluasi Proses: Mengamati antusiasme, interaksi aktif, dan keterbukaan siswa.
+2. Evaluasi Hasil: Mengisi lembar angket pemahaman diri setelah layanan klasikal.
+3. Tindak Lanjut: Konseling kelompok bagi siswa dengan skor manajemen waktu sangat rendah.`;
+
+      const textarea = document.getElementById('telaahPastedRplText');
+      if (textarea) {
+        textarea.value = sample;
+        switchRplInputTab('paste');
+        document.getElementById('t2-topic').value = 'Manajemen Waktu dan Resiliensi Diri Menghadapi Ujian';
+        document.getElementById('t2-service-type').value = 'Bimbingan Klasikal';
+        document.getElementById('t2-duration').value = '2 x 40 Menit';
+        Swal.fire({
+          icon: 'info',
+          title: 'Contoh RPL BK Dimuat',
+          text: 'Naskah contoh RPL Layanan Klasikal telah ditempelkan di tab "Ketik / Tempel". Klik tombol "Analisis RPL dengan AI Gemini Sekarang" untuk memeriksa indikator secara otomatis.',
+          timer: 2800,
+          showConfirmButton: false
+        });
+      }
+    }
+
+    async function triggerAutoAnalyzeRpl() {
+      const rplText = getActiveRplText();
+      if (!rplText) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Dokumen RPL Belum Tersedia',
+          html: `
+            <div class="text-sm text-left space-y-2">
+              <p>Sebelum menganalisis, lakukan salah satu opsi:</p>
+              <ul class="list-disc pl-5 space-y-1 text-slate-700">
+                <li><b>Unggah File:</b> Pilih file DOCX, PDF, atau TXT lalu klik "Ekstrak Teks"</li>
+                <li><b>Link / URL:</b> Tempel link Google Docs lalu klik "Ambil Teks"</li>
+                <li><b>Ketik / Tempel:</b> Tempelkan naskah RPL di tab Ketik / Tempel</li>
+              </ul>
+              <p class="mt-2 text-indigo-700">Atau klik <b>"Contoh Teks RPL BK Siap Uji"</b> untuk mencoba cepat.</p>
+            </div>
+          `
+        });
+        return;
+      }
+
+      const btn = document.getElementById('btnAutoAnalyzeRpl');
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Menganalisis 30 Indikator RPL dengan AI Gemini...</span>`;
+
+      try {
+        const teacherName = document.getElementById('t1-teacher-name')?.value || 'Guru BK';
+        const topic = document.getElementById('t2-topic')?.value || 'Layanan BK';
+        const criteria = window.KS_BK_MANAGER.getRplIndicators();
+
+        const analysis = await window.KS_BK_AI.analyzeRplTextWithGemini(rplText, {
+          teacherName,
+          topic,
+          criteria
+        });
+
+        if (analysis && analysis.scores) {
+          criteria.forEach(item => {
+            if (analysis.scores[item.number] !== undefined) {
+              currentRecord.tahap2Checklist[item.number] = parseInt(analysis.scores[item.number], 10);
+            }
+          });
+
+          // Category comments & Feedback fields
+          if (analysis.kesimpulan) document.getElementById('t2-kesimpulan').value = currentRecord.rplKesimpulan = analysis.kesimpulan;
+          if (analysis.rekomendasi) document.getElementById('t2-rekomendasi').value = currentRecord.rplRekomendasi = analysis.rekomendasi;
+          if (analysis.tindakLanjut) document.getElementById('t2-tindak-lanjut').value = currentRecord.rplTindakLanjut = analysis.tindakLanjut;
+
+          buildTahap2IndicatorsDOM();
+          recalculateTahap2();
+
+          const calc = window.KS_BK_MANAGER.calculateRplScore(currentRecord.tahap2Checklist);
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Telaah RPL AI Selesai!',
+            html: `
+              <div class="text-left text-xs space-y-2 mt-2">
+                <p><b>Model Analisis:</b> <span class="uppercase font-bold text-indigo-700">${analysis.source === 'gemini' ? 'Google Gemini Live AI' : 'Smart Pedagogical Heuristic AI'}</span></p>
+                <p><b>Butir Terpenuhi:</b> <span class="font-bold text-slate-800">${calc.totalEarned} / ${calc.totalMax}</span></p>
+                <p><b>Nilai Kelayakan:</b> <span class="text-base font-black text-indigo-700">${calc.percentage}%</span> (${calc.predicate})</p>
+                <div class="p-2.5 bg-indigo-50 rounded-lg border border-indigo-200 text-indigo-900 mt-2">
+                  Seluruh 30 butir kriteria telaah RPL, aspek A s.d F, catatan kritis, serta kesimpulan dan rekomendasi telah disusun otomatis.
+                </div>
+              </div>
+            `,
+            confirmButtonColor: '#4f46e5'
+          });
+        }
+      } catch (err) {
+        Swal.fire('Gagal Menelaah RPL', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+
+    function buildTahap2IndicatorsDOM() {
+      const container = document.getElementById('tahap2-indicators-container');
+      if (!container || !window.KS_BK_MANAGER) return;
+
+      const indicators = window.KS_BK_MANAGER.getRplIndicators();
+      if (indicators.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400">Tidak ada butir telaah RPL aktif.</div>`;
+        return;
+      }
+
+      const sections = {};
+      indicators.forEach(ind => {
+        const sec = ind.section || 'A. TUJUAN LAYANAN BK';
+        if (!sections[sec]) sections[sec] = [];
+        sections[sec].push(ind);
+      });
+
+      let html = '';
+      Object.keys(sections).forEach(secTitle => {
+        html += `
+          <div class="pt-4 border-t border-slate-200 first:border-t-0 first:pt-0">
+            <h4 class="font-bold text-xs uppercase tracking-wider text-indigo-900 bg-indigo-50/70 px-3.5 py-2 rounded-xl mb-3 border border-indigo-200/60">
+              ${secTitle}
+            </h4>
+            <div class="space-y-3">
+        `;
+
+        sections[secTitle].forEach(ind => {
+          const theme = window.KS_BK_MANAGER.getCategoryTheme(ind.category);
+          const val = (currentRecord.tahap2Checklist[ind.number] === 1 || currentRecord.tahap2Checklist[ind.number] === '1' || currentRecord.tahap2Checklist[ind.number] === true) ? 1 : 0;
+          const note = currentRecord.tahap2Notes[ind.number] || '';
+
+          html += `
+            <div class="p-4 rounded-2xl border border-slate-200 hover:border-indigo-300 transition-all bg-white space-y-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-800 text-[11px] font-black flex items-center justify-center flex-shrink-0">
+                      ${ind.number}
+                    </span>
+                    <h5 class="text-xs font-bold text-slate-800 leading-snug">${ind.title}</h5>
+                  </div>
+                  <p class="text-[11px] text-slate-500 pl-8 leading-relaxed">${ind.description || ''}</p>
+                </div>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${theme.badge} border flex-shrink-0">
+                  ${ind.category}
+                </span>
+              </div>
+
+              <!-- Ada / Tidak Ada Toggle & Note -->
+              <div class="pl-8 pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-bold text-slate-400">Keterpenuhan:</span>
+                  <button type="button" onclick="updateTahap2Check(${ind.number}, 1)" class="px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${val === 1 ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    <span>Ada (1)</span>
+                  </button>
+                  <button type="button" onclick="updateTahap2Check(${ind.number}, 0)" class="px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${val === 0 ? 'bg-rose-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                    <span class="material-symbols-outlined text-sm">cancel</span>
+                    <span>Tidak Ada (0)</span>
+                  </button>
+                </div>
+
+                <div class="w-full sm:w-1/2">
+                  <input type="text" id="t2_note_${ind.number}" value="${note.replace(/"/g, '&quot;')}" onchange="updateTahap2Note(${ind.number}, this.value)" placeholder="Keterangan / bukti fisik komponen RPL..." class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] focus:bg-white focus:border-indigo-400 outline-none" />
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      recalculateTahap2();
+    }
+
+    function updateTahap2Check(indNum, val) {
+      currentRecord.tahap2Checklist[indNum] = val;
+      buildTahap2IndicatorsDOM();
+    }
+
+    function updateTahap2Note(indNum, val) {
+      currentRecord.tahap2Notes[indNum] = val;
+    }
+
+    function fillAllRpl(val) {
+      const indicators = window.KS_BK_MANAGER.getRplIndicators();
+      indicators.forEach(ind => {
+        currentRecord.tahap2Checklist[ind.number] = val;
+      });
+      buildTahap2IndicatorsDOM();
+    }
+
+    function recalculateTahap2() {
+      const res = window.KS_BK_MANAGER.calculateRplScore(currentRecord.tahap2Checklist);
+      currentRecord.rplScore = res;
+
+      document.getElementById('t2-score-earned').innerText = res.totalEarned;
+      document.getElementById('t2-score-max').innerText = `/ ${res.totalMax}`;
+      document.getElementById('t2-score-percentage').innerText = `${res.percentage}%`;
+      document.getElementById('t2-score-predicate').innerText = res.predicate;
+    }
+
+    async function handleAiSynthesizeTelaahRpl() {
+      const btn = document.getElementById('btn-ai-synthesize-t2');
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>AI Menyusun...</span>`;
+      btn.disabled = true;
+
+      try {
+        const res = await window.KS_BK_AI.synthesizeTelaahRplConclusions(
+          currentRecord,
+          currentRecord.tahap2Checklist,
+          window.KS_BK_MANAGER.getRplIndicators()
+        );
+
+        if (res) {
+          if (res.kesimpulan) document.getElementById('t2-kesimpulan').value = currentRecord.rplKesimpulan = res.kesimpulan;
+          if (res.rekomendasi) document.getElementById('t2-rekomendasi').value = currentRecord.rplRekomendasi = res.rekomendasi;
+          if (res.tindakLanjut) document.getElementById('t2-tindak-lanjut').value = currentRecord.rplTindakLanjut = res.tindakLanjut;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Kesimpulan & Rekomendasi RPL Disusun!',
+            text: 'AI berhasil merumuskan kesimpulan, rekomendasi penyempurnaan, dan rencana tindak lanjut perbaikan RPL.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      } catch (err) {
+        Swal.fire('Gagal', err.message, 'error');
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    // ==================== TAB 4: JENIS 3 - COACHING BK (TIRTA MATCHING OBSERVASI) ====================
+    function buildTahap3TirtaDOM() {
+      const tbody = document.getElementById('coaching-tirta-table-body');
+      if (!tbody || !window.KS_BK_MANAGER) return;
+
+      const steps = window.KS_BK_MANAGER.getCoachingTirta();
+      const activeCats = window.KS_BK_MANAGER.getActiveCategoryNames();
+
+      tbody.innerHTML = steps.map((step, idx) => {
+        const savedNote = currentRecord.tahap3TirtaNotes[step.tahap] || '';
+        const aiRec = currentRecord.coachingAiRecommendations[step.tahap] || '';
+
+        return `
+          <tr class="hover:bg-slate-50/70 transition">
+            <td class="p-3 text-center font-bold text-slate-800 border-r border-slate-200 w-12 align-top">
+              ${idx + 1}
+            </td>
+            <td class="p-3.5 border-r border-slate-200 align-top space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 uppercase">${step.tahap}</span>
+                <span class="text-[10px] text-slate-400 font-semibold">${step.durasi}</span>
+              </div>
+              <p class="font-bold text-slate-800 leading-snug">${step.pertanyaan_dasar || '-'}</p>
+              
+              ${activeCats.includes('Deep Learning') && step.pertanyaan_dl ? `
+                <div class="p-2 rounded-lg bg-purple-50 text-[11px] text-purple-900 border border-purple-200 leading-relaxed">
+                  <span class="font-bold block text-[10px] text-purple-700 uppercase">Fokus Deep Learning:</span>
+                  ${step.pertanyaan_dl}
+                </div>
+              ` : ''}
+
+              ${activeCats.includes('Literasi Numerasi') && step.pertanyaan_litnum ? `
+                <div class="p-2 rounded-lg bg-amber-50 text-[11px] text-amber-900 border border-amber-200 leading-relaxed">
+                  <span class="font-bold block text-[10px] text-amber-700 uppercase">Fokus Literasi &amp; Numerasi:</span>
+                  ${step.pertanyaan_litnum}
+                </div>
+              ` : ''}
+
+              <p class="text-[10px] text-slate-400 italic pt-1 border-t border-slate-100">
+                Tujuan Coach: ${step.tujuan}
+              </p>
+            </td>
+            <td class="p-3.5 border-r border-slate-200 bg-teal-50/30 align-top">
+              <div class="p-2.5 rounded-xl bg-white border border-teal-200 text-teal-950 leading-relaxed shadow-xs min-h-[90px]" id="coaching_ai_rec_${idx}">
+                ${aiRec || '<span class="text-slate-400 italic">Klik "Bantu AI: Generate Rekomendasi Jawaban" di atas untuk menghasilkan respons guru yang diharapkan...</span>'}
+              </div>
+            </td>
+            <td class="p-3.5 align-top">
+              <textarea id="tirta_note_${idx}" rows="4" onchange="updateTirtaNote('${step.tahap}', this.value)" placeholder="Tuliskan catatan hasil percakapan coaching langsung dengan Guru BK..." class="w-full p-2.5 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none leading-relaxed text-slate-800 shadow-xs">${savedNote}</textarea>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      renderGapAnalysis();
+      updateReflectionStatusDisplay();
+    }
+
+    function updateTirtaNote(stepTitle, val) {
+      currentRecord.tahap3TirtaNotes[stepTitle] = val;
+    }
+
+    async function handleAiGenerateCoachingRecommendations() {
+      const btn = document.getElementById('btn-generate-coaching-ai');
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>AI Menyusun Rekomendasi...</span>`;
+      btn.disabled = true;
+
+      try {
+        const recs = await window.KS_BK_AI.generateCoachingRecommendations(currentRecord);
+        if (recs) {
+          currentRecord.coachingAiRecommendations = recs;
+          buildTahap3TirtaDOM();
+          Swal.fire({
+            icon: 'success',
+            title: 'Rekomendasi Jawaban AI Disusun!',
+            text: 'Draf jawaban rekomendatif untuk 6 tahap TIRTA telah berhasil ditampilkan pada Kolom 1.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      } catch (err) {
+        Swal.fire('Gagal', err.message, 'error');
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    async function handleAiSynthesizeCoachingBk() {
+      const btn = document.getElementById('btn-ai-synthesize-t3');
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>AI Menyusun...</span>`;
+      btn.disabled = true;
+
+      try {
+        const res = await window.KS_BK_AI.synthesizeCoachingBkConclusions(
+          currentRecord,
+          currentRecord.tahap3TirtaNotes,
+          currentRecord.tahap3RtlList
+        );
+
+        if (res) {
+          if (res.kesimpulan) document.getElementById('t3-kesimpulan').value = currentRecord.coachingKesimpulan = res.kesimpulan;
+          if (res.rekomendasi) document.getElementById('t3-rekomendasi').value = currentRecord.coachingRekomendasi = res.rekomendasi;
+          if (res.tindakLanjut) document.getElementById('t3-tindak-lanjut').value = currentRecord.coachingTindakLanjut = res.tindakLanjut;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Kesimpulan & Rekomendasi Coaching Disusun!',
+            text: 'AI berhasil merumuskan kesimpulan, rekomendasi pemberdayaan, dan tindak lanjut coaching.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      } catch (err) {
+        Swal.fire('Gagal', err.message, 'error');
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    function renderGapAnalysis() {
+      const container = document.getElementById('coaching-gap-analysis');
+      if (!container) return;
+
+      const s1 = currentRecord.supervisiScore || {};
+      const s2 = currentRecord.rplScore || {};
+
+      const b1 = s1.categoryBreakdown || {};
+      const b2 = s2.categoryBreakdown || {};
+
+      const cats = window.KS_BK_MANAGER.getActiveCategoryNames();
+
+      container.innerHTML = `
+        <div class="flex items-center gap-2 mb-1">
+          <span class="material-symbols-outlined text-amber-600 text-base">analytics</span>
+          <span class="font-bold text-slate-800">Pemetaan Ketercapaian per Elemen (Fokus Dialog Coaching):</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          ${cats.map(cat => {
+        const p1 = b1[cat]?.percentage || 0;
+        const p2 = b2[cat]?.percentage || 0;
+        const avg = Math.round(((p1 + p2) / 2) * 10) / 10;
+        const isLowest = avg < 75;
+
+        return `
+              <div class="p-2.5 rounded-xl ${isLowest ? 'bg-amber-100/70 border border-amber-300' : 'bg-white border border-slate-200'}">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-[11px] text-slate-800">${cat}</span>
+                  <span class="font-black text-xs ${isLowest ? 'text-amber-800' : 'text-teal-700'}">${avg}%</span>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Supervisi: ${p1}% • RPL: ${p2}%</div>
+              </div>
+            `;
+      }).join('')}
+        </div>
+      `;
+    }
+
+    function initDefaultRtlTable() {
+      if (!currentRecord.tahap3RtlList || currentRecord.tahap3RtlList.length === 0) {
+        currentRecord.tahap3RtlList = [
+          {
+            fokus: 'Penyempurnaan RPL Mindful & Joyful',
+            tindakan: 'Menyisipkan 2 pertanyaan pemantik dan aktivitas refleksi tertulis pada RPL layanan klasikal.',
+            sasaranWaktu: '2 Minggu setelah supervisi',
+            buktiFisik: 'Dokumen RPL Revisi & Format Jurnal Refleksi Siswa',
+            dukungan: 'Konsultasi MGBK & Penyediaan Lembar Kerja oleh Sekolah'
+          },
+          {
+            fokus: 'Pemanfaatan Data Asesmen Minat / Karir',
+            tindakan: 'Menyajikan rekapitulasi angket peminatan dalam bentuk grafik sederhana untuk dibahas bersama siswa.',
+            sasaranWaktu: 'Bulan berjalan',
+            buktiFisik: 'Grafik Rekap Peminatan & Lembar Tugas Penafsiran Data',
+            dukungan: 'Wali Kelas & Guru TIK'
+          }
+        ];
+      }
+      renderRtlTable();
+    }
+
+    function renderRtlTable() {
+      const tbody = document.getElementById('rtl-table-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = currentRecord.tahap3RtlList.map((row, idx) => `
+        <tr class="hover:bg-slate-50/70">
+          <td class="p-2">
+            <input type="text" value="${(row.fokus || '').replace(/"/g, '&quot;')}" onchange="updateRtlField(${idx}, 'fokus', this.value)" placeholder="Aspek / Fokus..." class="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs" />
+          </td>
+          <td class="p-2">
+            <input type="text" value="${(row.tindakan || '').replace(/"/g, '&quot;')}" onchange="updateRtlField(${idx}, 'tindakan', this.value)" placeholder="Rencana aksi konkret..." class="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs" />
+          </td>
+          <td class="p-2">
+            <input type="text" value="${(row.sasaranWaktu || '').replace(/"/g, '&quot;')}" onchange="updateRtlField(${idx}, 'sasaranWaktu', this.value)" placeholder="Target waktu..." class="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs" />
+          </td>
+          <td class="p-2">
+            <input type="text" value="${(row.buktiFisik || '').replace(/"/g, '&quot;')}" onchange="updateRtlField(${idx}, 'buktiFisik', this.value)" placeholder="Bukti fisik..." class="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs" />
+          </td>
+          <td class="p-2">
+            <input type="text" value="${(row.dukungan || '').replace(/"/g, '&quot;')}" onchange="updateRtlField(${idx}, 'dukungan', this.value)" placeholder="Pihak terkait..." class="w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs" />
+          </td>
+          <td class="p-2 text-center">
+            <button type="button" onclick="deleteRtlRow(${idx})" class="text-rose-500 hover:text-rose-700 font-bold" title="Hapus Baris">
+              <span class="material-symbols-outlined text-base">delete</span>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function addRtlRow() {
+      currentRecord.tahap3RtlList.push({
+        fokus: '',
+        tindakan: '',
+        sasaranWaktu: '',
+        buktiFisik: '',
+        dukungan: ''
+      });
+      renderRtlTable();
+    }
+
+    function deleteRtlRow(idx) {
+      currentRecord.tahap3RtlList.splice(idx, 1);
+      renderRtlTable();
+    }
+
+    function updateRtlField(idx, field, val) {
+      if (currentRecord.tahap3RtlList[idx]) {
+        currentRecord.tahap3RtlList[idx][field] = val;
+      }
+    }
+
+    function buildTahap3ReflectionDOM() {
+      const container = document.getElementById('reflection-indicators-container');
+      if (!container || !window.KS_BK_MANAGER) return;
+
+      const indicators = window.KS_BK_MANAGER.getReflectionIndicators();
+      container.innerHTML = indicators.map(ind => {
+        const val = currentRecord.tahap3ReflectionScores[ind.number] || 3;
+        currentRecord.tahap3ReflectionScores[ind.number] = val;
+
+        return `
+          <div class="p-3.5 rounded-xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-800 font-bold flex items-center justify-center text-[10px] flex-shrink-0">${ind.number}</span>
+                <span class="font-bold text-slate-800">${ind.statement || ind.pernyataan}</span>
+              </div>
+              <span class="text-[10px] font-semibold text-slate-400 pl-7">Kategori: ${ind.category || ind.kategori}</span>
+            </div>
+
+            <div class="pl-7 sm:pl-0 flex items-center gap-1.5 flex-shrink-0">
+              ${[1, 2, 3, 4].map(v => `
+                <label class="cursor-pointer">
+                  <input type="radio" name="refleksi_${ind.number}" value="${v}" ${val === v ? 'checked' : ''} onchange="updateReflectionScore(${ind.number}, ${v})" class="peer sr-only" />
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-bold border peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition inline-block text-center min-w-[32px]">
+                    ${v}
+                  </span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      recalculateReflection();
+    }
+
+    function updateReflectionScore(num, val) {
+      currentRecord.tahap3ReflectionScores[num] = val;
+      currentRecord.reflectionStatus = 'selesai';
+      recalculateReflection();
+      updateReflectionStatusDisplay();
+    }
+
+    function recalculateReflection() {
+      const res = window.KS_BK_MANAGER.calculateRefleksiScore(currentRecord.tahap3ReflectionScores);
+      currentRecord.refleksiScore = res;
+    }
+
+    function updateReflectionStatusDisplay() {
+      const badge = document.getElementById('reflection-status-badge');
+      const text = document.getElementById('reflection-status-text');
+      const isDone = (currentRecord.reflectionStatus === 'selesai' || (currentRecord.refleksiScore && currentRecord.refleksiScore.average > 0));
+
+      if (isDone) {
+        if (badge) {
+          badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5';
+        }
+        if (text) text.innerHTML = `✓ Refleksi Terisi (Rata-rata: ${currentRecord.refleksiScore?.average || '3.5'}/4.0)`;
+      } else {
+        if (badge) {
+          badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1.5';
+        }
+        if (text) text.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Menunggu Pengisian di Portal Guru`;
+      }
+    }
+
+    // ==================== TAB 5: LEMBAR LAPORAN HASIL SUPERVISI (TARGETED) ====================
+    async function renderReportView() {
+      const p = (window.KS_AUTH) ? window.KS_AUTH.getProfile() : {};
+      const sid = (window.KS_AUTH) ? window.KS_AUTH.getActiveSchoolId() : 'SCH-001';
+
+      // 1. School Letterhead
+      document.getElementById('rpt-school-name').innerText = p.schoolName || 'SMP BRIGHTON';
+      document.getElementById('rpt-school-address').innerText = p.schoolAddress || 'Jl. Pendidikan No. 45, Kompleks Akademik Terpadu';
+      document.getElementById('rpt-school-npsn').innerText = p.npsn || '10293847';
+      document.getElementById('rpt-school-email').innerText = p.schoolEmail || 'info@sekolah.sch.id';
+      document.getElementById('rpt-school-phone').innerText = p.schoolPhone || '-';
+
+      // 2. Identity
+      const teacherName = currentRecord.teacherName || document.getElementById('t1-teacher-name')?.value.trim() || 'Guru BK';
+      document.getElementById('rpt-teacher-name').innerText = teacherName;
+      document.getElementById('rpt-teacher-nip').innerText = currentRecord.teacherNip || '-';
+      document.getElementById('rpt-academic-period').innerText = `${currentRecord.academicYear} • ${currentRecord.semester}`;
+      document.getElementById('rpt-supervision-date').innerText = currentRecord.supervisionDate || new Date().toISOString().split('T')[0];
+      document.getElementById('rpt-target-class').innerText = currentRecord.targetClass || 'Semua Kelas Binaan';
+      document.getElementById('rpt-supervisor-name').innerText = p.fullName || 'Kepala Sekolah';
+      document.getElementById('rpt-doc-number').innerText = `BK/${currentRecord.academicYear.replace('/', '-')}/${currentRecord.id ? currentRecord.id.substr(0, 8) : '001'}`;
+
+      const type = currentRecord.supervisionType || 'supervisi_bk';
+      const typeNames = {
+        'supervisi_bk': 'Supervisi Pelaksanaan & Administrasi BK',
+        'telaah_rpl': 'Telaah Dokumen RPL BK',
+        'coaching_bk': 'Coaching BK (Model TIRTA & Refleksi)',
+        'semua': 'Supervisi Terpadu Siklus Lengkap (3 Tahap)'
+      };
+      document.getElementById('rpt-supervision-type-name').innerText = typeNames[type] || 'Supervisi Guru BK';
+      document.getElementById('rpt-document-main-title').innerText = `LEMBAR LAPORAN HASIL ${typeNames[type].toUpperCase()}`;
+      document.getElementById('rpt-subtitle-scope').innerText = `Laporan memuat instrumen spesifik: ${typeNames[type]}.`;
+
+      // Hide all blocks first
+      const blockS1 = document.getElementById('rpt-block-supervisi-bk');
+      const blockS2 = document.getElementById('rpt-block-telaah-rpl');
+      const blockS3 = document.getElementById('rpt-block-coaching-bk');
+
+      if (blockS1) blockS1.classList.add('hidden');
+      if (blockS2) blockS2.classList.add('hidden');
+      if (blockS3) blockS3.classList.add('hidden');
+
+      // SHOW ONLY CHOSEN SUPERVISION TYPE
+      if (type === 'supervisi_bk' || type === 'semua') {
+        if (blockS1) blockS1.classList.remove('hidden');
+        const s1 = currentRecord.supervisiScore || window.KS_BK_MANAGER.calculateSupervisiScore(currentRecord.tahap1Scores);
+        document.getElementById('rpt-s1-earned').innerText = s1.totalEarned;
+        document.getElementById('rpt-s1-max').innerText = s1.totalMax;
+        document.getElementById('rpt-s1-pct').innerText = `${s1.percentage}%`;
+        document.getElementById('rpt-s1-pred').innerText = s1.predicate;
+
+        // Subsections Breakdown
+        const subContainer = document.getElementById('rpt-s1-subsections-summary');
+        if (subContainer) {
+          subContainer.innerHTML = `
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200"><span class="font-bold block text-slate-800">Bagian A &amp; B</span><span class="text-teal-700 font-bold">Persiapan &amp; Program</span></div>
+            <div class="p-2.5 rounded-lg bg-teal-50 border border-teal-200"><span class="font-bold block text-teal-900">Bagian C (C.1 s.d C.4)</span><span class="text-teal-700 font-bold">Pelaksanaan Layanan</span></div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200"><span class="font-bold block text-slate-800">Bagian D (D.1 s.d D.3)</span><span class="text-teal-700 font-bold">Dukungan Sistem</span></div>
+            <div class="p-2.5 rounded-lg bg-amber-50 border border-amber-200"><span class="font-bold block text-amber-900">Bagian E</span><span class="text-amber-700 font-bold">Literasi &amp; Numerasi</span></div>
+          `;
+        }
+
+        document.getElementById('rpt-s1-kesimpulan').innerText = currentRecord.supervisiKesimpulan || document.getElementById('t1-kesimpulan')?.value || 'Telah disimpulkan sesuai data supervisi pelaksanaan dan administrasi BK.';
+        document.getElementById('rpt-s1-rekomendasi').innerText = currentRecord.supervisiRekomendasi || document.getElementById('t1-rekomendasi')?.value || 'Rekomendasi peningkatan efektivitas layanan dan administrasi.';
+        document.getElementById('rpt-s1-tindak-lanjut').innerText = currentRecord.supervisiTindakLanjut || document.getElementById('t1-tindak-lanjut')?.value || 'Rencana aksi tindak lanjut yang telah disepakati bersama.';
+      }
+
+      if (type === 'telaah_rpl' || type === 'semua') {
+        if (blockS2) blockS2.classList.remove('hidden');
+        const s2 = currentRecord.rplScore || window.KS_BK_MANAGER.calculateRplScore(currentRecord.tahap2Checklist);
+        document.getElementById('rpt-rpl-topic').innerText = currentRecord.tahap2Topic || 'Layanan BK';
+        document.getElementById('rpt-rpl-service').innerText = currentRecord.tahap2ServiceType || 'Bimbingan Klasikal';
+        document.getElementById('rpt-rpl-duration').innerText = currentRecord.tahap2Duration || '2 x 40 Menit';
+
+        document.getElementById('rpt-s2-earned').innerText = s2.totalEarned;
+        document.getElementById('rpt-s2-max').innerText = s2.totalMax;
+        document.getElementById('rpt-s2-pct').innerText = `${s2.percentage}%`;
+        document.getElementById('rpt-s2-pred').innerText = s2.predicate;
+
+        document.getElementById('rpt-s2-kesimpulan').innerText = currentRecord.rplKesimpulan || document.getElementById('t2-kesimpulan')?.value || 'Telah disimpulkan sesuai hasil telaah komponen RPL BK.';
+        document.getElementById('rpt-s2-rekomendasi').innerText = currentRecord.rplRekomendasi || document.getElementById('t2-rekomendasi')?.value || 'Rekomendasi penyempurnaan komponen pembelajaran bermakna dan literasi-numerasi.';
+        document.getElementById('rpt-s2-tindak-lanjut').innerText = currentRecord.rplTindakLanjut || document.getElementById('t2-tindak-lanjut')?.value || 'Rencana tindak lanjut revisi dan implementasi RPL.';
+      }
+
+      if (type === 'coaching_bk' || type === 'semua') {
+        if (blockS3) blockS3.classList.remove('hidden');
+        const steps = window.KS_BK_MANAGER.getCoachingTirta();
+        const tbodyCoaching = document.getElementById('rpt-coaching-table-body');
+        if (tbodyCoaching) {
+          tbodyCoaching.innerHTML = steps.map((st, i) => `
+            <tr>
+              <td class="p-2 border-r border-slate-300 text-center font-bold">${i + 1}</td>
+              <td class="p-2 border-r border-slate-300 font-bold text-amber-900">${st.tahap} (${st.durasi})</td>
+              <td class="p-2 border-r border-slate-300 text-slate-700">${st.pertanyaan_dasar}</td>
+              <td class="p-2 text-slate-900 font-medium">${currentRecord.tahap3TirtaNotes[st.tahap] || 'Telah disepakati dalam sesi percakapan coaching.'}</td>
+            </tr>
+          `).join('');
+        }
+
+        // RTL Table
+        const rtlContainer = document.getElementById('rpt-rtl-container');
+        if (rtlContainer) {
+          if (currentRecord.tahap3RtlList && currentRecord.tahap3RtlList.length > 0) {
+            rtlContainer.innerHTML = `
+              <table class="w-full text-left text-xs border border-slate-300 border-collapse">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-800 font-bold border-b border-slate-300">
+                    <th class="p-2 border-r border-slate-300 w-1/4">Fokus Pengembangan</th>
+                    <th class="p-2 border-r border-slate-300 w-1/3">Rencana Kegiatan / Tindakan</th>
+                    <th class="p-2 border-r border-slate-300">Target Waktu</th>
+                    <th class="p-2 border-r border-slate-300">Bukti Fisik</th>
+                    <th class="p-2">Dukungan</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  ${currentRecord.tahap3RtlList.map(r => `
+                    <tr>
+                      <td class="p-2 border-r border-slate-300 font-bold">${r.fokus || '-'}</td>
+                      <td class="p-2 border-r border-slate-300">${r.tindakan || '-'}</td>
+                      <td class="p-2 border-r border-slate-300">${r.sasaranWaktu || '-'}</td>
+                      <td class="p-2 border-r border-slate-300">${r.buktiFisik || '-'}</td>
+                      <td class="p-2">${r.dukungan || '-'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            `;
+          } else {
+            rtlContainer.innerHTML = `<p class="text-slate-500 italic text-xs">RTL telah dirumuskan dalam catatan wawancara coaching.</p>`;
+          }
+        }
+
+        // Refleksi Diri Summary
+        const refContainer = document.getElementById('rpt-refleksi-summary');
+        const isDone = (currentRecord.reflectionStatus === 'selesai' || (currentRecord.refleksiScore && currentRecord.refleksiScore.average > 0));
+        if (refContainer) {
+          refContainer.innerHTML = isDone
+            ? `Guru BK telah melengkapi 12 instrumen refleksi diri pasca-coaching di Portal Guru dengan rata-rata skor <b>${currentRecord.refleksiScore?.average || '3.5'} dari skala 4.0 (Sangat Positif)</b>.`
+            : `Status pengisian refleksi diri di Portal Guru BK: <i>Sedang dalam proses pengisian mandiri oleh guru pasca-coaching.</i>`;
+        }
+
+        document.getElementById('rpt-s3-kesimpulan').innerText = currentRecord.coachingKesimpulan || document.getElementById('t3-kesimpulan')?.value || 'Percakapan coaching alur TIRTA berlangsung memberdayakan.';
+        document.getElementById('rpt-s3-rekomendasi').innerText = currentRecord.coachingRekomendasi || document.getElementById('t3-rekomendasi')?.value || 'Dukungan kepala sekolah untuk fasilitas dan keterbukaan layanan bimbingan.';
+        document.getElementById('rpt-s3-tindak-lanjut').innerText = currentRecord.coachingTindakLanjut || document.getElementById('t3-tindak-lanjut')?.value || 'Guru BK menjalankan komitmen RTL sesuai tenggat waktu yang disepakati.';
+      }
+
+      // 4. Signatures
+      document.getElementById('rpt-sign-teacher-name').innerText = (teacherName || 'GURU BK').toUpperCase();
+      document.getElementById('rpt-sign-teacher-nip').innerText = currentRecord.teacherNip || '-';
+      document.getElementById('rpt-sign-principal-name').innerText = (p.fullName || 'KEPALA SEKOLAH').toUpperCase();
+      document.getElementById('rpt-sign-principal-nip').innerText = p.nip || '-';
+      document.getElementById('rpt-sign-city').innerText = (p.schoolAddress && p.schoolAddress.split(',')[1]) ? p.schoolAddress.split(',')[1].trim() : 'Depok';
+      document.getElementById('rpt-sign-date').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    // ==================== RECORD LIFECYCLE & PERSISTENCE ====================
+    function openStartModal() {
+      const modal = document.getElementById('modalStartSupervision');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeStartModal() {
+      const modal = document.getElementById('modalStartSupervision');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmStartSupervision() {
+      const teacherName = document.getElementById('modal-input-teacher-name').value.trim() || document.getElementById('modal-select-teacher').value;
+      if (!teacherName) {
+        Swal.fire('Perhatian', 'Pilih atau masukkan nama Guru BK terlebih dahulu.', 'warning');
+        return;
+      }
+
+      const emp = dbEmployees.find(e => e.name === teacherName);
+      const supType = document.querySelector('input[name="modal_sup_type"]:checked')?.value || 'supervisi_bk';
+      const targetClass = document.getElementById('modal-input-class').value.trim();
+      const supDate = document.getElementById('modal-input-date').value || new Date().toISOString().split('T')[0];
+
+      currentRecord = {
+        id: 'BK-' + Date.now() + '-' + Math.floor(Math.random() * 900 + 100),
+        teacherName: teacherName,
+        teacherNip: emp ? (emp.nip || '-') : '-',
+        targetClass: targetClass,
+        supervisionDate: supDate,
+        academicYear: currentRecord.academicYear,
+        semester: currentRecord.semester,
+        supervisionType: supType,
+        tahap1Scores: {},
+        tahap1Notes: {},
+        supervisiKesimpulan: '',
+        supervisiRekomendasi: '',
+        supervisiTindakLanjut: '',
+        tahap2Topic: '',
+        tahap2ServiceType: 'Bimbingan Klasikal',
+        tahap2Duration: '2 x 40 Menit',
+        tahap2Checklist: {},
+        tahap2Notes: {},
+        rplKesimpulan: '',
+        rplRekomendasi: '',
+        rplTindakLanjut: '',
+        tahap3TirtaNotes: {},
+        coachingAiRecommendations: {},
+        coachingKesimpulan: '',
+        coachingRekomendasi: '',
+        coachingTindakLanjut: '',
+        tahap3RtlList: [],
+        tahap3ReflectionScores: {},
+        reflectionStatus: 'menunggu_guru',
+        aiNarrative: null
+      };
+
+      // Sync Rekap Setup Form
+      const selectRekap = document.getElementById('rekap-teacher-select');
+      if (selectRekap) selectRekap.value = teacherName;
+      const inputManual = document.getElementById('rekap-teacher-name-manual');
+      if (inputManual) inputManual.value = teacherName;
+      const inputNip = document.getElementById('rekap-teacher-nip');
+      if (inputNip) inputNip.value = currentRecord.teacherNip;
+      const inputClass = document.getElementById('rekap-target-class');
+      if (inputClass) inputClass.value = targetClass;
+      const inputDate = document.getElementById('rekap-supervision-date');
+      if (inputDate) inputDate.value = supDate;
+
+      const radioType = document.querySelector(`input[name="rekap_sup_type"][value="${supType}"]`);
+      if (radioType) {
+        radioType.checked = true;
+        updateSelectedTypeStyle(supType);
+      }
+
+      buildTahap1IndicatorsDOM();
+      buildTahap2IndicatorsDOM();
+      buildTahap3TirtaDOM();
+      buildTahap3ReflectionDOM();
+      initDefaultRtlTable();
+      updateActiveSessionDisplay();
+
+      closeStartModal();
+
+      // Jump directly to the chosen supervision type tab
+      if (supType === 'telaah_rpl') {
+        switchTab('tahap2');
+      } else if (supType === 'coaching_bk') {
+        switchTab('tahap3');
+      } else {
+        switchTab('tahap1');
+      }
+    }
+
+    function editSupervisionRecord(id) {
+      const record = allSupervisiRecords.find(r => r.id === id);
+      if (!record) return;
+
+      currentRecord = JSON.parse(JSON.stringify(record));
+
+      // Sync Rekap Setup Form
+      const selectRekap = document.getElementById('rekap-teacher-select');
+      if (selectRekap) selectRekap.value = currentRecord.teacherName || '';
+      const inputManual = document.getElementById('rekap-teacher-name-manual');
+      if (inputManual) inputManual.value = currentRecord.teacherName || '';
+      const inputNip = document.getElementById('rekap-teacher-nip');
+      if (inputNip) inputNip.value = currentRecord.teacherNip || '-';
+      const inputClass = document.getElementById('rekap-target-class');
+      if (inputClass) inputClass.value = currentRecord.targetClass || '';
+      const inputDate = document.getElementById('rekap-supervision-date');
+      if (inputDate) inputDate.value = currentRecord.supervisionDate || '';
+
+      const radioType = document.querySelector(`input[name="rekap_sup_type"][value="${currentRecord.supervisionType}"]`);
+      if (radioType) {
+        radioType.checked = true;
+        updateSelectedTypeStyle(currentRecord.supervisionType);
+      }
+
+      document.getElementById('t1-kesimpulan').value = currentRecord.supervisiKesimpulan || '';
+      document.getElementById('t1-rekomendasi').value = currentRecord.supervisiRekomendasi || '';
+      document.getElementById('t1-tindak-lanjut').value = currentRecord.supervisiTindakLanjut || '';
+
+      document.getElementById('t2-topic').value = currentRecord.tahap2Topic || '';
+      document.getElementById('t2-service-type').value = currentRecord.tahap2ServiceType || 'Bimbingan Klasikal';
+      document.getElementById('t2-duration').value = currentRecord.tahap2Duration || '2 x 40 Menit';
+      document.getElementById('t2-kesimpulan').value = currentRecord.rplKesimpulan || '';
+      document.getElementById('t2-rekomendasi').value = currentRecord.rplRekomendasi || '';
+      document.getElementById('t2-tindak-lanjut').value = currentRecord.rplTindakLanjut || '';
+
+      document.getElementById('t3-kesimpulan').value = currentRecord.coachingKesimpulan || '';
+      document.getElementById('t3-rekomendasi').value = currentRecord.coachingRekomendasi || '';
+      document.getElementById('t3-tindak-lanjut').value = currentRecord.coachingTindakLanjut || '';
+
+      buildTahap1IndicatorsDOM();
+      buildTahap2IndicatorsDOM();
+      buildTahap3TirtaDOM();
+      buildTahap3ReflectionDOM();
+      renderRtlTable();
+      updateActiveSessionDisplay();
+
+      const supType = currentRecord.supervisionType || 'supervisi_bk';
+      if (supType === 'telaah_rpl') switchTab('tahap2');
+      else if (supType === 'coaching_bk') switchTab('tahap3');
+      else switchTab('tahap1');
+    }
+
+    async function viewReport(id) {
+      editSupervisionRecord(id);
+      await renderReportView();
+      switchTab('laporan');
+    }
+
+    async function saveCurrentSupervisionRecord(silent = false) {
+      const teacherName = currentRecord.teacherName ? currentRecord.teacherName.trim() : '';
+      if (!teacherName || teacherName === 'Guru BK' || teacherName === '-- Pilih Guru BK --' || teacherName === '') {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Identitas Guru BK Belum Diisi!',
+          html: `
+            <div class="text-left text-xs space-y-2 mt-2 text-slate-600 leading-relaxed">
+              <p>Kepala Sekolah <b>hanya bisa menyimpan hasil supervisi jika sudah mengisi identitas guru BK</b> di awal pada laman Rekap &amp; Jadwal Supervisi BK.</p>
+              <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base flex-shrink-0"></i>
+                <span>Anda akan dialihkan kembali ke laman <b>Rekap &amp; Jadwal Supervisi BK</b> untuk melengkapi identitas guru BK.</span>
+              </div>
+            </div>
+          `,
+          confirmButtonText: 'Kembali ke Rekap & Jadwal',
+          confirmButtonColor: '#0d9488'
+        });
+        switchTab('rekap');
+        const sel = document.getElementById('rekap-teacher-select');
+        if (sel) {
+          sel.focus();
+          sel.classList.add('ring-2', 'ring-teal-500');
+          setTimeout(() => sel.classList.remove('ring-2', 'ring-teal-500'), 2500);
+        }
+        return { success: false, reason: 'missing_identity' };
+      }
+
+      // STRICT VALIDATION: Hanya personil dengan role Guru BK yang boleh dinilai
+      const isRegisteredBk = bkEmployees.some(e => e.name === teacherName);
+      if (!isRegisteredBk) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Bukan Guru BK Terdaftar!',
+          html: `
+            <div class="text-left text-xs space-y-2 mt-2 text-slate-600 leading-relaxed">
+              <p>Halaman Supervisi BK <b>hanya dapat menilai personil dengan role Guru BK</b>.</p>
+              <p>Personil <b>${teacherName}</b> belum memiliki role 'Guru BK'. Silakan atur jabatannya menjadi 'Guru BK' pada menu <b>Data Karyawan</b>.</p>
+            </div>
+          `,
+          confirmButtonText: 'Buka Data Karyawan',
+          confirmButtonColor: '#0d9488',
+          showCancelButton: true,
+          cancelButtonText: 'Batal'
+        }).then(result => {
+          if (result.isConfirmed) {
+            window.location.href = '../../karyawan/';
+          }
+        });
+        switchTab('rekap');
+        return { success: false, reason: 'not_bk_role' };
+      }
+
+      currentRecord.teacherName = teacherName;
+      currentRecord.targetClass = currentRecord.targetClass || document.getElementById('rekap-target-class')?.value.trim() || 'Semua Kelas Binaan';
+      currentRecord.supervisionDate = currentRecord.supervisionDate || document.getElementById('rekap-supervision-date')?.value || new Date().toISOString().split('T')[0];
+      currentRecord.supervisionType = currentRecord.supervisionType || document.querySelector('input[name="rekap_sup_type"]:checked')?.value || 'supervisi_bk';
+
+      currentRecord.supervisiKesimpulan = document.getElementById('t1-kesimpulan')?.value.trim();
+      currentRecord.supervisiRekomendasi = document.getElementById('t1-rekomendasi')?.value.trim();
+      currentRecord.supervisiTindakLanjut = document.getElementById('t1-tindak-lanjut')?.value.trim();
+
+      currentRecord.tahap2Topic = document.getElementById('t2-topic')?.value || '';
+      currentRecord.tahap2ServiceType = document.getElementById('t2-service-type')?.value || 'Bimbingan Klasikal';
+      currentRecord.tahap2Duration = document.getElementById('t2-duration')?.value || '2 x 40 Menit';
+      currentRecord.rplKesimpulan = document.getElementById('t2-kesimpulan')?.value.trim();
+      currentRecord.rplRekomendasi = document.getElementById('t2-rekomendasi')?.value.trim();
+      currentRecord.rplTindakLanjut = document.getElementById('t2-tindak-lanjut')?.value.trim();
+
+      currentRecord.coachingKesimpulan = document.getElementById('t3-kesimpulan')?.value.trim();
+      currentRecord.coachingRekomendasi = document.getElementById('t3-rekomendasi')?.value.trim();
+      currentRecord.coachingTindakLanjut = document.getElementById('t3-tindak-lanjut')?.value.trim();
+
+      currentRecord.supervisiScore = window.KS_BK_MANAGER.calculateSupervisiScore(currentRecord.tahap1Scores);
+      currentRecord.rplScore = window.KS_BK_MANAGER.calculateRplScore(currentRecord.tahap2Checklist);
+      currentRecord.refleksiScore = window.KS_BK_MANAGER.calculateRefleksiScore(currentRecord.tahap3ReflectionScores);
+
+      const res = await window.KS_BK_MANAGER.saveRecord(currentRecord);
+      if (res && res.success) {
+        await loadAllSupervisiRecords();
+        updateActiveSessionDisplay();
+        if (!silent) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Tersimpan ke Server!',
+            text: `Data supervisi ${teacherName} berhasil disimpan permanen ke database MySQL.`,
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      }
+      return res;
+    }
+
+    async function saveTahap1Only() {
+      await saveCurrentSupervisionRecord();
+    }
+
+    async function saveTahap2Only() {
+      await saveCurrentSupervisionRecord();
+    }
+
+    async function saveTahap3Only() {
+      await saveCurrentSupervisionRecord();
+    }
+
+    async function saveAndGoToReport() {
+      await saveCurrentSupervisionRecord(true);
+      await renderReportView();
+      switchTab('laporan');
+    }
+
+    async function deleteSupervisionRecord(id) {
+      const confirm = await Swal.fire({
+        title: 'Hapus Berkas Supervisi BK?',
+        text: 'Data hasil supervisi dan lembar laporan akan dihapus permanen dari server.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+      });
+      if (!confirm.isConfirmed) return;
+
+      try {
+        await window.KS_BK_MANAGER.deleteRecord(id);
+        Swal.fire({ icon: 'success', title: 'Terhapus', timer: 1500, showConfirmButton: false });
+        await loadAllSupervisiRecords();
+      } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: e.message });
+      }
+    }
+
+    // Tab Switching Logic
+    function switchTab(tabKey) {
+      const tabs = ['rekap', 'tahap1', 'tahap2', 'tahap3', 'laporan'];
+      tabs.forEach(t => {
+        const content = document.getElementById(`tab-content-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (content) content.classList.add('hidden');
+        if (btn) {
+          btn.classList.remove('bg-teal-500', 'text-white', 'shadow-md');
+          btn.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-white/10');
+        }
+      });
+
+      const activeContent = document.getElementById(`tab-content-${tabKey}`);
+      const activeBtn = document.getElementById(`tab-btn-${tabKey}`);
+      if (activeContent) activeContent.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-white/10');
+        activeBtn.classList.add('bg-teal-500', 'text-white', 'shadow-md');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+
+</html>

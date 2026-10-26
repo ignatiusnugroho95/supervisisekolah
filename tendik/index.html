@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supervisi Tenaga Kependidikan (Tendik) — SupervisiSekolah.id</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Material Symbols -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Path normalization: ensure trailing slash so ../ references the root -->
+  <script>
+    if (!window.location.pathname.endsWith('/') && !window.location.pathname.endsWith('.html')) {
+      window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+    }
+  </script>
+
+  <!-- App Modules -->
+  <script src="../js/auth.js?v=20261018"></script>
+  <script src="../js/includes.js?v=20261018"></script>
+  <script src="../js/supervision-tendik.js?v=20261018"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#0f172a",
+            secondary: "#0284c7",
+            amberCustom: "#d97706",
+            surface: "#ffffff",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#64748b",
+            "surface-container": "#f8fafc",
+            outline: "#cbd5e1"
+          },
+          maxWidth: {
+            'container-max': '1280px'
+          },
+          padding: {
+            'margin-mobile': '1rem',
+            'margin-desktop': '2rem'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .font-display {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .print-only {
+      display: none !important;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      #print-area,
+      #print-area * {
+        visibility: visible;
+      }
+
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        background: white;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .print-only {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Universal Header Navigation -->
+  <header id="app-header"></header>
+
+  <!-- Main Container -->
+  <main class="flex-1 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-6 space-y-6">
+
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+      <a href="../dashboard" class="hover:text-amber-600 transition flex items-center gap-1 font-medium">
+        <span class="material-symbols-outlined text-sm">dashboard</span>
+        <span>Dashboard KS</span>
+      </a>
+      <span class="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
+      <span class="text-amber-800 font-bold flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">badge</span>
+        <span>Supervisi Tenaga Kependidikan</span>
+      </span>
+    </nav>
+
+    <!-- Top Hero Banner: Supervisi Tendik -->
+    <div
+      class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-amber-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-xl border border-amber-800/30">
+      <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none">
+      </div>
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span
+              class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">badge</span>
+              Supervisi Tenaga Kependidikan
+            </span>
+            <span id="badge-active-period"
+              class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/10">
+              2026/2027 • Ganjil
+            </span>
+            <span id="badge-school-code-hero"
+              class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
+              Kode: <span id="hero-code-val">SCH-001</span>
+            </span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold font-display tracking-tight text-white">
+            Instrumen &amp; Tata Kelola Supervisi Tenaga Kependidikan (Tendik)
+          </h1>
+          <p class="text-xs md:text-sm text-slate-300 max-w-3xl leading-relaxed">
+            Penjaminan mutu <strong>7 instrumen resmi GTK</strong>: Kepala Tenaga Administrasi (KTAS), Persuratan &amp; Pengarsipan, Urusan Sarana &amp; Prasarana, Petugas Kebersihan/OB, Perpustakaan, Laboratorium, dan Keamanan/Security. Dilengkapi pengisian nilai otomatis, asisten rekomendasi AI, rekapitulasi nilai, serta portal mandiri untuk tendik.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="../karyawan/"
+            class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg transition active:scale-95"
+            title="Kelola Kode Akses Karyawan di menu Karyawan">
+            <span class="material-symbols-outlined text-sm">key</span>
+            <span>Kode Akses Karyawan</span>
+          </a>
+          <a href="portal" target="_blank"
+            class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center gap-2 border border-white/20 transition active:scale-95">
+            <span class="material-symbols-outlined text-sm">open_in_new</span>
+            <span>Portal Tendik</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs (Rekap & Jadwal, Instrumen Penilaian, Lembar Laporan) -->
+    <div class="flex items-center gap-2 border-b border-slate-200 overflow-x-auto pb-1 no-print">
+      <button id="tab-btn-rekap" onclick="switchMainTab('rekap')"
+        class="tab-btn px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 border-b-2 border-amber-600 text-amber-700 bg-amber-50/60">
+        <span class="material-symbols-outlined text-base">table_chart</span>
+        <span>Rekap &amp; Jadwal Supervisi Tendik</span>
+        <span id="badge-count-rekap" class="px-2 py-0.5 rounded-full text-[10px] bg-amber-200 text-amber-900 font-extrabold">0</span>
+      </button>
+      <button id="tab-btn-form" onclick="switchMainTab('form')"
+        class="tab-btn px-4 py-2.5 rounded-t-xl text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center gap-2 border-b-2 border-transparent">
+        <span class="material-symbols-outlined text-base">fact_check</span>
+        <span>Form Instrumen Supervisi (7 Instrumen)</span>
+      </button>
+      <button id="tab-btn-report" onclick="switchMainTab('report')"
+        class="tab-btn px-4 py-2.5 rounded-t-xl text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center gap-2 border-b-2 border-transparent">
+        <span class="material-symbols-outlined text-base">description</span>
+        <span>Lembar Laporan Hasil &amp; Cetak</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 1: REKAP & JADWAL SUPERVISI TENDIK                                -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <section id="section-rekap" class="space-y-6">
+      <!-- Quick Metric KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase text-slate-400">Total Personil Tendik</span>
+            <div class="text-2xl font-black text-slate-900 mt-1" id="stat-total-tendik">0</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">Semua Staf &amp; Guru Tugas Tambahan</div>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">groups</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase text-emerald-600">Sudah Disupervisi</span>
+            <div class="text-2xl font-black text-emerald-700 mt-1" id="stat-done-tendik">0</div>
+            <div class="text-[11px] text-emerald-600/80 mt-0.5" id="stat-pct-tendik">0% Ketercapaian</div>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">verified</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase text-blue-600">Rata-rata Skor</span>
+            <div class="text-2xl font-black text-blue-700 mt-1" id="stat-avg-score">0%</div>
+            <div class="text-[11px] text-blue-600/80 mt-0.5" id="stat-avg-predikat">Predikat: —</div>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">analytics</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase text-purple-600">Jadwal Mendatang</span>
+            <div class="text-2xl font-black text-purple-700 mt-1" id="stat-scheduled-tendik">0</div>
+            <div class="text-[11px] text-purple-600/80 mt-0.5">Pengajuan / Rencana</div>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">event_available</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action & Filter Bar -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2.5 flex-1">
+          <div class="relative flex-1 min-w-[200px]">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+            <input type="text" id="filter-search-tendik" oninput="renderRekapTable()"
+              placeholder="Cari nama personil tendik / NIP..."
+              class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+          </div>
+          <select id="filter-instrument-tendik" onchange="renderRekapTable()"
+            class="px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <option value="all">Semua Instrumen</option>
+            <option value="ktas">1. KTAS (Kepala TU)</option>
+            <option value="persuratan">2. Administrasi Persuratan</option>
+            <option value="sarpras">3. Sarana &amp; Prasarana</option>
+            <option value="kebersihan">4. Tenaga Kebersihan / OB</option>
+            <option value="perpustakaan">5. Kepala Perpustakaan</option>
+            <option value="laboratorium">6. Kepala Laboratorium</option>
+            <option value="keamanan">7. Keamanan / Satpam</option>
+          </select>
+          <select id="filter-status-tendik" onchange="renderRekapTable()"
+            class="px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <option value="all">Semua Status</option>
+            <option value="done">Sudah Disupervisi</option>
+            <option value="pending">Belum Disupervisi</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openScheduleModal()"
+            class="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <span class="material-symbols-outlined text-sm">add_task</span>
+            <span>Tambah Jadwal</span>
+          </button>
+          <button onclick="startNewSupervision()"
+            class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <span class="material-symbols-outlined text-sm">edit_note</span>
+            <span>Supervisi Baru</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Rekap Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4 w-12 text-center">No</th>
+                <th class="py-3 px-4">Nama Personil Tendik</th>
+                <th class="py-3 px-4">Jabatan / Tugas</th>
+                <th class="py-3 px-4">Instrumen Terpilih</th>
+                <th class="py-3 px-4 text-center">Tgl Terakhir</th>
+                <th class="py-3 px-4 text-center">Skor &amp; Predikat</th>
+                <th class="py-3 px-4 text-center">Akses Portal</th>
+                <th class="py-3 px-4 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="rekap-table-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="8" class="py-8 text-center text-slate-400">
+                  <div class="flex flex-col items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-3xl animate-spin text-amber-600">sync</span>
+                    <span>Memuat data personil dan hasil supervisi tendik...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 2: FORM INSTRUMEN PENILAIAN SUPERVISI TENDIK                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <section id="section-form" class="space-y-6 hidden">
+      <!-- Form Controls & Identitas Pegawai -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span class="material-symbols-outlined text-amber-600">edit_document</span>
+              <span>Identitas &amp; Pemilihan Instrumen Supervisi Tendik</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">Pilih nama personil yang akan disupervisi, jenis instrumen, dan tanggal pelaksanaan penilaian.</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs font-bold text-slate-500">Skala Penilaian:</span>
+            <span class="px-2 py-0.5 bg-rose-50 text-rose-700 text-[10px] font-bold rounded">1: Sangat Kurang</span>
+            <span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded">2: Kurang</span>
+            <span class="px-2 py-0.5 bg-yellow-50 text-yellow-800 text-[10px] font-bold rounded">3: Cukup</span>
+            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded">4: Baik</span>
+            <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded">5: Amat Baik</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pegawai yang Disupervisi *</label>
+            <select id="form-employee-select" onchange="onEmployeeSelectChange(this.value)"
+              class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="">-- Pilih Personil (Guru, Guru BK, Staff TU, OB, Satpam) --</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Instrumen Penilaian (7 Instrumen) *</label>
+            <select id="form-instrument-select" onchange="onInstrumentSelectChange(this.value)"
+              class="w-full px-3 py-2 text-xs rounded-xl border-2 border-amber-400 bg-amber-50/50 font-bold text-amber-950 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="ktas">1. Kepala Tenaga Administrasi Sekolah (KTAS) [18 Butir]</option>
+              <option value="persuratan">2. Administrasi Persuratan &amp; Pengarsipan [12 Butir]</option>
+              <option value="sarpras">3. Administrasi Sarana &amp; Prasarana [24 Butir]</option>
+              <option value="kebersihan">4. Tenaga Kebersihan / OB [4 Butir]</option>
+              <option value="perpustakaan">5. Kepala Perpustakaan Sekolah [18 Butir]</option>
+              <option value="laboratorium">6. Kepala Laboratorium Sekolah [11 Butir]</option>
+              <option value="keamanan">7. Petugas Keamanan / Security [10 Butir]</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Pelaksanaan Supervisi</label>
+            <input type="date" id="form-supervision-date"
+              class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2 border-t border-slate-100 text-xs">
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">NIP / NUPTK:</span>
+            <span id="form-disp-nip" class="font-mono font-bold text-slate-800">-</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Tugas / Jabatan:</span>
+            <span id="form-disp-task" class="font-bold text-slate-800">-</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Tahun Ajaran / Semester:</span>
+            <span id="form-disp-cycle" class="font-bold text-purple-700">2026/2027 • Ganjil</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Kode Akses Portal:</span>
+            <span id="form-disp-code" class="font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Calculation Banner & Auto-Fill Toolbar -->
+      <div class="bg-gradient-to-r from-amber-50 via-white to-amber-50 p-4 rounded-2xl border-2 border-amber-300 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4 flex-wrap">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-600">Perolehan Skor:</span>
+            <span id="calc-disp-score" class="font-mono font-black text-xl text-slate-900">0 / 90</span>
+          </div>
+          <div class="h-6 w-px bg-slate-300 hidden sm:block"></div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-600">Nilai Akhir:</span>
+            <span id="calc-disp-pct" class="font-mono font-black text-2xl text-amber-700">0%</span>
+          </div>
+          <div class="h-6 w-px bg-slate-300 hidden sm:block"></div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-600">Predikat:</span>
+            <span id="calc-disp-predicate" class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-slate-200 text-slate-700">
+              Belum Lengkap
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Assist & AI Buttons -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="autoFillScores(5)"
+            class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-xs"
+            title="Isi semua skor dengan nilai 5 (Amat Baik)">
+            <span class="material-symbols-outlined text-sm">stars</span>
+            <span>Otomatis: 5 (Amat Baik)</span>
+          </button>
+          <button onclick="autoFillScores(4)"
+            class="px-3 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-xs"
+            title="Isi semua skor dengan nilai 4 (Baik)">
+            <span class="material-symbols-outlined text-sm">thumb_up</span>
+            <span>Otomatis: 4 (Baik)</span>
+          </button>
+          <button onclick="triggerAiTendikAssistant()"
+            class="px-3 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+            <span class="material-symbols-outlined text-sm text-yellow-300">auto_awesome</span>
+            <span>Analisis AI Rekomendasi</span>
+          </button>
+          <button onclick="resetInstrumentForm()"
+            class="px-3 py-2 bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">refresh</span>
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Instrument Items Container -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-4 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
+          <div>
+            <h3 id="inst-header-title" class="font-bold text-sm text-slate-900">1. Kepala Tenaga Administrasi Sekolah (KTAS)</h3>
+            <p id="inst-header-subtitle" class="text-xs text-slate-500">Standar Kompetensi Manajerial, Teknis Administrasi &amp; Kepemimpinan TAS</p>
+          </div>
+          <span id="inst-header-badge" class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800">
+            18 Butir Pertanyaan
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3 w-10 text-center">No</th>
+                <th class="py-2.5 px-4 w-5/12">Aspek yang Diamati / Disupervisi</th>
+                <th class="py-2.5 px-4 w-4/12">Bukti Fisik / Indikator Kinerja</th>
+                <th class="py-2.5 px-3 text-center w-3/12">Kriteria Nilai (1 - 5)</th>
+              </tr>
+            </thead>
+            <tbody id="instrument-items-body" class="divide-y divide-slate-100">
+              <!-- Rendered dynamically by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Notes & Tindak Lanjut -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+          <label class="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-amber-600">rate_review</span>
+            <span>Catatan Evaluasi / Temuan Lapangan Kepala Sekolah:</span>
+          </label>
+          <textarea id="form-notes-catatan" rows="4"
+            placeholder="Tuliskan catatan kelebihan, aspek yang telah memenuhi standar, atau temuan observasi di lapangan..."
+            class="w-full p-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+          <label class="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-purple-600">trending_up</span>
+            <span>Rekomendasi Tindak Lanjut Kepala Sekolah:</span>
+          </label>
+          <textarea id="form-notes-tindak-lanjut" rows="4"
+            placeholder="Tuliskan saran perbaikan, rekomendasi pelatihan/bimtek, atau target peningkatan kinerja berikutnya..."
+            class="w-full p-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+        </div>
+      </div>
+
+      <!-- Save & Action Buttons -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="text-xs text-slate-500 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
+          <span>Hasil penilaian akan otomatis tersinkronisasi ke database dan rapor Tendik.</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button onclick="saveSupervisionRecord()"
+            class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md">
+            <span class="material-symbols-outlined text-sm">save</span>
+            <span>Simpan Hasil Supervisi</span>
+          </button>
+          <button onclick="previewAndPrintReport()"
+            class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 active:scale-95 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">print</span>
+            <span>Cetak / Lihat Lembar Laporan</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 3: LEMBAR LAPORAN HASIL SUPERVISI (FORMAT CETAK RESMI)             -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <section id="section-report" class="space-y-6 hidden">
+      <!-- Toolbar Atas Cetak -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
+        <div>
+          <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span class="material-symbols-outlined text-amber-600">print</span>
+            <span>Lembar Laporan Hasil Supervisi Tenaga Kependidikan</span>
+          </h2>
+          <p class="text-xs text-slate-500">Pratinjau lembar laporan resmi siap cetak (PDF / Kertas A4).</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()"
+            class="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <span class="material-symbols-outlined text-sm">print</span>
+            <span>Cetak Dokumen (Print / PDF)</span>
+          </button>
+          <button onclick="switchMainTab('form')"
+            class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">edit</span>
+            <span>Edit Penilaian</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Official Print Preview Container -->
+      <div id="print-area" class="bg-white rounded-2xl border border-slate-300 p-6 md:p-10 shadow-sm text-slate-900 space-y-6 max-w-4xl mx-auto">
+        
+        <!-- Kop Surat Sekolah -->
+        <div class="border-b-4 border-double border-slate-900 pb-4 text-center space-y-1">
+          <h2 id="rep-school-name" class="font-display font-black text-xl uppercase tracking-wider text-slate-900">SMP BRIGHTON</h2>
+          <p id="rep-school-address" class="text-xs text-slate-600 font-medium">Jl. Raya Genteng No. 123, Kabupaten Banyuwangi, Jawa Timur</p>
+          <p class="text-xs text-slate-500 font-mono">NPSN: <span id="rep-school-npsn">20512345</span> • Status Akreditasi: A • Website: supervisisekolah.id</p>
+        </div>
+
+        <!-- Judul Laporan -->
+        <div class="text-center space-y-1">
+          <h3 id="rep-instrument-title" class="font-display font-black text-sm uppercase tracking-wide text-slate-900">
+            INSTRUMEN SUPERVISI KEPALA TENAGA ADMINISTRASI SEKOLAH
+          </h3>
+          <p class="text-xs font-bold text-slate-600">
+            SEMESTER <span id="rep-disp-semester">GANJIL</span> TAHUN PELAJARAN <span id="rep-disp-year">2026/2027</span>
+          </p>
+        </div>
+
+        <!-- Identitas Pegawai & Sekolah -->
+        <div class="grid grid-cols-2 gap-4 text-xs border border-slate-200 p-3.5 rounded-xl bg-slate-50/60">
+          <div class="space-y-1">
+            <div class="flex"><span class="w-36 font-semibold text-slate-500">Nama Pegawai</span><span class="font-bold text-slate-900">: <span id="rep-emp-name">-</span></span></div>
+            <div class="flex"><span class="w-36 font-semibold text-slate-500">NIP / NUPTK</span><span class="font-mono text-slate-800">: <span id="rep-emp-nip">-</span></span></div>
+            <div class="flex"><span class="w-36 font-semibold text-slate-500">Bidang Tugas / Jabatan</span><span class="font-bold text-slate-800">: <span id="rep-emp-task">-</span></span></div>
+          </div>
+          <div class="space-y-1">
+            <div class="flex"><span class="w-36 font-semibold text-slate-500">Sekolah / Akreditasi</span><span class="font-semibold text-slate-800">: <span id="rep-emp-school">SMP Brighton (A)</span></span></div>
+            <div class="flex"><span class="w-36 font-semibold text-slate-500">Hari / Tanggal</span><span class="font-semibold text-slate-800">: <span id="rep-emp-date">-</span></span></div>
+            <div class="flex"><span class="w-36 font-semibold text-slate-500">Supervisor / KS</span><span class="font-bold text-slate-900">: <span id="rep-ks-name">-</span></span></div>
+          </div>
+        </div>
+
+        <!-- Tabel Butir Hasil Penilaian -->
+        <div class="overflow-x-auto border border-slate-300 rounded-lg">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-300">
+              <tr>
+                <th class="py-2 px-3 border-r border-slate-300 w-10 text-center">No</th>
+                <th class="py-2 px-3 border-r border-slate-300">Aspek yang Diamati / Disupervisi</th>
+                <th class="py-2 px-3 border-r border-slate-300 w-24 text-center">Bukti Fisik</th>
+                <th class="py-2 px-3 w-16 text-center">Nilai (1-5)</th>
+              </tr>
+            </thead>
+            <tbody id="rep-table-body" class="divide-y divide-slate-200">
+              <!-- Rendered by JS -->
+            </tbody>
+            <tfoot class="bg-slate-50 font-bold border-t-2 border-slate-300 text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-3 text-right border-r border-slate-300">Jumlah Skor Perolehan</td>
+                <td class="py-2 px-3 text-center font-mono font-bold" id="rep-total-score">0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-3 text-right border-r border-slate-300">Skor Maksimal</td>
+                <td class="py-2 px-3 text-center font-mono text-slate-600" id="rep-max-score">90</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-3 text-right border-r border-slate-300 text-amber-900 font-black">Nilai Akhir : (Skor Perolehan / Skor Maks) × 100%</td>
+                <td class="py-2 px-3 text-center font-mono font-black text-amber-900 text-sm" id="rep-final-score">0%</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-3 text-right border-r border-slate-300">Predikat Ketercapaian Mutu</td>
+                <td class="py-2 px-3 text-center font-black" id="rep-final-predicate">D (Kurang)</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Standar Kriteria Penilaian Kemendikbud -->
+        <div class="text-[11px] text-slate-600 border border-slate-200 p-2.5 rounded-lg bg-slate-50/50 flex items-center justify-between flex-wrap gap-2">
+          <span class="font-bold">Ketercapaian Mutu:</span>
+          <span>86 - 100 % = <strong>A (Amat Baik)</strong></span>
+          <span>70 - 85 % = <strong>B (Baik)</strong></span>
+          <span>55 - 69 % = <strong>C (Cukup)</strong></span>
+          <span>&lt; 55 % = <strong>D (Kurang)</strong></span>
+        </div>
+
+        <!-- Catatan & Tindak Lanjut Resmi -->
+        <div class="space-y-3 text-xs">
+          <div class="border border-slate-300 p-3 rounded-lg">
+            <span class="font-bold block text-slate-900 mb-1">Catatan Hasil Observasi:</span>
+            <p id="rep-notes-catatan" class="text-slate-700 whitespace-pre-line leading-relaxed italic">
+              -
+            </p>
+          </div>
+          <div class="border border-slate-300 p-3 rounded-lg">
+            <span class="font-bold block text-slate-900 mb-1">Rencana Tindak Lanjut:</span>
+            <p id="rep-notes-tindak-lanjut" class="text-slate-700 whitespace-pre-line leading-relaxed italic">
+              -
+            </p>
+          </div>
+        </div>
+
+        <!-- Kolom Tanda Tangan Resmi -->
+        <div class="pt-6 grid grid-cols-2 gap-8 text-xs text-center">
+          <div>
+            <p class="text-slate-600 mb-16">
+              Petugas yang Disupervisi,
+            </p>
+            <p class="font-bold text-slate-900 underline" id="rep-sign-emp-name">Nama Petugas</p>
+            <p class="text-slate-600 font-mono" id="rep-sign-emp-nip">NIP. -</p>
+          </div>
+          <div>
+            <p class="text-slate-600 mb-16">
+              <span id="rep-sign-place">Genteng</span>, <span id="rep-sign-date">18 Oktober 2026</span><br>
+              Kepala Sekolah,
+            </p>
+            <p class="font-bold text-slate-900 underline" id="rep-sign-ks-name">Nama Kepala Sekolah</p>
+            <p class="text-slate-600 font-mono" id="rep-sign-ks-nip">NIP. -</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: TAMBAH / ATUR JADWAL SUPERVISI TENDIK                          -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="modal-schedule-tendik" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">event_available</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Atur Jadwal Supervisi Tendik</h3>
+            <p class="text-xs text-slate-500">Rencanakan tanggal dan waktu pelaksanaan supervisi tendik.</p>
+          </div>
+        </div>
+        <button onclick="closeScheduleModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+
+      <form id="form-add-schedule-tendik" onsubmit="handleSaveScheduleTendik(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nama Pegawai Tendik *</label>
+          <select id="sched-emp-select" required
+            class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <!-- populated by JS -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Jenis Instrumen *</label>
+          <select id="sched-instrument-select" required
+            class="w-full px-3 py-2 rounded-xl border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="ktas">1. Kepala Tenaga Administrasi Sekolah (KTAS)</option>
+            <option value="persuratan">2. Administrasi Persuratan &amp; Pengarsipan</option>
+            <option value="sarpras">3. Administrasi Sarana &amp; Prasarana</option>
+            <option value="kebersihan">4. Tenaga Kebersihan / OB</option>
+            <option value="perpustakaan">5. Kepala Perpustakaan Sekolah</option>
+            <option value="laboratorium">6. Kepala Laboratorium Sekolah</option>
+            <option value="keamanan">7. Petugas Keamanan / Security</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tanggal Supervisi *</label>
+            <input type="date" id="sched-date" required
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Waktu / Jam Pelaksanaan</label>
+            <input type="text" id="sched-time" placeholder="08.30 - 10.00 WIB"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Catatan / Fokus Pemeriksaan Dokumen</label>
+          <input type="text" id="sched-notes" placeholder="Misal: Pemeriksaan BKU, Arsip Surat, dan Buku KIR..."
+            class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeScheduleModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl">Batal</button>
+          <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md">Simpan Jadwal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Universal Footer -->
+  <footer id="app-footer"></footer>
+  <!-- Mobile Bottom Nav -->
+  <nav id="app-mobile-nav"></nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- APPLICATION LOGIC SCRIPT                                              -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <script>
+    // State Variables
+    let allEmployees = [];
+    let allSupervisions = [];
+    let allSchedules = [];
+    let currentInstrumentKey = 'ktas';
+    let currentEmployee = null;
+    let currentScores = {};
+    let schoolProfile = {};
+
+    // Initialization on DOM Load
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Initialize Universal Layout
+      if (window.KS_INCLUDES) {
+        window.KS_INCLUDES.init({ type: 'dashboard', activeNav: 'tendik' });
+      }
+
+      // 2. Load School Profile & Active Period
+      loadProfileAndPeriod();
+
+      // 3. Load Employees (all guru, guru bk, staff)
+      await loadEmployeesList();
+
+      // 4. Load Supervisi Tendik & Schedules
+      await loadSupervisionData();
+
+      // 5. Render Instrument Form
+      renderInstrumentItems(currentInstrumentKey);
+
+      // Set default date
+      document.getElementById('form-supervision-date').value = new Date().toISOString().split('T')[0];
+    });
+
+    // Load Profile & Period
+    async function loadProfileAndPeriod() {
+      const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+      const activeSid = (window.KS_AUTH && typeof window.KS_AUTH.getActiveSchoolId === 'function')
+        ? window.KS_AUTH.getActiveSchoolId()
+        : (user?.schoolId || user?.school_id || 'SCH-001');
+      const username = user ? (user.username || '') : '';
+      let p = window.KS_AUTH ? window.KS_AUTH.getProfile() : {};
+
+      try {
+        const base = window.KS_AUTH ? window.KS_AUTH.getBaseUrl() : '../';
+        const url = `${base}api.php?action=get_profile&school_id=${encodeURIComponent(activeSid)}&username=${encodeURIComponent(username)}`;
+        const resp = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url) : fetch(url));
+        const res = await resp.json();
+        if (res.success && res.profile) {
+          p = { ...p, ...res.profile };
+        }
+      } catch (e) {
+        console.warn('Gagal memuat profil sekolah:', e);
+      }
+
+      schoolProfile = p;
+      const schoolCode = p.schoolCode || user?.schoolCode || (activeSid === 'SCH-004' ? 'SEK-JZ49' : activeSid);
+      schoolProfile.schoolCode = schoolCode;
+      schoolProfile.schoolId = activeSid;
+      schoolProfile.school_id = activeSid;
+
+      const academicYear = p.academicYear || user?.academicYear || '2026/2027';
+      const semester = p.semester || user?.semester || 'Ganjil';
+      schoolProfile.academicYear = academicYear;
+      schoolProfile.semester = semester;
+
+      document.getElementById('badge-active-period').textContent = `${academicYear} • ${semester}`;
+      document.getElementById('hero-code-val').textContent = schoolCode;
+      document.getElementById('form-disp-cycle').textContent = `${academicYear} • ${semester}`;
+      document.getElementById('modal-disp-school-code').textContent = schoolCode;
+
+      // Update Report Header
+      const schoolName = p.schoolName || user?.schoolName || user?.school || 'Sekolah';
+      document.getElementById('rep-school-name').textContent = schoolName.toUpperCase();
+      document.getElementById('rep-school-address').textContent = p.schoolAddress || 'Alamat Sekolah';
+      document.getElementById('rep-school-npsn').textContent = p.npsn || '-';
+      document.getElementById('rep-disp-year').textContent = academicYear;
+      document.getElementById('rep-disp-semester').textContent = semester.toUpperCase();
+      
+      const ksName = p.fullName || user?.fullName || 'Kepala Sekolah';
+      const ksNip = p.nip || user?.nip || '';
+      document.getElementById('rep-sign-ks-name').textContent = ksName;
+      document.getElementById('rep-sign-ks-nip').textContent = ksNip ? `NIP. ${ksNip}` : 'NIP. -';
+      document.getElementById('rep-ks-name').textContent = ksName;
+
+      const city = (p.schoolAddress || '').includes('Banyuwangi') ? 'Genteng' : ((p.schoolAddress || '').split(',')[0] || 'Tempat');
+      document.getElementById('rep-sign-place').textContent = city;
+    }
+
+    // Load All Employees (Include Staff & Guru sesuai School ID)
+    async function loadEmployeesList() {
+      const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+      const activeSid = (window.KS_AUTH && typeof window.KS_AUTH.getActiveSchoolId === 'function')
+        ? window.KS_AUTH.getActiveSchoolId()
+        : (user?.schoolId || user?.school_id || 'SCH-001');
+      const base = window.KS_AUTH ? window.KS_AUTH.getBaseUrl() : '../';
+      const url = `${base}api.php?action=get_employees&include_staff=1&school_id=${encodeURIComponent(activeSid)}`;
+
+      allEmployees = [];
+      try {
+        const resp = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url) : fetch(url));
+        const res = await resp.json();
+        if (res.success && Array.isArray(res.employees)) {
+          // Filter ketat sesuai school_id yang aktif dan jangan masukkan Kepala Sekolah (karena KS bertindak sebagai penilai/supervisor)
+          allEmployees = res.employees.filter(emp => {
+            const sidMatch = !emp.school_id || emp.school_id === activeSid;
+            const notKS = emp.role !== 'Kepala Sekolah' && (emp.role || '').toLowerCase() !== 'kepala_sekolah';
+            return sidMatch && notKS;
+          });
+        }
+      } catch (e) {
+        console.warn('Gagal memuat daftar personil:', e);
+      }
+
+      populateEmployeeSelects();
+    }
+
+    // Populate Select Dropdowns
+    function populateEmployeeSelects() {
+      const formSelect = document.getElementById('form-employee-select');
+      const schedSelect = document.getElementById('sched-emp-select');
+
+      formSelect.innerHTML = '<option value="">-- Pilih Personil (Guru, Guru BK, Staff TU, OB, Satpam) --</option>';
+      schedSelect.innerHTML = '<option value="">-- Pilih Personil Tendik --</option>';
+
+      if (allEmployees.length === 0) {
+        const emptyOpt1 = document.createElement('option');
+        emptyOpt1.value = "";
+        emptyOpt1.textContent = "-- Belum ada data guru/tendik di sekolah ini (tambahkan di menu Karyawan) --";
+        emptyOpt1.disabled = true;
+        formSelect.appendChild(emptyOpt1);
+
+        const emptyOpt2 = document.createElement('option');
+        emptyOpt2.value = "";
+        emptyOpt2.textContent = "-- Belum ada data personil di sekolah ini --";
+        emptyOpt2.disabled = true;
+        schedSelect.appendChild(emptyOpt2);
+        return;
+      }
+
+      allEmployees.forEach(emp => {
+        const role = emp.role || 'Staff';
+        const task = emp.task ? ` (${emp.task})` : '';
+        const optText = `${emp.name} — [${role}]${task}`;
+
+        const opt1 = document.createElement('option');
+        opt1.value = emp.id;
+        opt1.textContent = optText;
+        formSelect.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = emp.id;
+        opt2.textContent = optText;
+        schedSelect.appendChild(opt2);
+      });
+    }
+
+    // Load Supervisi Tendik Records
+    async function loadSupervisionData() {
+      const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+      const activeSid = (window.KS_AUTH && typeof window.KS_AUTH.getActiveSchoolId === 'function')
+        ? window.KS_AUTH.getActiveSchoolId()
+        : (user?.schoolId || user?.school_id || 'SCH-001');
+
+      if (window.KS_TENDIK) {
+        allSupervisions = await window.KS_TENDIK.fetchFromApi({ all_cycles: '1', school_id: activeSid });
+      }
+
+      // Load Schedules
+      try {
+        const base = window.KS_AUTH ? window.KS_AUTH.getBaseUrl() : '../';
+        const schedUrl = `${base}api.php?action=get_schedules&school_id=${encodeURIComponent(activeSid)}`;
+        const resp = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(schedUrl) : fetch(schedUrl));
+        const res = await resp.json();
+        if (res.success && Array.isArray(res.schedules)) {
+          allSchedules = res.schedules.filter(s => (s.submittedBy === 'Tendik' || (s.gradeClass || '').includes('Tendik')) && (!s.school_id || s.school_id === activeSid));
+        }
+      } catch (e) {}
+
+      renderRekapTable();
+      updateMetricKpis();
+    }
+
+    // Update Metric KPI Cards
+    function updateMetricKpis() {
+      document.getElementById('stat-total-tendik').textContent = allEmployees.length;
+      
+      const supervisedEmpNames = new Set(allSupervisions.map(s => (s.employeeName || '').toLowerCase()));
+      const doneCount = supervisedEmpNames.size;
+      document.getElementById('stat-done-tendik').textContent = doneCount;
+
+      const pct = allEmployees.length > 0 ? Math.round((doneCount / allEmployees.length) * 100) : 0;
+      document.getElementById('stat-pct-tendik').textContent = `${pct}% Ketercapaian`;
+
+      let totalPct = 0;
+      allSupervisions.forEach(s => {
+        totalPct += parseFloat(s.percentage || 0);
+      });
+      const avg = allSupervisions.length > 0 ? (totalPct / allSupervisions.length).toFixed(1) : 0;
+      document.getElementById('stat-avg-score').textContent = `${avg}%`;
+
+      let avgPred = '—';
+      if (avg >= 86) avgPred = 'Predikat: A (Amat Baik)';
+      else if (avg >= 70) avgPred = 'Predikat: B (Baik)';
+      else if (avg >= 55) avgPred = 'Predikat: C (Cukup)';
+      else if (avg > 0) avgPred = 'Predikat: D (Kurang)';
+      document.getElementById('stat-avg-predikat').textContent = avgPred;
+
+      document.getElementById('stat-scheduled-tendik').textContent = allSchedules.length;
+      document.getElementById('badge-count-rekap').textContent = allSupervisions.length;
+    }
+
+    // Render Main Rekap Table
+    function renderRekapTable() {
+      const tbody = document.getElementById('rekap-table-body');
+      const search = (document.getElementById('filter-search-tendik').value || '').toLowerCase();
+      const instFilter = document.getElementById('filter-instrument-tendik').value;
+      const statusFilter = document.getElementById('filter-status-tendik').value;
+
+      let list = allEmployees.map(emp => {
+        const supervisions = allSupervisions.filter(s => (s.employeeName || '').toLowerCase() === (emp.name || '').toLowerCase());
+        const latest = supervisions[0] || null;
+        const schedule = allSchedules.find(sc => (sc.teacherName || '').toLowerCase() === (emp.name || '').toLowerCase());
+
+        return {
+          emp,
+          supervisions,
+          latest,
+          schedule,
+          isDone: !!latest
+        };
+      });
+
+      // Filter
+      if (search) {
+        list = list.filter(item => 
+          (item.emp.name || '').toLowerCase().includes(search) ||
+          (item.emp.nip || '').includes(search) ||
+          (item.emp.task || '').toLowerCase().includes(search)
+        );
+      }
+
+      if (instFilter !== 'all') {
+        list = list.filter(item => item.latest && item.latest.instrumentType === instFilter);
+      }
+
+      if (statusFilter === 'done') {
+        list = list.filter(item => item.isDone);
+      } else if (statusFilter === 'pending') {
+        list = list.filter(item => !item.isDone);
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="py-8 text-center text-slate-400">
+              <span class="material-symbols-outlined text-3xl mb-1 text-slate-300">search_off</span>
+              <p>Tidak ada data personil tendik yang cocok dengan filter pencarian.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map((item, idx) => {
+        const emp = item.emp;
+        const latest = item.latest;
+        const instMeta = latest && window.KS_TENDIK ? window.KS_TENDIK.INSTRUMENTS[latest.instrumentType] : null;
+
+        let scoreHtml = '<span class="text-slate-400 font-medium">Belum Disupervisi</span>';
+        if (latest) {
+          const scoreCalc = window.KS_TENDIK.calculateScore(latest.scores || {}, latest.instrumentType);
+          scoreHtml = `
+            <div class="flex flex-col items-center">
+              <span class="font-mono font-bold text-slate-900">${scoreCalc.percentage}%</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${scoreCalc.badgeClass}">
+                Predikat ${scoreCalc.predicate} (${scoreCalc.predicateLabel})
+              </span>
+            </div>
+          `;
+        }
+
+        const dateStr = latest ? (latest.supervisionDate || latest.updatedAt?.split('T')[0] || '-') : '-';
+        const instName = instMeta ? instMeta.title : (latest ? latest.instrumentType : '<span class="text-slate-400">—</span>');
+
+        return `
+          <tr class="hover:bg-amber-50/40 transition">
+            <td class="py-3 px-4 text-center font-bold text-slate-400">${idx + 1}</td>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2.5">
+                <img src="${emp.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(emp.name)}" 
+                  class="w-8 h-8 rounded-full object-cover border border-slate-200" alt="Avatar">
+                <div>
+                  <div class="font-bold text-slate-900">${emp.name}</div>
+                  <div class="text-[10px] text-slate-400 font-mono">NIP: ${emp.nip || '-'}</div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 block w-max mb-1">
+                ${emp.role || 'Staff'}
+              </span>
+              ${emp.task ? `
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-900 border border-amber-200">
+                  <span class="material-symbols-outlined text-[13px] text-amber-600">assignment_ind</span>
+                  <span>${emp.task}</span>
+                </span>` : `<span class="text-[11px] text-slate-400 italic">Belum diatur</span>`}
+            </td>
+            <td class="py-3 px-4 text-xs font-medium text-slate-700">
+              ${instName}
+            </td>
+            <td class="py-3 px-4 text-center font-mono text-[11px] text-slate-600">
+              ${dateStr}
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${scoreHtml}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="copySingleAccessCode('${emp.accessCode || ''}', '${emp.name}')" 
+                class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-[10px] font-mono font-bold transition flex items-center gap-1 mx-auto"
+                title="Klik untuk salin kode akses">
+                <span class="material-symbols-outlined text-xs">key</span>
+                <span>${emp.accessCode || 'GEN-KODE'}</span>
+              </button>
+            </td>
+            <td class="py-3 px-4 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="startSupervisionForEmp('${emp.id}')"
+                  class="p-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition active:scale-95"
+                  title="Supervisi Sekarang">
+                  <span class="material-symbols-outlined text-sm">edit_note</span>
+                </button>
+                ${latest ? `
+                  <button onclick="previewReportFromData('${latest.id}')"
+                    class="p-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition active:scale-95"
+                    title="Lihat / Cetak Lembar Laporan">
+                    <span class="material-symbols-outlined text-sm">print</span>
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Switch Tabs
+    function switchMainTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-amber-600', 'text-amber-700', 'bg-amber-50/60');
+        btn.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      document.getElementById('section-rekap').classList.add('hidden');
+      document.getElementById('section-form').classList.add('hidden');
+      document.getElementById('section-report').classList.add('hidden');
+
+      if (tab === 'rekap') {
+        document.getElementById('tab-btn-rekap').classList.add('border-amber-600', 'text-amber-700', 'bg-amber-50/60');
+        document.getElementById('section-rekap').classList.remove('hidden');
+      } else if (tab === 'form') {
+        document.getElementById('tab-btn-form').classList.add('border-amber-600', 'text-amber-700', 'bg-amber-50/60');
+        document.getElementById('section-form').classList.remove('hidden');
+      } else if (tab === 'report') {
+        document.getElementById('tab-btn-report').classList.add('border-amber-600', 'text-amber-700', 'bg-amber-50/60');
+        document.getElementById('section-report').classList.remove('hidden');
+      }
+    }
+
+    // On Employee Select Change in Form
+    function onEmployeeSelectChange(empId) {
+      const emp = allEmployees.find(e => e.id === empId);
+      currentEmployee = emp || null;
+
+      if (!emp) {
+        document.getElementById('form-disp-nip').textContent = '-';
+        document.getElementById('form-disp-task').textContent = '-';
+        document.getElementById('form-disp-code').textContent = '-';
+        return;
+      }
+
+      document.getElementById('form-disp-nip').textContent = emp.nip || '-';
+      document.getElementById('form-disp-task').textContent = `${emp.role || 'Staff'} — ${emp.task || '-'}`;
+      document.getElementById('form-disp-code').textContent = emp.accessCode || '-';
+
+      // Auto-suggest instrument based on employee task/role (7 Instrumen Resmi GTK)
+      const taskLower = (emp.task || '').toLowerCase();
+      const roleLower = (emp.role || '').toLowerCase();
+
+      let targetInst = 'ktas';
+      if (taskLower.includes('bersih') || taskLower.includes('ob') || roleLower.includes('kebersihan')) {
+        targetInst = 'kebersihan';
+      } else if (taskLower.includes('surat') || taskLower.includes('arsip') || taskLower.includes('persuratan')) {
+        targetInst = 'persuratan';
+      } else if (taskLower.includes('sarpras') || taskLower.includes('sarana')) {
+        targetInst = 'sarpras';
+      } else if (taskLower.includes('perpus') || roleLower.includes('pustakawan')) {
+        targetInst = 'perpustakaan';
+      } else if (taskLower.includes('lab') || roleLower.includes('laboran')) {
+        targetInst = 'laboratorium';
+      } else if (taskLower.includes('aman') || taskLower.includes('satpam') || taskLower.includes('security') || taskLower.includes('keamanan')) {
+        targetInst = 'keamanan';
+      } else if (taskLower.includes('administrasi') || taskLower.includes('ktas') || taskLower.includes('tata usaha') || roleLower.includes('tu') || roleLower.includes('administrasi')) {
+        targetInst = 'ktas';
+      }
+
+      document.getElementById('form-instrument-select').value = targetInst;
+      onInstrumentSelectChange(targetInst);
+
+      // Check if employee has existing supervision record for this instrument
+      const existing = allSupervisions.find(s => (s.employeeName || '').toLowerCase() === emp.name.toLowerCase() && s.instrumentType === targetInst);
+      if (existing) {
+        currentScores = existing.scores || {};
+        document.getElementById('form-notes-catatan').value = existing.notesCatatan || '';
+        document.getElementById('form-notes-tindak-lanjut').value = existing.notesTindakLanjut || '';
+        if (existing.supervisionDate) document.getElementById('form-supervision-date').value = existing.supervisionDate;
+        renderInstrumentItems(targetInst);
+        updateFormScoreDisplay();
+      } else {
+        currentScores = {};
+        document.getElementById('form-notes-catatan').value = '';
+        document.getElementById('form-notes-tindak-lanjut').value = '';
+        renderInstrumentItems(targetInst);
+        updateFormScoreDisplay();
+      }
+    }
+
+    // On Instrument Select Change
+    function onInstrumentSelectChange(instKey) {
+      currentInstrumentKey = instKey;
+      currentScores = {};
+      renderInstrumentItems(instKey);
+      updateFormScoreDisplay();
+    }
+
+    // Render Instrument Table Items
+    function renderInstrumentItems(instKey) {
+      const inst = window.KS_TENDIK ? window.KS_TENDIK.INSTRUMENTS[instKey] : null;
+      if (!inst) return;
+
+      document.getElementById('inst-header-title').textContent = inst.title;
+      document.getElementById('inst-header-subtitle').textContent = inst.subtitle;
+
+      const items = window.KS_TENDIK.getFlatItems(instKey);
+      document.getElementById('inst-header-badge').textContent = `${items.length} Butir Pertanyaan`;
+
+      const tbody = document.getElementById('instrument-items-body');
+      tbody.innerHTML = '';
+
+      if (inst.sections) {
+        inst.sections.forEach(sec => {
+          // Section header row
+          const secRow = document.createElement('tr');
+          secRow.className = 'bg-amber-100/60 font-bold text-amber-950';
+          secRow.innerHTML = `<td colspan="4" class="py-2 px-4 text-xs tracking-wider">${sec.group}</td>`;
+          tbody.appendChild(secRow);
+
+          sec.items.forEach(item => {
+            tbody.appendChild(createItemRow(item));
+          });
+        });
+      } else {
+        items.forEach(item => {
+          tbody.appendChild(createItemRow(item));
+        });
+      }
+    }
+
+    // Helper: Create Row for an item
+    function createItemRow(item) {
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+      const currentVal = parseInt(currentScores[item.no] || 0, 10);
+
+      tr.innerHTML = `
+        <td class="py-2.5 px-3 text-center font-bold text-slate-400">${item.no}</td>
+        <td class="py-2.5 px-4 font-semibold text-slate-800 leading-snug">
+          ${item.text}
+        </td>
+        <td class="py-2.5 px-4 text-slate-500 text-[11px] leading-relaxed italic">
+          ${item.evidence || '-'}
+        </td>
+        <td class="py-2.5 px-3">
+          <div class="flex items-center justify-center gap-1.5 sm:gap-2">
+            ${[1, 2, 3, 4, 5].map(v => `
+              <label class="cursor-pointer flex flex-col items-center">
+                <input type="radio" name="item_score_${item.no}" value="${v}" 
+                  ${currentVal === v ? 'checked' : ''} 
+                  onchange="onItemScoreChange(${item.no}, ${v})"
+                  class="w-4 h-4 text-amber-600 focus:ring-amber-500 border-slate-300">
+                <span class="text-[9px] font-bold text-slate-500 mt-0.5">${v}</span>
+              </label>
+            `).join('')}
+          </div>
+        </td>
+      `;
+      return tr;
+    }
+
+    // On Item Score Radio Change
+    function onItemScoreChange(itemNo, value) {
+      currentScores[itemNo] = parseInt(value, 10);
+      updateFormScoreDisplay();
+    }
+
+    // Update Live Score Display Banner
+    function updateFormScoreDisplay() {
+      if (!window.KS_TENDIK) return;
+      const res = window.KS_TENDIK.calculateScore(currentScores, currentInstrumentKey);
+
+      document.getElementById('calc-disp-score').textContent = `${res.totalScore} / ${res.maxScore}`;
+      document.getElementById('calc-disp-pct').textContent = `${res.percentage}%`;
+
+      const badge = document.getElementById('calc-disp-predicate');
+      badge.textContent = `Predikat ${res.predicate} (${res.predicateLabel})`;
+      badge.className = `px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${res.badgeClass}`;
+    }
+
+    // Auto-fill all items with specific score
+    function autoFillScores(val) {
+      const items = window.KS_TENDIK.getFlatItems(currentInstrumentKey);
+      items.forEach(item => {
+        currentScores[item.no] = val;
+      });
+      renderInstrumentItems(currentInstrumentKey);
+      updateFormScoreDisplay();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Skor Otomatis Diisi!',
+        text: `Semua butir instrumen diisi dengan nilai ${val}. Nilai akhir dan predikat telah diperbarui.`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }
+
+    // Reset Form
+    function resetInstrumentForm() {
+      currentScores = {};
+      renderInstrumentItems(currentInstrumentKey);
+      updateFormScoreDisplay();
+      document.getElementById('form-notes-catatan').value = '';
+      document.getElementById('form-notes-tindak-lanjut').value = '';
+    }
+
+    // AI Tendik Assistant Trigger
+    function triggerAiTendikAssistant() {
+      if (!currentEmployee) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Pilih Pegawai Dahulu',
+          text: 'Silakan pilih Nama Pegawai yang disupervisi terlebih dahulu agar asisten AI dapat membuat analisis yang kontekstual.'
+        });
+        return;
+      }
+
+      const res = window.KS_TENDIK.calculateScore(currentScores, currentInstrumentKey);
+      if (res.filledCount === 0) {
+        // Auto fill with 4 if empty
+        autoFillScores(4);
+      }
+
+      Swal.fire({
+        title: 'Asisten AI Menganalisis...',
+        text: 'Menghasilkan evaluasi kinerja dan rekomendasi tindak lanjut berdasarkan instrumen dan skor.',
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        timer: 800
+      }).then(() => {
+        const smart = window.KS_TENDIK.generateSmartRecommendation(
+          currentInstrumentKey,
+          currentEmployee.name,
+          res.percentage || 80,
+          res.predicate || 'B'
+        );
+
+        document.getElementById('form-notes-catatan').value = smart.strength;
+        document.getElementById('form-notes-tindak-lanjut').value = smart.followUp;
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Rekomendasi AI Selesai!',
+          text: 'Catatan hasil evaluasi dan rekomendasi tindak lanjut berhasil dibuat dan ditempatkan pada formulir.',
+          confirmButtonColor: '#d97706'
+        });
+      });
+    }
+
+    // Save Supervision Record
+    async function saveSupervisionRecord() {
+      if (!currentEmployee) {
+        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Silakan pilih Nama Pegawai yang disupervisi.' });
+        return;
+      }
+
+      const resScore = window.KS_TENDIK.calculateScore(currentScores, currentInstrumentKey);
+      const notesCatatan = document.getElementById('form-notes-catatan').value;
+      const notesTindakLanjut = document.getElementById('form-notes-tindak-lanjut').value;
+      const supervisionDate = document.getElementById('form-supervision-date').value || new Date().toISOString().split('T')[0];
+
+      const p = schoolProfile;
+      const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+      const activeSid = (window.KS_AUTH && typeof window.KS_AUTH.getActiveSchoolId === 'function')
+        ? window.KS_AUTH.getActiveSchoolId()
+        : (p.schoolId || p.school_id || user?.schoolId || 'SCH-001');
+
+      const supervisorName = p.fullName || user?.fullName || 'Kepala Sekolah';
+      const supervisorNip = p.nip || user?.nip || '-';
+      const academicYear = p.academicYear || user?.academicYear || '2026/2027';
+      const semester = p.semester || user?.semester || 'Ganjil';
+
+      const payload = {
+        id: 'TDK-' + Date.now() + '-' + Math.floor(Math.random() * 900 + 100),
+        school_id: activeSid,
+        schoolId: activeSid,
+        employeeId: currentEmployee.id,
+        employeeName: currentEmployee.name,
+        nip: currentEmployee.nip || '-',
+        role: currentEmployee.role || 'Staff',
+        bidangTugas: currentEmployee.task || '-',
+        instrumentType: currentInstrumentKey,
+        instrumentTitle: window.KS_TENDIK.INSTRUMENTS[currentInstrumentKey].title,
+        scores: currentScores,
+        totalScore: resScore.totalScore,
+        maxScore: resScore.maxScore,
+        percentage: resScore.percentage,
+        predicate: resScore.predicate,
+        predicateLabel: resScore.predicateLabel,
+        notesCatatan,
+        notesTindakLanjut,
+        supervisionDate,
+        supervisorName,
+        supervisorNip,
+        academicYear,
+        semester,
+        updatedAt: new Date().toISOString()
+      };
+
+      Swal.fire({
+        title: 'Menyimpan...',
+        text: 'Mengunggah hasil supervisi tendik ke server...',
+        didOpen: () => Swal.showLoading()
+      });
+
+      const saveRes = await window.KS_TENDIK.saveToApi(payload);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Supervisi Berhasil Disimpan!',
+        text: `Data supervisi untuk ${currentEmployee.name} berhasil disimpan dengan Nilai ${resScore.percentage}% (Predikat ${resScore.predicate}).`,
+        confirmButtonColor: '#d97706',
+        showCancelButton: true,
+        confirmButtonText: 'Lihat Lembar Laporan',
+        cancelButtonText: 'Kembali ke Rekap'
+      }).then(result => {
+        // Reload list
+        loadSupervisionData();
+        if (result.isConfirmed) {
+          renderReportFromData(payload);
+          switchMainTab('report');
+        } else {
+          switchMainTab('rekap');
+        }
+      });
+    }
+
+    // Start New Supervision
+    function startNewSupervision() {
+      switchMainTab('form');
+      document.getElementById('form-employee-select').focus();
+    }
+
+    // Start Supervision for specific employee from Rekap
+    function startSupervisionForEmp(empId) {
+      switchMainTab('form');
+      document.getElementById('form-employee-select').value = empId;
+      onEmployeeSelectChange(empId);
+    }
+
+    // Preview Report from Stored Record ID
+    function previewReportFromData(id) {
+      const rec = allSupervisions.find(s => s.id === id);
+      if (rec) {
+        renderReportFromData(rec);
+        switchMainTab('report');
+      }
+    }
+
+    // Preview Report from active form
+    function previewAndPrintReport() {
+      if (!currentEmployee) {
+        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Pilih pegawai terlebih dahulu untuk melihat laporan.' });
+        return;
+      }
+      const resScore = window.KS_TENDIK.calculateScore(currentScores, currentInstrumentKey);
+      const p = schoolProfile;
+      const data = {
+        employeeName: currentEmployee.name,
+        nip: currentEmployee.nip || '-',
+        role: currentEmployee.role || 'Staff',
+        bidangTugas: currentEmployee.task || '-',
+        instrumentType: currentInstrumentKey,
+        instrumentTitle: window.KS_TENDIK.INSTRUMENTS[currentInstrumentKey].title,
+        scores: currentScores,
+        totalScore: resScore.totalScore,
+        maxScore: resScore.maxScore,
+        percentage: resScore.percentage,
+        predicate: resScore.predicate,
+        predicateLabel: resScore.predicateLabel,
+        notesCatatan: document.getElementById('form-notes-catatan').value,
+        notesTindakLanjut: document.getElementById('form-notes-tindak-lanjut').value,
+        supervisionDate: document.getElementById('form-supervision-date').value || new Date().toISOString().split('T')[0],
+        supervisorName: p.fullName || 'Kepala Sekolah',
+        supervisorNip: p.nip || '-',
+        academicYear: p.academicYear || '2026/2027',
+        semester: p.semester || 'Ganjil'
+      };
+
+      renderReportFromData(data);
+      switchMainTab('report');
+    }
+
+    // Render Data into Report Section
+    function renderReportFromData(data) {
+      const instMeta = window.KS_TENDIK.INSTRUMENTS[data.instrumentType] || window.KS_TENDIK.INSTRUMENTS.ktas;
+      const items = window.KS_TENDIK.getFlatItems(data.instrumentType);
+      const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+      const schName = schoolProfile.schoolName || user?.schoolName || user?.school || 'Sekolah';
+      const ksName = data.supervisorName || schoolProfile.fullName || user?.fullName || 'Kepala Sekolah';
+
+      document.getElementById('rep-instrument-title').textContent = `INSTRUMEN SUPERVISI ${instMeta.title.toUpperCase()}`;
+      document.getElementById('rep-disp-year').textContent = data.academicYear || schoolProfile.academicYear || '2026/2027';
+      document.getElementById('rep-disp-semester').textContent = (data.semester || schoolProfile.semester || 'Ganjil').toUpperCase();
+
+      document.getElementById('rep-emp-name').textContent = data.employeeName || '-';
+      document.getElementById('rep-emp-nip').textContent = data.nip || '-';
+      document.getElementById('rep-emp-task').textContent = `${data.role || 'Staff'} (${data.bidangTugas || '-'})`;
+      document.getElementById('rep-emp-date').textContent = data.supervisionDate || '-';
+      document.getElementById('rep-sign-date').textContent = data.supervisionDate || '-';
+
+      const repEmpSchool = document.getElementById('rep-emp-school');
+      if (repEmpSchool) repEmpSchool.textContent = schName;
+      const repKsName = document.getElementById('rep-ks-name');
+      if (repKsName) repKsName.textContent = ksName;
+
+      document.getElementById('rep-sign-emp-name').textContent = data.employeeName || 'Petugas';
+      document.getElementById('rep-sign-emp-nip').textContent = data.nip ? `NIP. ${data.nip}` : 'NIP. -';
+      document.getElementById('rep-sign-ks-name').textContent = ksName;
+      document.getElementById('rep-sign-ks-nip').textContent = data.supervisorNip && data.supervisorNip !== '-' ? `NIP. ${data.supervisorNip}` : (schoolProfile.nip ? `NIP. ${schoolProfile.nip}` : 'NIP. -');
+
+      // Render table
+      const tbody = document.getElementById('rep-table-body');
+      tbody.innerHTML = items.map(item => {
+        const val = data.scores ? (data.scores[item.no] || '-') : '-';
+        return `
+          <tr>
+            <td class="py-1.5 px-3 text-center border-r border-slate-300 font-bold">${item.no}</td>
+            <td class="py-1.5 px-3 border-r border-slate-300">${item.text}</td>
+            <td class="py-1.5 px-3 border-r border-slate-300 text-slate-500 italic text-[11px]">${item.evidence || '-'}</td>
+            <td class="py-1.5 px-3 text-center font-bold font-mono">${val}</td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('rep-total-score').textContent = data.totalScore || 0;
+      document.getElementById('rep-max-score').textContent = data.maxScore || (items.length * 5);
+      document.getElementById('rep-final-score').textContent = `${data.percentage || 0}%`;
+      document.getElementById('rep-final-predicate').textContent = `${data.predicate || 'D'} (${data.predicateLabel || 'Kurang'})`;
+
+      document.getElementById('rep-notes-catatan').textContent = data.notesCatatan || 'Pelaksanaan tugas telah berjalan secara memadai dan sesuai dengan target operasional sekolah.';
+      document.getElementById('rep-notes-tindak-lanjut').textContent = data.notesTindakLanjut || 'Tingkatkan ketertiban pengarsipan berkas kerja dan pertahankan efisiensi pelayanan.';
+    }
+
+    // Access Codes Helper: Centralized in /karyawan/
+    function openAccessCodeModal() {
+      window.location.href = '../karyawan/';
+    }
+
+    function closeAccessCodeModal() {
+      // No-op as modal is centralized in /karyawan/
+    }
+
+    function copySingleAccessCode(code, name) {
+      if (!code || code === 'GEN-KODE' || code === 'TK-PENDING' || code === '-') {
+        Swal.fire({
+          icon: 'info',
+          title: 'Kode Akses Karyawan',
+          text: `Personil ${name} belum memiliki kode akses aktif. Silakan buka menu Kelola Karyawan untuk men-generate kode akses karyawan.`,
+          showCancelButton: true,
+          confirmButtonText: 'Buka Menu Karyawan',
+          confirmButtonColor: '#d97706',
+          cancelButtonText: 'Tutup'
+        }).then((res) => {
+          if (res.isConfirmed) {
+            window.location.href = '../karyawan/';
+          }
+        });
+        return;
+      }
+      navigator.clipboard.writeText(code);
+      Swal.fire({
+        icon: 'success',
+        title: 'Kode Disalin!',
+        text: `Kode akses untuk ${name} (${code}) telah disalin ke clipboard.`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }
+
+    // Modal Schedule Helpers
+    function openScheduleModal() {
+      document.getElementById('modal-schedule-tendik').classList.remove('hidden');
+      document.getElementById('sched-date').value = new Date().toISOString().split('T')[0];
+    }
+
+    function closeScheduleModal() {
+      document.getElementById('modal-schedule-tendik').classList.add('hidden');
+    }
+
+    async function handleSaveScheduleTendik(e) {
+      e.preventDefault();
+      const empId = document.getElementById('sched-emp-select').value;
+      const instType = document.getElementById('sched-instrument-select').value;
+      const date = document.getElementById('sched-date').value;
+      const time = document.getElementById('sched-time').value;
+      const notes = document.getElementById('sched-notes').value;
+
+      const emp = allEmployees.find(e => e.id === empId);
+      if (!emp) return;
+
+      const p = schoolProfile;
+      const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+      const activeSid = (window.KS_AUTH && typeof window.KS_AUTH.getActiveSchoolId === 'function')
+        ? window.KS_AUTH.getActiveSchoolId()
+        : (p.schoolId || p.school_id || user?.schoolId || 'SCH-001');
+
+      const academicYear = p.academicYear || user?.academicYear || '2026/2027';
+      const semester = p.semester || user?.semester || 'Ganjil';
+
+      const payload = {
+        id: 'SCH-TDK-' + Date.now(),
+        school_id: activeSid,
+        schoolId: activeSid,
+        teacherId: emp.id,
+        teacherName: emp.name,
+        subject: `Supervisi Tendik: ${window.KS_TENDIK.INSTRUMENTS[instType].title}`,
+        gradeClass: `Tendik (${emp.role || 'Staff'})`,
+        rppDate: date,
+        obsDate: date,
+        timeSlot: time,
+        submittedBy: 'Kepala Sekolah',
+        notes: notes,
+        status: 'Disetujui',
+        academicYear,
+        semester
+      };
+
+      try {
+        const base = window.KS_AUTH ? window.KS_AUTH.getBaseUrl() : '../';
+        const url = `${base}api.php?action=save_schedule&school_id=${encodeURIComponent(activeSid)}`;
+        await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }) : fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }));
+      } catch (e) {}
+
+      closeScheduleModal();
+      Swal.fire({
+        icon: 'success',
+        title: 'Jadwal Disimpan!',
+        text: `Jadwal supervisi untuk ${emp.name} pada ${date} berhasil dijadwalkan.`,
+        timer: 1600,
+        showConfirmButton: false
+      });
+
+      loadSupervisionData();
+    }
+  </script>
+</body>
+
+</html>

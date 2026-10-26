@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Prompt Modul Ajar Deep Learning &amp; STEM — Toolkit Guru SupervisiSekolah.id</title>
+    <meta name="description" content="Toolkit Guru: generator prompt RPP / Modul Ajar Pembelajaran Mendalam (Deep Learning) dan STEM sesuai standar supervisi akademik, siap dipakai di Claude.">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom Scrollbar for Textarea & Preview */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .claude-btn {
+            background: linear-gradient(135deg, #d97757 0%, #c15f3c 100%);
+        }
+        .claude-btn:hover {
+            background: linear-gradient(135deg, #e08868 0%, #cc6a46 100%);
+        }
+        .locked-input {
+            background: repeating-linear-gradient(135deg, #f8fafc, #f8fafc 8px, #f1f5f9 8px, #f1f5f9 16px);
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .pop-in { animation: popIn 0.25s ease both; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Toolkit Breadcrumb Bar -->
+    <div class="bg-slate-950 text-slate-300 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-2">
+            <nav class="flex items-center gap-1.5" aria-label="Breadcrumb">
+                <a href="../../" class="hover:text-emerald-300 transition flex items-center gap-1.5"><i class="fa-solid fa-chalkboard-user"></i> Dashboard Guru</a>
+                <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+                <a href="../" class="hover:text-emerald-300 transition flex items-center gap-1.5"><i class="fa-solid fa-toolbox"></i> Toolkit Guru</a>
+                <i class="fa-solid fa-chevron-right text-[9px] text-slate-600"></i>
+                <span class="text-white font-semibold">Generator Prompt RPP</span>
+            </nav>
+            <div id="teacherBadge" class="hidden items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center"><i class="fa-solid fa-user text-[10px]"></i></span>
+                <span id="teacherBadgeName" class="font-semibold text-white truncate max-w-[200px]"></span>
+                <span class="text-slate-600">·</span>
+                <span id="teacherBadgeSchool" class="text-slate-400 truncate max-w-[180px]"></span>
+                <button type="button" onclick="showAuthGate()" class="ml-1 text-[11px] text-amber-300 hover:text-amber-200 underline underline-offset-2 font-medium">Ganti Akun</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <a href="../" title="Kembali ke Toolkit Guru" class="bg-indigo-500/30 p-2.5 rounded-xl backdrop-blur-md border border-indigo-400/30 hover:bg-indigo-500/50 transition">
+                    <svg class="w-7 h-7 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Prompt Generator RPP / Modul Ajar</h1>
+                    <p class="text-xs text-indigo-200 font-medium">Pembelajaran Mendalam (Deep Learning) &amp; Standar Supervisi Akademik</p>
+                </div>
+            </div>
+            <!-- Action / Reset Option -->
+            <div class="flex items-center gap-2">
+                <a href="../" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-lg border border-white/20 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                    <span>Toolkit</span>
+                </a>
+                <button onclick="resetToDefaults()" class="px-3.5 py-1.5 bg-indigo-600/60 hover:bg-indigo-600 text-white text-xs font-semibold rounded-lg border border-indigo-400/30 transition-all shadow-sm flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span>Atur Ulang Preset</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Left Panel: Customization Form (5 Columns) -->
+            <section class="lg:col-span-5 space-y-5">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        1. Identitas Guru &amp; Sekolah
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <label for="inputNama" class="block font-semibold text-slate-700 mb-1 text-xs flex items-center justify-between">
+                                <span>Nama Guru</span>
+                                <span class="text-[10px] font-semibold text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-lock text-[9px]"></i> Dari akun</span>
+                            </label>
+                            <input type="text" id="inputNama" readonly title="Terisi otomatis dari akun guru yang login" class="locked-input w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-700 font-semibold outline-none cursor-not-allowed" value="">
+                        </div>
+                        <div>
+                            <label for="inputSekolah" class="block font-semibold text-slate-700 mb-1 text-xs flex items-center justify-between">
+                                <span>Nama Sekolah</span>
+                                <span class="text-[10px] font-semibold text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-lock text-[9px]"></i> Dari akun</span>
+                            </label>
+                            <input type="text" id="inputSekolah" readonly title="Terisi otomatis dari profil sekolah" class="locked-input w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-700 font-semibold outline-none cursor-not-allowed" value="">
+                        </div>
+                        <div>
+                            <label for="selectMapel" class="block font-semibold text-slate-700 mb-1 text-xs">Mata Pelajaran (Kurikulum Merdeka)</label>
+                            <select id="selectMapel" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
+                                <option value="Informatika" selected>Informatika</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                                <option value="Matematika">Matematika</option>
+                                <option value="Ilmu Pengetahuan Alam (IPA)">Ilmu Pengetahuan Alam (IPA)</option>
+                                <option value="Ilmu Pengetahuan Sosial (IPS)">Ilmu Pengetahuan Sosial (IPS)</option>
+                                <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris</option>
+                                <option value="Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)">Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)</option>
+                                <option value="Seni Musik">Seni Musik</option>
+                                <option value="Seni Rupa">Seni Rupa</option>
+                                <option value="Seni Tari">Seni Tari</option>
+                                <option value="Seni Teater">Seni Teater</option>
+                                <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+                                <option value="Pendidikan Agama Kristen dan Budi Pekerti">Pendidikan Agama Kristen dan Budi Pekerti</option>
+                                <option value="Pendidikan Agama Katolik dan Budi Pekerti">Pendidikan Agama Katolik dan Budi Pekerti</option>
+                                <option value="Pendidikan Agama Hindu dan Budi Pekerti">Pendidikan Agama Hindu dan Budi Pekerti</option>
+                                <option value="Pendidikan Agama Buddha dan Budi Pekerti">Pendidikan Agama Buddha dan Budi Pekerti</option>
+                                <option value="Pendidikan Agama Khonghucu dan Budi Pekerti">Pendidikan Agama Khonghucu dan Budi Pekerti</option>
+                                <option value="Muatan Lokal / Bahasa Daerah">Muatan Lokal / Bahasa Daerah</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="inputKelasFase" class="block font-semibold text-slate-700 mb-1 text-xs">Kelas &amp; Fase</label>
+                            <input type="text" id="inputKelasFase" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" value="Kelas 7 / Fase D">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold text-slate-700 mb-1 text-xs">Alokasi Waktu</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <select id="selectPertemuan" aria-label="Jumlah pertemuan" class="w-full px-2 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-xs bg-white">
+                                        <option value="1 Pertemuan">1 Pertemuan</option>
+                                        <option value="2 Pertemuan" selected>2 Pertemuan</option>
+                                        <option value="3 Pertemuan">3 Pertemuan</option>
+                                        <option value="4 Pertemuan">4 Pertemuan</option>
+                                        <option value="5 Pertemuan">5 Pertemuan</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <select id="selectJP" aria-label="Jam pelajaran" class="w-full px-2 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-xs bg-white">
+                                        <option value="2 Jam Pelajaran">2 JP</option>
+                                        <option value="3 Jam Pelajaran">3 JP</option>
+                                        <option value="4 Jam Pelajaran">4 JP</option>
+                                        <option value="5 Jam Pelajaran">5 JP</option>
+                                        <option value="6 Jam Pelajaran" selected>6 JP</option>
+                                        <option value="8 Jam Pelajaran">8 JP</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <select id="selectMenit" aria-label="Durasi per JP" class="w-full px-2 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-xs bg-white">
+                                        <option value="@ 35 menit">@ 35 menit (SD)</option>
+                                        <option value="@ 40 menit" selected>@ 40 menit (SMP)</option>
+                                        <option value="@ 45 menit">@ 45 menit (SMA)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        2. Materi &amp; Pendekatan Pembelajaran
+                    </h2>
+
+                    <div>
+                        <label for="inputMateri" class="block font-semibold text-slate-700 mb-1 text-xs">Topik / Materi Pembelajaran</label>
+                        <input type="text" id="inputMateri" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition" value="Berpikir Komputasional &amp; Algoritma Pemrograman Sederhana">
+                    </div>
+
+                    <div>
+                        <label for="inputTP" class="block font-semibold text-slate-700 mb-1 text-xs">Tujuan Pembelajaran (TP)</label>
+                        <textarea id="inputTP" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition resize-none">Peserta didik mampu menerapkan konsep berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, dan algoritma) dalam menyelesaikan permasalahan kontekstual kehidupan sehari-hari.</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <label for="selectModel" class="block font-semibold text-slate-700 mb-1 text-xs">Model Pembelajaran</label>
+                            <select id="selectModel" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
+                                <option value="Problem-Based Learning (PBL)">Problem-Based Learning (PBL)</option>
+                                <option value="Project-Based Learning (PjBL)">Project-Based Learning (PjBL)</option>
+                                <option value="Inquiry-Based Learning">Inquiry-Based Learning</option>
+                                <option value="Discovery Learning">Discovery Learning</option>
+                                <option value="Cooperative Learning">Cooperative Learning</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectStrategi" class="block font-semibold text-slate-700 mb-1 text-xs">Strategi Pembelajaran</label>
+                            <select id="selectStrategi" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
+                                <option value="Gallery Walk">Gallery Walk</option>
+                                <option value="Think-Pair-Share">Think-Pair-Share</option>
+                                <option value="Jigsaw Pembelajaran">Jigsaw Pembelajaran</option>
+                                <option value="Station Learning (Stasiun Belajar)">Station Learning</option>
+                                <option value="World Cafe Strategy">World Cafe Strategy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="selectAsesmen" class="block font-semibold text-slate-700 mb-1 text-xs">Kerangka Asesmen / Penilaian</label>
+                        <select id="selectAsesmen" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
+                            <option value="Taksonomi SOLO (Prastruktural, Unistruktural, Multistruktural, Relasional, Abstrak Diperluas)">Taksonomi SOLO (5 Tingkatan Lengkap)</option>
+                            <option value="Taksonomi Bloom Terrevisi (C1 Mengingat s.d. C6 Mencipta)">Taksonomi Bloom Terrevisi (C1 - C6)</option>
+                            <option value="Rubrik Performa Kinerja &amp; Produk Projek">Rubrik Kinerja &amp; Produk Projek</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Indicators Checklist -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        3. Indikator Supervisi Akademik (Diperkaya)
+                    </h2>
+                    <p class="text-xs text-slate-500">Pilih elemen yang akan diintegrasikan ke dalam RPP / Modul Ajar:</p>
+
+                    <div class="space-y-2 text-xs font-medium text-slate-700">
+                        <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1.5 rounded-md transition border border-transparent hover:border-slate-200">
+                            <input type="checkbox" id="checkSTEM" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span class="font-bold text-indigo-900">Pendekatan STEM (Science, Technology, Engineering, &amp; Math + EDP)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1.5 rounded-md transition">
+                            <input type="checkbox" id="checkDiferensiasi" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span>Pembelajaran Berdiferensiasi (Konten, Proses, Produk, Lingkungan)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1.5 rounded-md transition">
+                            <input type="checkbox" id="checkKSE" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span>Kompetensi Sosial Emosional / KSE (Mindfulness, STOP, Roda Emosi)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1.5 rounded-md transition">
+                            <input type="checkbox" id="checkDisiplin" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span>Manajemen Kelas &amp; Disiplin Positif (Keyakinan Kelas, Respon Restitutif)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1.5 rounded-md transition">
+                            <input type="checkbox" id="checkLitNum" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span>Penguatan Literasi &amp; Numerasi (Analisis Data, Grafik, Informasi)</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Output & Live Prompt Preview (7 Columns) -->
+            <section class="lg:col-span-7 flex flex-col h-full gap-4">
+                <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-800 flex flex-col flex-grow overflow-hidden">
+
+                    <!-- Top Action Bar -->
+                    <div class="bg-slate-800/90 px-5 py-3.5 border-b border-slate-700/80 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="text-xs text-slate-400 font-semibold ml-2">Hasil Prompt Siap Pakai</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="openInClaude()" id="btnOpenClaude" title="Salin prompt lalu buka Claude di tab baru" class="claude-btn px-4 py-2 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-orange-900/30 flex items-center gap-2 active:scale-95">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M12 2.5l1.6 6.1 5.6-3-3 5.6 6.1 1.6-6.1 1.6 3 5.6-5.6-3L12 22.5l-1.6-6.1-5.6 3 3-5.6L1.7 12.2l6.1-1.6-3-5.6 5.6 3z"/>
+                                </svg>
+                                <span>Salin &amp; Buka di Claude</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-80"></i>
+                            </button>
+                            <button onclick="copyPromptToClipboard()" id="copyBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                </svg>
+                                <span id="copyBtnText">Salin Prompt</span>
+                            </button>
+                            <button onclick="downloadPromptTXT()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5 border border-slate-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                <span>Unduh TXT</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notification Toast -->
+                    <div id="toastMessage" class="hidden bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs px-4 py-2 text-center font-medium transition-all">
+                        ✨ Prompt berhasil disalin ke clipboard! Silakan paste (Ctrl+V) ke Claude.
+                    </div>
+
+                    <!-- Prompt Display Area -->
+                    <div class="p-5 flex-grow overflow-y-auto">
+                        <textarea id="promptOutput" readonly aria-label="Hasil prompt" class="w-full h-[600px] bg-transparent text-slate-200 font-mono text-xs sm:text-sm leading-relaxed outline-none border-none resize-none cursor-text selection:bg-indigo-500 selection:text-white" spellcheck="false"></textarea>
+                    </div>
+
+                    <!-- Footer Info -->
+                    <div class="bg-slate-950 px-5 py-3 border-t border-slate-800 text-xs text-slate-400 flex justify-between items-center">
+                        <span id="charCount">0 karakter</span>
+                        <span class="text-indigo-400 font-medium">✔️ Sesuai Format Supervisi Akademik</span>
+                    </div>
+                </div>
+
+                <!-- How to use in Claude -->
+                <div class="bg-gradient-to-r from-orange-50 via-amber-50 to-white rounded-2xl border border-orange-200 p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-7 h-7 rounded-lg claude-btn text-white flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.6 6.1 5.6-3-3 5.6 6.1 1.6-6.1 1.6 3 5.6-5.6-3L12 22.5l-1.6-6.1-5.6 3 3-5.6L1.7 12.2l6.1-1.6-3-5.6 5.6 3z"/></svg>
+                        </span>
+                        <h2 class="text-sm font-bold text-slate-900">Cara Memakai Prompt di Claude</h2>
+                    </div>
+                    <ol class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-700">
+                        <li class="bg-white/80 rounded-xl border border-orange-100 p-2.5 flex gap-2">
+                            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0">1</span>
+                            <span>Lengkapi form di kiri, lalu klik <b>Salin &amp; Buka di Claude</b>.</span>
+                        </li>
+                        <li class="bg-white/80 rounded-xl border border-orange-100 p-2.5 flex gap-2">
+                            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0">2</span>
+                            <span>Di tab Claude, klik kolom chat lalu tekan <b>Ctrl+V</b> (Mac: <b>⌘+V</b>).</span>
+                        </li>
+                        <li class="bg-white/80 rounded-xl border border-orange-100 p-2.5 flex gap-2">
+                            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0">3</span>
+                            <span>Tekan <b>Enter</b>. Jika jawaban terpotong, ketik <i>"lanjutkan"</i>.</span>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            Toolkit Guru SupervisiSekolah.id · Generator Prompt Pembelajaran Mendalam &amp; STEM &copy; 2026. Dioptimalkan untuk Claude.
+        </div>
+    </footer>
+
+    <!-- Auth Gate Overlay (shown when no teacher session) -->
+    <div id="authGate" class="hidden fixed inset-0 z-[60] bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+        <div class="pop-in bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl text-left">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-user-check text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-extrabold text-slate-900">Pilih Akun Guru Anda</h2>
+                    <p class="text-xs text-slate-500">Preset otomatis Nama Guru &amp; Sekolah pada Generator</p>
+                </div>
+            </div>
+            
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                Pilih nama Anda dari daftar tenaga pendidik terdaftar untuk mengunci identitas pada modul ajar, atau masuk menggunakan Kode Akses Guru.
+            </p>
+
+            <!-- Quick Picker Form -->
+            <div class="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <label for="quickTeacherSelect" class="block text-xs font-bold text-slate-700">Pilih Guru dari Daftar Sekolah:</label>
+                <div class="relative">
+                    <select id="quickTeacherSelect" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                        <option value="">-- Memuat daftar guru... --</option>
+                    </select>
+                </div>
+                <button type="button" onclick="confirmQuickTeacher()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
+                    <span>Gunakan Akun Ini &amp; Mulai Generator</span>
+                </button>
+            </div>
+
+            <div class="relative flex py-3 items-center">
+                <div class="flex-grow border-t border-slate-200"></div>
+                <span class="flex-shrink mx-3 text-[11px] text-slate-400 font-medium">atau masuk resmi</span>
+                <div class="flex-grow border-t border-slate-200"></div>
+            </div>
+
+            <a id="authGateLoginLink" href="../../supervisi/?redirect=toolkit-rpp" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow transition flex items-center justify-center gap-2 active:scale-95 text-center">
+                <i class="fa-solid fa-key text-[11px] text-amber-400"></i>
+                <span>Masuk dengan Kode Akses Personal Guru</span>
+            </a>
+
+            <div class="mt-4 flex items-center justify-between text-xs pt-3 border-t border-slate-100">
+                <a href="../" class="text-slate-500 hover:text-indigo-600 font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i> Kembali ke Toolkit
+                </a>
+                <button type="button" onclick="continueAsGuest()" class="text-slate-500 hover:text-slate-700 font-medium text-[11px] underline">
+                    Lanjut Mode Tamu (Uji Coba)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Claude Handoff Modal -->
+    <div id="claudeModal" class="hidden fixed inset-0 z-[70] bg-slate-950/70 backdrop-blur-sm items-center justify-center p-4" onclick="if(event.target===this) closeClaudeModal()">
+        <div class="pop-in bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-11 h-11 rounded-2xl claude-btn text-white flex items-center justify-center shadow-md">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.6 6.1 5.6-3-3 5.6 6.1 1.6-6.1 1.6 3 5.6-5.6-3L12 22.5l-1.6-6.1-5.6 3 3-5.6L1.7 12.2l6.1-1.6-3-5.6 5.6 3z"/></svg>
+                </span>
+                <div>
+                    <h2 id="claudeModalTitle" class="text-base font-extrabold text-slate-900">Prompt sudah tersalin ✓</h2>
+                    <p class="text-xs text-slate-500">Claude dibuka di tab baru</p>
+                </div>
+            </div>
+            <ol class="space-y-2 text-sm text-slate-700">
+                <li class="flex gap-2.5"><span class="w-5 h-5 rounded-full bg-orange-100 text-orange-700 font-bold flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">1</span><span>Buka tab <b>Claude</b> (login jika diminta).</span></li>
+                <li class="flex gap-2.5"><span class="w-5 h-5 rounded-full bg-orange-100 text-orange-700 font-bold flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">2</span><span>Klik kolom chat, tekan <b>Ctrl+V</b> (Mac: <b>⌘+V</b>).</span></li>
+                <li class="flex gap-2.5"><span class="w-5 h-5 rounded-full bg-orange-100 text-orange-700 font-bold flex items-center justify-center text-[11px] flex-shrink-0 mt-0.5">3</span><span>Tekan <b>Enter</b> untuk menghasilkan Modul Ajar.</span></li>
+            </ol>
+            <div id="claudeCopyWarn" class="hidden mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800">
+                Browser menolak penyalinan otomatis. Klik <b>Salin Prompt</b> terlebih dahulu, lalu tempel di Claude.
+            </div>
+            <div class="mt-6 flex flex-col sm:flex-row gap-2">
+                <a href="https://claude.ai/new" target="_blank" rel="noopener" class="flex-1 py-2.5 rounded-xl claude-btn text-white text-xs font-bold text-center flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Buka Claude Lagi
+                </a>
+                <button onclick="closeClaudeModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Toolkit Identity (preset from logged-in teacher account) ─────────
+        const API_BASE = (() => {
+            const p = window.location.pathname;
+            const idx = p.toLowerCase().indexOf('/guru');
+            const base = idx !== -1 ? p.slice(0, idx + 1) : '/';
+            return window.location.origin + base;
+        })();
+
+        const CLAUDE_URL = 'https://claude.ai/new';
+
+        const TEACHER_IDENTITY = {
+            name: '',
+            school: '',
+            subject: ''
+        };
+
+        function getTeacherSession() {
+            try {
+                const raw = localStorage.getItem('ks_teacher_session');
+                const parsed = raw ? JSON.parse(raw) : null;
+                return (parsed && parsed.authenticated && parsed.name) ? parsed : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function resolveSchoolName(session) {
+            try {
+                const res = await fetch(API_BASE + 'api.php?action=get_public_schools');
+                const data = await res.json();
+                if (data.success && Array.isArray(data.schools) && data.schools[0] && data.schools[0].name) {
+                    return data.schools[0].name;
+                }
+            } catch (e) {
+                console.warn('Gagal memuat profil sekolah:', e);
+            }
+            try {
+                const g = JSON.parse(localStorage.getItem('ks_guru_session') || 'null');
+                if (g && g.schoolName) return g.schoolName;
+            } catch (e) {}
+            return (session && session.department) || '';
+        }
+
+        // Map the teacher's subject (employee DB) to the Kurikulum Merdeka option list
+        function matchSubjectOption(subject) {
+            const s = (subject || '').toLowerCase();
+            if (!s) return null;
+            const rules = [
+                [/informatika|\btik\b/, 'Informatika'],
+                [/bahasa indonesia/, 'Bahasa Indonesia'],
+                [/matematika/, 'Matematika'],
+                [/\bipa\b|pengetahuan alam/, 'Ilmu Pengetahuan Alam (IPA)'],
+                [/\bips\b|pengetahuan sosial/, 'Ilmu Pengetahuan Sosial (IPS)'],
+                [/pancasila|ppkn|\bpkn\b/, 'Pendidikan Pancasila'],
+                [/inggris|english/, 'Bahasa Inggris'],
+                [/pjok|olahraga|jasmani/, 'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)'],
+                [/musik/, 'Seni Musik'],
+                [/seni rupa/, 'Seni Rupa'],
+                [/tari/, 'Seni Tari'],
+                [/teater/, 'Seni Teater'],
+                [/islam|\bpai\b/, 'Pendidikan Agama Islam dan Budi Pekerti'],
+                [/kristen/, 'Pendidikan Agama Kristen dan Budi Pekerti'],
+                [/katolik/, 'Pendidikan Agama Katolik dan Budi Pekerti'],
+                [/hindu/, 'Pendidikan Agama Hindu dan Budi Pekerti'],
+                [/buddha|budha/, 'Pendidikan Agama Buddha dan Budi Pekerti'],
+                [/khonghucu|konghucu/, 'Pendidikan Agama Khonghucu dan Budi Pekerti'],
+                [/muatan lokal|mulok|bahasa daerah|sunda|jawa/, 'Muatan Lokal / Bahasa Daerah']
+            ];
+            for (const [re, val] of rules) {
+                if (re.test(s)) return val;
+            }
+            return null;
+        }
+
+        function applyTeacherSubject() {
+            const select = document.getElementById('selectMapel');
+            const subject = TEACHER_IDENTITY.subject;
+            if (!subject) return false;
+            const matched = matchSubjectOption(subject);
+            if (matched) {
+                select.value = matched;
+                return true;
+            }
+            // Not in the standard list: add the teacher's own subject as an option
+            let opt = Array.from(select.options).find(o => o.value === subject);
+            if (!opt) {
+                opt = document.createElement('option');
+                opt.value = subject;
+                opt.textContent = subject;
+                select.insertBefore(opt, select.firstChild);
+            }
+            select.value = subject;
+            return true;
+        }
+
+        function renderTeacherBadge() {
+            const badge = document.getElementById('teacherBadge');
+            document.getElementById('teacherBadgeName').textContent = TEACHER_IDENTITY.name;
+            document.getElementById('teacherBadgeSchool').textContent = TEACHER_IDENTITY.school;
+            badge.classList.remove('hidden');
+            badge.classList.add('flex');
+        }
+
+        let availableTeachers = [];
+
+        async function loadQuickTeachers() {
+            const select = document.getElementById('quickTeacherSelect');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Memuat daftar guru... --</option>';
+
+            try {
+                const res = await fetch(API_BASE + 'api.php?action=get_employees_public');
+                const data = await res.json();
+                if (data.success && Array.isArray(data.employees) && data.employees.length > 0) {
+                    availableTeachers = data.employees.filter(e => e.role === 'Guru' || e.role === 'Kepala Sekolah');
+                }
+            } catch (e) {
+                console.warn('Gagal memuat pegawai:', e);
+            }
+
+            if (!availableTeachers.length) {
+                try {
+                    const raw = localStorage.getItem('ks_employee_db');
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) availableTeachers = parsed;
+                    }
+                } catch (e) {}
+            }
+
+            if (!availableTeachers.length) {
+                availableTeachers = [
+                    { name: 'Elfrida, S.Pd.', subject: 'Informatika', role: 'Guru', department: 'SMP Brighton' },
+                    { name: 'Budi Santoso, M.Pd.', subject: 'Matematika', role: 'Guru', department: 'SMP Brighton' },
+                    { name: 'Siti Rahma, S.Pd.', subject: 'Ilmu Pengetahuan Alam (IPA)', role: 'Guru', department: 'SMP Brighton' }
+                ];
+            }
+
+            select.innerHTML = '<option value="">-- Pilih nama Anda --</option>';
+            availableTeachers.forEach((emp, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${emp.name} — ${emp.subject || emp.department || 'Guru'}`;
+                select.appendChild(opt);
+            });
+        }
+
+        async function confirmQuickTeacher() {
+            const select = document.getElementById('quickTeacherSelect');
+            const val = select.value;
+            if (val === '') {
+                alert('Silakan pilih nama guru terlebih dahulu.');
+                return;
+            }
+            const emp = availableTeachers[parseInt(val, 10)];
+            if (!emp) return;
+
+            const schoolName = await resolveSchoolName(emp) || 'SMP Brighton';
+            TEACHER_IDENTITY.name = emp.name;
+            TEACHER_IDENTITY.subject = emp.subject || '';
+            TEACHER_IDENTITY.school = schoolName;
+
+            const session = {
+                name: emp.name,
+                nip: emp.nip || '',
+                subject: emp.subject || '',
+                role: emp.role || 'Guru',
+                department: schoolName,
+                authenticated: true,
+                authTime: new Date().toISOString()
+            };
+            localStorage.setItem('ks_teacher_session', JSON.stringify(session));
+
+            renderTeacherBadge();
+            resetToDefaults();
+
+            const gate = document.getElementById('authGate');
+            gate.classList.add('hidden');
+            gate.classList.remove('flex');
+        }
+
+        async function continueAsGuest() {
+            const schoolName = await resolveSchoolName(null) || 'SMP Brighton';
+            TEACHER_IDENTITY.name = 'Guru Penggerak';
+            TEACHER_IDENTITY.subject = 'Informatika';
+            TEACHER_IDENTITY.school = schoolName;
+
+            renderTeacherBadge();
+            resetToDefaults();
+
+            const gate = document.getElementById('authGate');
+            gate.classList.add('hidden');
+            gate.classList.remove('flex');
+        }
+
+        function showAuthGate() {
+            loadQuickTeachers();
+            const gate = document.getElementById('authGate');
+            gate.classList.remove('hidden');
+            gate.classList.add('flex');
+        }
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', async () => {
+            loadQuickTeachers();
+            const session = getTeacherSession();
+            if (!session) {
+                showAuthGate();
+            } else {
+                TEACHER_IDENTITY.name = session.name;
+                TEACHER_IDENTITY.subject = session.subject || '';
+                TEACHER_IDENTITY.school = await resolveSchoolName(session);
+                renderTeacherBadge();
+            }
+
+            resetToDefaults();
+
+            // Attach event listeners for real-time updates
+            const inputs = [
+                'inputNama', 'inputSekolah', 'selectMapel', 'inputKelasFase',
+                'selectPertemuan', 'selectJP', 'selectMenit',
+                'inputMateri', 'inputTP', 'selectModel', 'selectStrategi', 'selectAsesmen',
+                'checkSTEM', 'checkDiferensiasi', 'checkKSE', 'checkDisiplin', 'checkLitNum'
+            ];
+
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', generatePrompt);
+                    el.addEventListener('change', generatePrompt);
+                }
+            });
+        });
+
+        function resetToDefaults() {
+            // Identitas selalu mengikuti akun guru yang login (tidak dapat diubah manual)
+            document.getElementById('inputNama').value = TEACHER_IDENTITY.name;
+            document.getElementById('inputSekolah').value = TEACHER_IDENTITY.school;
+            document.getElementById('selectMapel').value = "Informatika";
+            applyTeacherSubject();
+            document.getElementById('inputKelasFase').value = "Kelas 7 / Fase D";
+
+            document.getElementById('selectPertemuan').value = "2 Pertemuan";
+            document.getElementById('selectJP').value = "6 Jam Pelajaran";
+            document.getElementById('selectMenit').value = "@ 40 menit";
+
+            document.getElementById('inputMateri').value = "Berpikir Komputasional & Algoritma Pemrograman Sederhana";
+            document.getElementById('inputTP').value = "Peserta didik mampu menerapkan konsep berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, dan algoritma) dalam menyelesaikan permasalahan kontekstual kehidupan sehari-hari.";
+
+            document.getElementById('selectModel').value = "Problem-Based Learning (PBL)";
+            document.getElementById('selectStrategi').value = "Gallery Walk";
+            document.getElementById('selectAsesmen').value = "Taksonomi SOLO (Prastruktural, Unistruktural, Multistruktural, Relasional, Abstrak Diperluas)";
+
+            document.getElementById('checkSTEM').checked = true;
+            document.getElementById('checkDiferensiasi').checked = true;
+            document.getElementById('checkKSE').checked = true;
+            document.getElementById('checkDisiplin').checked = true;
+            document.getElementById('checkLitNum').checked = true;
+
+            generatePrompt();
+        }
+
+        // ════════════════════════════════════════════════════════════════════
+        // TEMPLATE PROMPT ASLI — JANGAN DIUBAH (disalin apa adanya dari generator)
+        // ════════════════════════════════════════════════════════════════════
+        function generatePrompt() {
+            const nama = document.getElementById('inputNama').value.trim() || "[Nama Guru]";
+            const sekolah = document.getElementById('inputSekolah').value.trim() || "[Nama Sekolah]";
+            const mapel = document.getElementById('selectMapel').value;
+            const kelasFase = document.getElementById('inputKelasFase').value.trim() || "[Kelas / Fase]";
+            
+            const pertemuan = document.getElementById('selectPertemuan').value;
+            const jp = document.getElementById('selectJP').value;
+            const menit = document.getElementById('selectMenit').value;
+            const alokasi = `${pertemuan} (${jp} ${menit})`;
+
+            const materi = document.getElementById('inputMateri').value.trim() || "[Materi Utama]";
+            const tp = document.getElementById('inputTP').value.trim() || "[Tujuan Pembelajaran]";
+            
+            const isSTEM = document.getElementById('checkSTEM').checked;
+            const model = document.getElementById('selectModel').value;
+            const strategi = document.getElementById('selectStrategi').value;
+            const asesmen = document.getElementById('selectAsesmen').value;
+
+            const hasDiferensiasi = document.getElementById('checkDiferensiasi').checked;
+            const hasKSE = document.getElementById('checkKSE').checked;
+            const hasDisiplin = document.getElementById('checkDisiplin').checked;
+            const hasLitNum = document.getElementById('checkLitNum').checked;
+
+            let promptText = "";
+
+            if (isSTEM) {
+                promptText = `Saya ${nama}, Guru ${mapel} ${kelasFase} di ${sekolah}. Tolong buatkan perencanaan pembelajaran mendalam (Deep Learning) yang mengintegrasikan secara utuh Pendekatan STEM (Science, Technology, Engineering, and Mathematics) di setiap tahapannya.
+Rancangan ini harus memuat prinsip pembelajaran mendalam (Berkesadaran, Bermakna, Menggembirakan), tahapan pengalaman belajar (Memahami, Mengaplikasi, Merefleksi), serta asesmen komprehensif untuk ${kelasFase}.
+
+INFORMASI DASAR PEMBELAJARAN
+Tujuan Pembelajaran (TP): ${tp}
+Alokasi Waktu: ${alokasi}.
+Model Pembelajaran: ${model} berorientasi STEM (diuraikan sintaksnya secara detail).
+Metode Pembelajaran: Diskusi Kelompok, Eksperimen/Perancangan STEM, Presentasi Karya.
+Strategi Pembelajaran: ${strategi} (dilengkapi sintaksnya).
+Target Karakter & Keterampilan: Aktif, Kreatif, Kolaboratif, serta Berpikir Kritis.
+Kerangka Penilaian: ${asesmen}.
+
+SUSUNAN DOKUMEN YANG HARUS DIHASILKAN:
+1. Identitas Penulis
+Nama Guru (${nama}), Sekolah (${sekolah}), Kelas/Fase (${kelasFase}), Alokasi Waktu (${alokasi}), dan Topik Utama (${materi}).
+
+2. Identifikasi Pembelajaran
+a. Murid (Pemetaan Kebutuhan): Identifikasi kesiapan belajar murid (pengetahuan awal terkait ${materi}), minat, latar belakang, serta gaya belajar (visual, auditori, kinestetik).
+b. Materi Pelajaran & Integrasi STEM:
+- Mathematics (M): Konsep matematis utama terkait ${materi}.
+- Science (S): Fenomena alam/sains kontekstual yang dihubungkan dengan topik materi.
+- Technology (T): Alat digital/aplikasi interaktif atau teknologi sederhana yang digunakan untuk pengumpulan data/visualisasi.
+- Engineering (E): Proses perancangan (Engineering Design Process/EDP: Memahami Masalah, Merancang, Membuat Prototipe, Menguji, & Memperbaiki) berbasis pemecahan masalah.
+- Relevansi kehidupan nyata, struktur materi, serta integrasi nilai dan karakter.
+c. Dimensi Profil Lulusan: Beriman & Bertakwa Kepada Tuhan YME, Berpikir Kritis, Kreativitas, Kewargaan, Kesehatan, Kemandirian, Komunikasi, dan Kolaborasi.
+
+3. Desain Pembelajaran
+a. Tujuan Pembelajaran: Spesifik, terukur (KKO Kognitif & Psikomotorik), serta mencakup ketercapaian pemahaman ${materi} dan pemecahan masalah berbasis STEM.
+b. Praktik Pedagogis: Integrasi ${model}, Pembelajaran Inkuiri, dan Pendekatan STEM.
+c. Kemitraan Pembelajaran: Kolaborasi internal/eksternal (lintas mata pelajaran, kerja sama kelompok antar-murid, peran orang tua/komunitas/mitra profesional jika relevan).
+d. Lingkungan Pembelajaran: Budaya belajar yang aman, nyaman, inklusif, dan memuliakan murid (baik ruang fisik kelas maupun virtual).
+e. Pemanfaatan Digital: Penggunaan aplikasi visualisasi interaktif (misal: PhET Simulations, GeoGebra, Quizizz/Google Forms), video pengantar STEM, serta repositori digital.
+
+4. Pengalaman Belajar (Langkah-Langkah Pembelajaran Berorientasi STEM & ${model})
+(Uraikan secara sistematis per pertemuan dengan menyebutkan prinsip pembelajaran: Berkesadaran, Bermakna, Menggembirakan)
+
+a. AWAL / PEMBUKA:
+- Orientasi Bermakna & Apersepsi STEM: Pertanyaan pemantik kontekstual berbasis fenomena sains/teknologi sehari-hari yang memancing pemikiran kritis.
+- Motivasi Menggembirakan: Aktivitas atau ice breaking yang membangkitkan rasa ingin tahu tentang tantangan STEM.`;
+
+if (hasKSE) {
+    promptText += `\n- Rutinitas Kesadaran Diri & Manajemen Diri (KSE): Penerapan Teknik STOP / Roda Emosi / Doa Berkesadaran sebelum memulai aktivitas.`;
+}
+if (hasDisiplin) {
+    promptText += `\n- Budaya Positif: Penguatan Kesepakatan / Keyakinan Kelas bersama murid.`;
+}
+
+promptText += `\n\nb. INTI (Sintaks ${model} + Pendekatan STEM + Strategi ${strategi}):
+MEMAHAMI (Berkesadaran, Bermakna, Menggembirakan):
+- Sintaks 1: Orientasi Murid pada Masalah STEM. Murid mengamati masalah nyata yang melibatkan aspek Science dan Mathematics terkait ${materi}.
+- Sintaks 2: Mengorganisasikan Murid untuk Belajar. Pembentukan kelompok heterogen, pembagian peran STEM (misal: Lead Engineer, Data Analyst, Tech Specialist, Spokesperson).
+
+MENGAPLIKASI (Berkesadaran, Bermakna, Menggembirakan):
+- Sintaks 3: Membimbing Penyelidikan Individu maupun Kelompok. Murid melakukan perhitungan/persamaan dan uji coba rekayasa (Engineering Design Process) memanfaatkan teknologi/alat bantu.
+- Sintaks 4: Mengembangkan dan Menyajikan Hasil Karya (${strategi}). Kelompok membuat media visual/poster/prototype karya STEM. Melaksanakan ${strategi} di mana sebagian anggota menjadi penjaga stan (presenter) dan sebagian lagi berkeliling memberi masukan/penilaian antar-rekan.
+
+MEREFLEKSI (Berkesadaran, Bermakna, Menggembirakan):
+- Sintaks 5: Menganalisis dan Evaluasi Proses Pemecahan Masalah. Murid mendiskusikan efektivitas solusi STEM yang diciptakan, mengidentifikasi kekuatan dan area perbaikan strategi belajar mereka.
+
+c. PENUTUP:
+- Pemberian umpan balik konstruktif, penyimpulan konsep mendalam bersama murid, serta keterlibatan murid dalam merencanakan pembelajaran selanjutnya.`;
+
+            } else {
+                // Non-STEM Version
+                promptText = `Saya ${nama}, Guru ${mapel} ${kelasFase} di ${sekolah}. Tolong buatkan perencanaan pembelajaran mendalam (Deep Learning) yang dirancang secara terstruktur dan kontekstual di setiap tahapannya.
+Rancangan ini harus memuat prinsip pembelajaran mendalam (Berkesadaran, Bermakna, Menggembirakan), tahapan pengalaman belajar (Memahami, Mengaplikasi, Merefleksi), serta asesmen komprehensif untuk ${kelasFase}.
+
+INFORMASI DASAR PEMBELAJARAN
+Tujuan Pembelajaran (TP): ${tp}
+Alokasi Waktu: ${alokasi}.
+Model Pembelajaran: ${model} (diuraikan sintaksnya secara detail).
+Metode Pembelajaran: Diskusi Kelompok, Eksplorasi Konsep, Presentasi Interaktif.
+Strategi Pembelajaran: ${strategi} (dilengkapi sintaksnya).
+Target Karakter & Keterampilan: Aktif, Kreatif, Kolaboratif, serta Berpikir Kritis.
+Kerangka Penilaian: ${asesmen}.
+
+SUSUNAN DOKUMEN YANG HARUS DIHASILKAN:
+1. Identitas Penulis
+Nama Guru (${nama}), Sekolah (${sekolah}), Kelas/Fase (${kelasFase}), Alokasi Waktu (${alokasi}), dan Topik Utama (${materi}).
+
+2. Identifikasi Pembelajaran
+a. Murid (Pemetaan Kebutuhan): Identifikasi kesiapan belajar murid (pengetahuan awal terkait ${materi}), minat, latar belakang, serta gaya belajar (visual, auditori, kinestetik).
+b. Materi Pelajaran & Relevansi Kontekstual:
+- Konsep Utama: Struktur dan pemahaman konsep ${materi}.
+- Relevansi Kehidupan Nyata: Pengaplikasian langsung dalam konteks sosial, lingkungan, atau kehidupan sehari-hari murid.
+- Integrasi nilai, karakter, dan etika.
+c. Dimensi Profil Lulusan: Beriman & Bertakwa Kepada Tuhan YME, Berpikir Kritis, Kreativitas, Kewargaan, Kesehatan, Kemandirian, Komunikasi, dan Kolaborasi.
+
+3. Desain Pembelajaran
+a. Tujuan Pembelajaran: Spesifik, terukur (KKO operasional), serta mencakup pemahaman konsep dan kemampuan pemecahan masalah kontekstual.
+b. Praktik Pedagogis: Integrasi ${model} dan Pembelajaran Inkuiri Berpusat pada Murid.
+c. Kemitraan Pembelajaran: Kolaborasi antar-murid, dukungan guru lintas disiplin, serta peran orang tua/masyarakat jika relevan.
+d. Lingkungan Pembelajaran: Budaya belajar yang aman, nyaman, inklusif, dan memuliakan murid.
+e. Pemanfaatan Digital: Penggunaan media interaktif digital, slide presentasi, platform kuis interaktif (Quizizz/Wordwall), serta repositori sumber belajar.
+
+4. Pengalaman Belajar (Langkah-Langkah Pembelajaran Berorientasi ${model})
+(Uraikan secara sistematis per pertemuan dengan menyebutkan prinsip pembelajaran: Berkesadaran, Bermakna, Menggembirakan)
+
+a. AWAL / PEMBUKA:
+- Orientasi Bermakna & Apersepsi: Pertanyaan pemantik kontekstual berbasis masalah kehidupan nyata yang memancing diskusi kritis.
+- Motivasi Menggembirakan: Aktivitas ice breaking/game edukatif yang memicu keterlibatan aktif murid.`;
+
+if (hasKSE) {
+    promptText += `\n- Rutinitas Kesadaran Diri & Manajemen Diri (KSE): Penerapan Teknik STOP / Roda Emosi / Doa Berkesadaran sebelum pembelajaran.`;
+}
+if (hasDisiplin) {
+    promptText += `\n- Budaya Positif: Penguatan Kesepakatan / Keyakinan Kelas bersama murid.`;
+}
+
+promptText += `\n\nb. INTI (Sintaks ${model} + Strategi ${strategi}):
+MEMAHAMI (Berkesadaran, Bermakna, Menggembirakan):
+- Sintaks 1: Orientasi Murid pada Masalah/Konsep Utama. Murid mengamati stimulus visual/teks/masalah nyata terkait ${materi}.
+- Sintaks 2: Mengorganisasikan Murid untuk Belajar. Pembentukan kelompok diskusi heterogen dengan kejelasan peran anggota.
+
+MENGAPLIKASI (Berkesadaran, Bermakna, Menggembirakan):
+- Sintaks 3: Membimbing Penyelidikan & Eksplorasi Kelompok. Murid menganalisis data/informasi untuk menyelesaikan lembar kerja/tantangan konsep.
+- Sintaks 4: Mengembangkan dan Menyajikan Hasil Karya (${strategi}). Setiap kelompok menyusun infografis/poster/laporan karya. Melaksanakan ${strategi} untuk berbagi gagasan dan saling memberikan umpan balik balik antar-rekan.
+
+MEREFLEKSI (Berkesadaran, Bermakna, Menggembirakan):
+- Sintaks 5: Menganalisis dan Evaluasi Proses Pemecahan Masalah. Murid mengevaluasi solusi/pemahaman yang dicapai serta merefleksikan efektivitas kerja kelompok.
+
+c. PENUTUP:
+- Pemberian umpan balik konstruktif, penguatan kesimpulan materi secara komprehensif, serta perencanaan pembelajaran berikutnya.`;
+            }
+
+            // Append Assessment, Remedial, KKTP, LKPD, and Authorization Block Details
+            promptText += `\n\n5. Asesmen Pembelajaran Mendalam (${asesmen})
+Jenis Asesmen:
+- Assessment as Learning: Penilaian Diri (Self-Assessment) dan Penilaian Sejawat (Peer-Assessment) saat ${strategi}.
+- Assessment for Learning: Formatif melalui observasi diskusi kelompok, checklist sikap/keterampilan, dan umpan balik berkala secara langsung.
+- Assessment of Learning: Penilaian Produk/Hasil Karya dan Tes Tertulis Pemahaman Konsep ${materi}.
+Rubrik Penilaian:
+Buat rubrik matriks komprehensif berdasarkan ${asesmen}. Sertakan kriteria pencapaian (misal: Perlu Bimbingan / Berkembang, Cakap, dan Mahir) yang mengukur pemahaman konsep, penalaran, dan komunikasi.`;
+
+            if (hasDiferensiasi) {
+                promptText += `\n\n6. Rencana Pembelajaran Berdiferensiasi & Tindak Lanjut (RTL)
+- Diferensiasi Konten: Variasi sumber belajar (visual, audio-visual, manipulatif/konkret, teks digital) sesuai kesiapan belajar murid.
+- Diferensiasi Proses: Scaffolding / pendampingan terarah bagi kelompok yang butuh bantuan lebih, serta tantangan pengayaan bagi kelompok cepat paham.
+- Diferensiasi Produk: Kebebasan format sajian hasil karya kelompok (poster, infografis, slide presentasi, rekaman audio/video).
+- Program Pengayaan & Remedial Berdiferensiasi.`;
+            } else {
+                promptText += `\n\n6. Rencana Tindak Lanjut (RTL)
+Program Pengayaan untuk murid yang mencapai batas mahir dan Remedial terarah bagi murid yang belum mencapai kriteria.`;
+            }
+
+            if (hasLitNum) {
+                promptText += `\n\n7. Penguatan Literasi & Numerasi
+- Literasi: Aktivitas membaca teks/informasi kontekstual, analisis kritis, menyimpulkan pesan, dan menyusun sintesis informasi.
+- Numerasi: Pengolahan data, pembacaan tabel/grafik/diagram, kalkulasi matematis, serta interpretasi data numerik dalam pemecahan masalah.`;
+            }
+
+            if (hasDisiplin) {
+                promptText += `\n\n8. Manajemen Kelas, Iklim Belajar & Disiplin Positif
+- Penerapan strategi positive reinforcement dan penanganan gangguan belajar secara restitutif (bukan sanksi/hukuman fisik/verbal).
+- Prosedur transisi antar-kegiatan yang efisien untuk meminimalkan waktu terbuang (downtime).
+- Iklim belajar inklusif, non-judgmental, dan menghargai keberagaman murid.`;
+            }
+
+            promptText += `\n\n9. Kriteria Ketercapaian Tujuan Pembelajaran (KKTP)
+Tabel KKTP dengan rentang interval nilai / rubrik pencapaian yang disesuaikan dengan kriteria ketercapaian ${materi}.
+
+10. Lampiran Bahan Ajar & Lembar Kerja Peserta Didik (LKPD)
+- Ringkasan Rangkuman Materi Detil & Komprehensif (${materi}).
+- Panduan Studi Kasus / Masalah Kontekstual Nyata.
+- Lembar Kerja Peserta Didik (LKPD) terstruktur yang memandu siswa berkolaborasi dan berpikir tingkat tinggi (HOTS).
+
+11. Bagian Pengesahan / Kolom Tanda Tangan (Wajib Ditampilkan Di Paling Bawah Dokumen Modul Ajar)
+Sediakan format pengesahan lengkap dan rapi di akhir dokumen:
+- Di sebelah kanan: [Nama Kota/Tempat], [Tanggal/Bulan/Tahun]
+  Guru Mata Pelajaran ${mapel},
+  (Tanda Tangan & Nama Terang Guru: ${nama})
+- Di sebelah kiri: 
+  Mengetahui,
+  Kepala Sekolah ${sekolah},
+  (Tanda Tangan & Nama Terang Kepala Sekolah + NIP)
+
+---
+CATATAN KHUSUS SUPERVISI AKADEMIK:
+Pastikan dokumen RPP/Modul Ajar yang dihasilkan lengkap, utuh, operasional, tanpa menyisakan placeholder (...) atau bagian terpotong, serta memenuhi indikator penilai Supervisi Akademik (Diferensiasi, KSE, Disiplin Positif, Literasi-Numerasi, STEM, dan Pembelajaran Mendalam) hingga bagian pengesahan tanda tangan.`;
+
+            document.getElementById('promptOutput').value = promptText;
+            document.getElementById('charCount').textContent = `${promptText.length.toLocaleString('id-ID')} karakter`;
+        }
+        // ════════════════════════════════════════════════════════════════════
+        // AKHIR TEMPLATE PROMPT ASLI
+        // ════════════════════════════════════════════════════════════════════
+
+        // Synchronous copy (keeps the user-gesture so window.open is not blocked)
+        function copyPromptSync() {
+            const textarea = document.getElementById('promptOutput');
+            textarea.focus();
+            textarea.select();
+            let ok = false;
+            try {
+                ok = document.execCommand('copy');
+            } catch (e) {
+                ok = false;
+            }
+            textarea.setSelectionRange(0, 0);
+            textarea.blur();
+            return ok;
+        }
+
+        function copyPromptToClipboard() {
+            const text = document.getElementById('promptOutput').value;
+            if (copyPromptSync()) {
+                showToast();
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(showToast).catch(() => {});
+            }
+        }
+
+        function openInClaude() {
+            const text = document.getElementById('promptOutput').value;
+            const copied = copyPromptSync();
+            window.open(CLAUDE_URL, '_blank', 'noopener');
+
+            document.getElementById('claudeCopyWarn').classList.toggle('hidden', copied);
+            document.getElementById('claudeModalTitle').textContent = copied ? 'Prompt sudah tersalin ✓' : 'Claude sudah dibuka';
+            if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    document.getElementById('claudeCopyWarn').classList.add('hidden');
+                    document.getElementById('claudeModalTitle').textContent = 'Prompt sudah tersalin ✓';
+                }).catch(() => {});
+            }
+
+            const modal = document.getElementById('claudeModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeClaudeModal() {
+            const modal = document.getElementById('claudeModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeClaudeModal();
+        });
+
+        function showToast() {
+            const toast = document.getElementById('toastMessage');
+            const btnText = document.getElementById('copyBtnText');
+
+            toast.classList.remove('hidden');
+            btnText.textContent = "Tersalin!";
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                btnText.textContent = "Salin Prompt";
+            }, 3000);
+        }
+
+        function downloadPromptTXT() {
+            const text = document.getElementById('promptOutput').value;
+            const namaGuru = document.getElementById('inputNama').value.trim() || "Guru";
+            const mapel = document.getElementById('selectMapel').value.trim() || "Modul";
+
+            const filename = `Prompt_RPP_${mapel.replace(/\s+/g, '_')}_${namaGuru.replace(/\s+/g, '_')}.txt`;
+
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

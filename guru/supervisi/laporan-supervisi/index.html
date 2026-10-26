@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Hasil Supervisi Guru — SupervisiSekolah.id</title>
+  <meta name="description" content="Portal lihat hasil supervisi dan laporan observasi kelas untuk guru.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../../../js/auth.js"></script>
+  <script src="../../../js/telaah-rpp.js"></script>
+  <script src="../../../js/observation.js"></script>
+  <script src="../../../js/supervision-indicators.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], display: ['Plus Jakarta Sans','sans-serif'] } } }
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-hero { background: linear-gradient(135deg,#0f172a 0%,#1e293b 30%,#0f2a50 65%,#1a1040 100%); min-height:100vh; }
+    .glass-card { background:rgba(255,255,255,0.07); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.12); }
+    .glass-card-light { background:rgba(255,255,255,0.97); backdrop-filter:blur(20px); border:1px solid rgba(226,232,240,0.8); }
+    .orb { position:fixed; border-radius:50%; filter:blur(80px); opacity:0.18; pointer-events:none; animation:float 12s ease-in-out infinite; }
+    .orb-1 { width:500px; height:500px; background:#3b82f6; top:-100px; left:-150px; animation-delay:0s; }
+    .orb-2 { width:400px; height:400px; background:#8b5cf6; bottom:-100px; right:-100px; animation-delay:-4s; }
+    .orb-3 { width:300px; height:300px; background:#06b6d4; top:40%; left:50%; animation-delay:-8s; }
+    @keyframes float { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(20px,-30px) scale(1.05)} 66%{transform:translate(-15px,20px) scale(0.95)} }
+    .step-dot { transition:all 0.4s ease; }
+    .step-dot.active { background:#f59e0b; transform:scale(1.2); box-shadow:0 0 0 4px rgba(245,158,11,0.3); }
+    .step-dot.done { background:#10b981; }
+    .step-dot.pending { background:rgba(255,255,255,0.2); }
+    .fade-in { animation:fadeInUp 0.4s ease both; }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    .badge-t1{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;}
+    .badge-l1{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+    .badge-l2{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;}
+    .badge-l3{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+    .code-input { letter-spacing:0.3em; font-family:'Courier New',monospace; font-weight:700; font-size:1.5rem; text-align:center; text-transform:uppercase; }
+    .code-input::placeholder { letter-spacing:normal; font-size:0.85rem; font-weight:400; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+    .shake { animation:shake 0.4s ease; }
+    @media print {
+      .no-print{display:none!important;}
+      .glass-card,.glass-card-light{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+      .orb{display:none!important;}
+      .bg-hero{background:#fff!important;}
+      body{color:#000!important;}
+    }
+  </style>
+</head>
+<body class="bg-hero text-white min-h-screen">
+  <!-- Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- HEADER -->
+  <header class="no-print sticky top-0 z-50 glass-card border-b border-white/10">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+        </div>
+        <div>
+          <div class="font-display font-bold text-sm text-white leading-tight">Laporan Hasil Supervisi</div>
+          <div class="text-[10px] text-blue-300 font-medium" id="header-school-name">SupervisiSekolah.id</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="../" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-semibold transition flex items-center gap-1.5 border border-amber-500/30">
+          <i class="fa-solid fa-calendar-days"></i> <span class="hidden sm:inline">Jadwal &amp; Dashboard Supervisi</span>
+        </a>
+        <a href="../../" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-semibold transition flex items-center gap-1.5 border border-emerald-500/30">
+          <i class="fa-solid fa-school"></i> <span class="hidden sm:inline">Portal Guru</span>
+        </a>
+        <button id="btn-logout" onclick="doLogout()" class="hidden px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 pb-16">
+
+    <!-- ══ LOGIN GATE ═══════════════════════════════════════════════════ -->
+    <section id="login-gate" class="hidden pt-12 pb-8 flex flex-col items-center fade-in">
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-blue-200 mb-6">
+          <i class="fa-solid fa-eye"></i>
+          <span>Akses Hasil Supervisi Anda</span>
+        </div>
+        <h1 class="font-display font-bold text-3xl md:text-4xl text-white leading-tight mb-3">
+          Portal Supervisi <span class="text-amber-400">Guru</span>
+        </h1>
+        <p class="text-blue-200 text-sm max-w-md mx-auto">
+          Lihat rekapitulasi supervisi dan lembar laporan observasi kelas Anda menggunakan kode akses dari Kepala Sekolah.
+        </p>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="flex items-center gap-3 mb-8">
+        <div class="flex flex-col items-center gap-1"><div id="dot-1" class="step-dot active w-3 h-3 rounded-full"></div><span class="text-[10px] text-blue-300">Sekolah</span></div>
+        <div class="w-10 h-px bg-white/20"></div>
+        <div class="flex flex-col items-center gap-1"><div id="dot-2" class="step-dot pending w-3 h-3 rounded-full"></div><span class="text-[10px] text-blue-300">Guru</span></div>
+        <div class="w-10 h-px bg-white/20"></div>
+        <div class="flex flex-col items-center gap-1"><div id="dot-3" class="step-dot pending w-3 h-3 rounded-full"></div><span class="text-[10px] text-blue-300">Kode Akses</span></div>
+      </div>
+
+      <!-- Card -->
+      <div class="glass-card rounded-3xl p-7 w-full max-w-md shadow-2xl">
+
+        <!-- Step 1 -->
+        <div id="step-1" class="space-y-5">
+          <div>
+            <label class="block text-xs font-bold text-blue-200 uppercase tracking-wider mb-2">
+              <i class="fa-solid fa-school mr-1.5"></i>Langkah 1 — Nama Sekolah
+            </label>
+            <div id="school-display" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-2xl text-white font-semibold text-sm text-center min-h-[48px] flex items-center justify-center">
+              Memuat...
+            </div>
+            <p class="text-[11px] text-blue-300 mt-2 text-center">Nama sekolah terdeteksi otomatis dari sistem.</p>
+          </div>
+          <button onclick="goToStep2()" class="w-full py-3.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 font-bold rounded-2xl transition text-sm shadow-lg active:scale-95">
+            Lanjut — Pilih Nama Guru <i class="fa-solid fa-arrow-right ml-2"></i>
+          </button>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="step-2" class="hidden space-y-5 fade-in">
+          <div>
+            <label class="block text-xs font-bold text-blue-200 uppercase tracking-wider mb-2">
+              <i class="fa-solid fa-chalkboard-teacher mr-1.5"></i>Langkah 2 — Nama Guru
+            </label>
+            <!-- Custom dropdown (native select invisible on some browsers due to white text) -->
+            <div class="relative" id="teacher-dropdown-wrapper">
+              <button type="button" id="teacher-dropdown-btn"
+                onclick="toggleTeacherDropdown()"
+                class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-2xl text-white text-sm text-left flex items-center justify-between hover:bg-white/15 focus:outline-none focus:border-amber-400 transition">
+                <span id="teacher-dropdown-label" class="text-blue-200">-- Pilih nama Anda --</span>
+                <i class="fa-solid fa-chevron-down text-blue-300 text-xs"></i>
+              </button>
+              <div id="teacher-dropdown-list"
+                class="hidden absolute z-50 top-full left-0 right-0 mt-1 bg-slate-800 border border-white/20 rounded-2xl shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
+                <div id="teacher-dropdown-empty" class="px-4 py-3 text-blue-300 text-xs italic">Memuat daftar guru...</div>
+              </div>
+            </div>
+            <input type="hidden" id="teacher-select" value="">
+          </div>
+          <div class="flex gap-2">
+            <button onclick="goToStep1()" class="px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-sm font-semibold transition flex-shrink-0"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="goToStep3()" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 font-bold rounded-2xl transition text-sm shadow-lg active:scale-95">
+              Lanjut — Masukkan Kode <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="step-3" class="hidden space-y-5 fade-in">
+          <div>
+            <label class="block text-xs font-bold text-blue-200 uppercase tracking-wider mb-2">
+              <i class="fa-solid fa-key mr-1.5"></i>Langkah 3 — Kode Akses
+            </label>
+            <p id="selected-teacher-label" class="text-center text-amber-300 font-semibold text-sm mb-3">-</p>
+            <input id="access-code-input" type="text" maxlength="9" placeholder="XXXX-XXXX"
+              oninput="formatCodeInput(this)" onkeydown="if(event.key==='Enter') doLogin()"
+              class="code-input w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white focus:outline-none focus:border-amber-400 transition">
+            <p class="text-[11px] text-blue-300 mt-2 text-center">Kode 8 karakter dari kartu akses yang diberikan KS.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="goToStep2()" class="px-4 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-sm font-semibold transition flex-shrink-0"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="doLogin()" class="flex-1 py-3.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl transition text-sm shadow-lg active:scale-95">
+              <i class="fa-solid fa-unlock mr-2"></i>Akses Data Supervisi
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="text-blue-400/60 text-[11px] mt-8 text-center">Hanya Anda yang dapat melihat data supervisi milik Anda. Data bersifat read-only.</p>
+    </section>
+
+    <!-- ══ DASHBOARD ════════════════════════════════════════════════════ -->
+    <section id="dashboard" class="hidden pt-8 fade-in">
+
+      <!-- Welcome banner -->
+      <div class="glass-card rounded-3xl p-6 mb-6 flex items-center justify-between gap-4 flex-wrap">
+        <div class="flex items-center gap-4">
+          <img id="dash-photo" src="" alt="Foto Guru" class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400/50 flex-shrink-0">
+          <div>
+            <div class="text-[11px] font-semibold text-amber-300 uppercase tracking-wider mb-0.5">Selamat datang,</div>
+            <h2 id="dash-name" class="font-display font-bold text-xl text-white"></h2>
+            <p id="dash-subject" class="text-sm text-blue-300 mt-0.5"></p>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">Total Entri</div>
+          <div id="dash-total" class="font-display font-black text-3xl text-white">0</div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div class="glass-card rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-emerald-400" id="stat-t1">0</div>
+          <div class="text-[10px] text-blue-300 font-semibold mt-1">Telaah RPP<br>Selesai</div>
+        </div>
+        <div class="glass-card rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-blue-400" id="stat-obs">0</div>
+          <div class="text-[10px] text-blue-300 font-semibold mt-1">Observasi Kelas<br>Tercatat</div>
+        </div>
+        <div class="glass-card rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-amber-400" id="stat-avg">—</div>
+          <div class="text-[10px] text-blue-300 font-semibold mt-1">Rata-rata Nilai<br>Observasi</div>
+        </div>
+        <div class="glass-card rounded-2xl p-4 text-center">
+          <div class="text-xl font-black text-purple-400" id="stat-pred">—</div>
+          <div class="text-[10px] text-blue-300 font-semibold mt-1">Predikat<br>Terbaru</div>
+        </div>
+      </div>
+
+      <!-- Rekap Table -->
+      <div class="glass-card-light rounded-3xl shadow-xl overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
+          <h3 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-list text-blue-600"></i>
+            Rekapitulasi Supervisi Saya
+          </h3>
+          <span id="rekap-period" class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full"></span>
+        </div>
+        <div id="rekap-empty" class="hidden p-12 text-center">
+          <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-2xl mb-3">
+            <i class="fa-solid fa-clipboard-question"></i>
+          </div>
+          <h4 class="text-base font-bold text-slate-700">Belum Ada Supervisi</h4>
+          <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Belum ada data supervisi tercatat untuk Anda. Hubungi Kepala Sekolah.</p>
+        </div>
+        <div id="rekap-table-wrap" class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-100 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <th class="p-4 w-10 text-center">No</th>
+                <th class="p-4">Mapel &amp; Kelas</th>
+                <th class="p-4">Topik / Materi</th>
+                <th class="p-4 text-center">Progress</th>
+                <th class="p-4 text-center">Nilai</th>
+                <th class="p-4 text-center">Predikat</th>
+                <th class="p-4 text-center no-print">Laporan</th>
+              </tr>
+            </thead>
+            <tbody id="rekap-tbody" class="divide-y divide-slate-100 text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ REPORT PANEL ═════════════════════════════════════════════════ -->
+    <section id="report-section" class="hidden pt-8 fade-in">
+      <div class="glass-card rounded-3xl p-5 mb-6 flex items-center justify-between flex-wrap gap-3 no-print">
+        <div class="flex items-center gap-3">
+          <button onclick="backToDashboard()" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition">
+            <i class="fa-solid fa-arrow-left text-white"></i>
+          </button>
+          <div>
+            <div class="text-xs font-semibold text-blue-300">Lembar Laporan Observasi Kelas</div>
+            <div id="report-teacher-name" class="font-display font-bold text-white text-sm"></div>
+          </div>
+        </div>
+        <button onclick="window.print()" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+          <i class="fa-solid fa-print"></i> Print / Simpan PDF
+        </button>
+      </div>
+      <div id="report-content" class="glass-card-light rounded-3xl shadow-xl p-8 text-slate-800 text-sm"></div>
+    </section>
+
+  </main>
+
+  <footer class="no-print border-t border-white/10 mt-12 py-6 text-center text-[11px] text-blue-400/60">
+    Portal Supervisi Guru &middot; SupervisiSekolah.id &middot; Data bersifat read-only.
+  </footer>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────
+    let selectedTeacherName = '';
+    let loggedInEmployee = null;
+    let allTelaah = [];
+    let allObservations = [];
+
+    // ── Init ───────────────────────────────────────────────────
+    // ── Detect API base URL automatically ───────────────────────
+    const API_BASE = (() => {
+      // Works whether served from /supervisisekolah.id/, /ks.id/, localhost, or any hostname
+      const p = window.location.pathname;
+      const idx = p.toLowerCase().indexOf('/guru');
+      if (idx !== -1) {
+        return window.location.origin + p.slice(0, idx + 1);
+      }
+      const idx2 = p.toLowerCase().indexOf('/supervisi');
+      if (idx2 !== -1) {
+        return window.location.origin + p.slice(0, idx2 + 1);
+      }
+      return window.location.origin + '/';
+    })();
+
+    // Server employee list (populated on load, reused for validation)
+    let serverEmployees = [];
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Load school profile for header
+      try {
+        const r = await fetch(API_BASE + 'api.php?action=get_profile');
+        const d = await r.json();
+        const profile = d.profile || {};
+        const school = profile.schoolName || 'Portal Supervisi Guru';
+        if (document.getElementById('header-school-name')) {
+          document.getElementById('header-school-name').textContent = school;
+        }
+        const period = `${profile.semester || ''} · ${profile.academicYear || ''}`;
+        if (document.getElementById('rekap-period')) {
+          document.getElementById('rekap-period').textContent = period.trim() === '·' ? '' : period;
+        }
+      } catch(e) {
+        const profile = (typeof KS_AUTH !== 'undefined') ? KS_AUTH.getProfile() : {};
+        if (document.getElementById('header-school-name')) {
+          document.getElementById('header-school-name').textContent = profile.schoolName || '';
+        }
+      }
+
+      // Load indicator config
+      try {
+        if (typeof KS_INDICATOR_MANAGER !== 'undefined') {
+          await KS_INDICATOR_MANAGER.loadConfig();
+        }
+      } catch(e) {
+        console.warn('Indicator manager loadConfig error:', e);
+      }
+
+      // ─── AUTH CHECK: read session from /guru/supervisi/ ───
+      const urlParams = new URLSearchParams(window.location.search);
+      const teacherParam = urlParams.get('teacher');
+
+      try {
+        const raw = localStorage.getItem('supervisi_teacher_session') || localStorage.getItem('ks_teacher_session');
+        if (raw) {
+          const session = JSON.parse(raw);
+          if (session && session.authenticated && session.name) {
+            // If URL has ?teacher= that differs from session, still accept session
+            // (session takes priority — they already authenticated)
+            loggedInEmployee = session;
+            await loadDashboard(session);
+            document.getElementById('btn-logout').classList.remove('hidden');
+            return;
+          }
+        }
+      } catch(e) {}
+
+      // No valid session → redirect to /guru/supervisi/ to authenticate
+      const redirectParam = teacherParam
+        ? `../?teacher=${encodeURIComponent(teacherParam)}&redirect=laporan`
+        : '../?redirect=laporan';
+      window.location.href = redirectParam;
+    });
+
+    async function populateTeacherSelect() {
+      const list  = document.getElementById('teacher-dropdown-list');
+      const empty = document.getElementById('teacher-dropdown-empty');
+      if (!list) return;
+
+      // Reset
+      document.getElementById('teacher-select').value = '';
+      const lbl = document.getElementById('teacher-dropdown-label');
+      lbl.textContent = '-- Pilih nama Anda --';
+      lbl.className = 'text-blue-200';
+
+      if (empty) empty.textContent = 'Memuat daftar guru...';
+
+      try {
+        const res  = await fetch(API_BASE + 'api.php?action=get_employees_public');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.employees) && data.employees.length > 0) {
+          serverEmployees = data.employees;
+          _renderDropdown(serverEmployees);
+        } else {
+          if (empty) empty.textContent = 'Belum ada guru dengan kode akses.';
+        }
+      } catch(e) {
+        console.warn('[Portal] Server unreachable:', e);
+        if (empty) empty.textContent = 'Gagal memuat data guru dari server.';
+      }
+    }
+
+    function _renderDropdown(teachers) {
+      const list = document.getElementById('teacher-dropdown-list');
+      list.innerHTML = teachers.map(t => `
+        <button type="button" onclick="selectTeacher('${t.name.replace(/'/g, "\\'")}')"
+          class="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 border-b border-white/5 last:border-0 transition flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-user text-amber-400 text-[10px]"></i>
+          </div>
+          <div>
+            <div class="font-semibold">${t.name}</div>
+            ${t.subject ? `<div class="text-[11px] text-blue-300">${t.subject}</div>` : ''}
+          </div>
+        </button>`).join('');
+
+      // Auto-select if URL has ?teacher=
+      const urlParams = new URLSearchParams(window.location.search);
+      const teacherParam = urlParams.get('teacher');
+      if (teacherParam) {
+        const found = teachers.find(t => t.name.toLowerCase() === teacherParam.toLowerCase() || t.name.toLowerCase().includes(teacherParam.toLowerCase()));
+        if (found) {
+          selectTeacher(found.name);
+          setTimeout(() => {
+            goToStep3();
+          }, 200);
+        }
+      }
+    }
+
+    function toggleTeacherDropdown() {
+      const list = document.getElementById('teacher-dropdown-list');
+      list.classList.toggle('hidden');
+    }
+
+    function selectTeacher(name) {
+      document.getElementById('teacher-select').value = name;
+      const lbl = document.getElementById('teacher-dropdown-label');
+      lbl.textContent = name;
+      lbl.classList.remove('text-blue-200');
+      lbl.classList.add('text-white', 'font-semibold');
+      document.getElementById('teacher-dropdown-list').classList.add('hidden');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const wrapper = document.getElementById('teacher-dropdown-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        const list = document.getElementById('teacher-dropdown-list');
+        if (list) list.classList.add('hidden');
+      }
+    });
+
+    // ── Steps ──────────────────────────────────────────────────
+    function setStep(n) {
+      ['step-1','step-2','step-3'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (i+1 === n) { el.classList.remove('hidden'); } else { el.classList.add('hidden'); }
+      });
+      ['dot-1','dot-2','dot-3'].forEach((id, i) => {
+        const d = document.getElementById(id);
+        d.className = 'step-dot w-3 h-3 rounded-full ' + (i+1 < n ? 'done' : i+1 === n ? 'active' : 'pending');
+      });
+    }
+
+    function goToStep1() { setStep(1); }
+    function goToStep2() { setStep(2); }
+
+    function goToStep3() {
+      const v = document.getElementById('teacher-select').value;
+      if (!v) { shakeEl('teacher-dropdown-btn'); Swal.fire({icon:'warning',title:'Pilih Nama Guru',text:'Silakan pilih nama Anda dari daftar.',confirmButtonColor:'#f59e0b'}); return; }
+      selectedTeacherName = v;
+      document.getElementById('selected-teacher-label').textContent = v;
+      document.getElementById('access-code-input').value = '';
+      setStep(3);
+      setTimeout(() => document.getElementById('access-code-input').focus(), 200);
+    }
+
+    function formatCodeInput(el) {
+      let v = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (v.length > 4) v = v.slice(0,4) + '-' + v.slice(4,8);
+      el.value = v;
+    }
+
+    // ── Login ──────────────────────────────────────────────────
+    async function doLogin() {
+      const code = document.getElementById('access-code-input').value.trim();
+      if (!code) { shakeEl('access-code-input'); return; }
+
+      // Find teacher from server list (MySQL)
+      const normalize = s => s.toUpperCase().replace(/[-\s]/g, '');
+      let emp = serverEmployees.find(e =>
+        e.name === selectedTeacherName &&
+        normalize(e.accessCode || '') === normalize(code)
+      );
+
+      if (!emp) {
+        shakeEl('access-code-input');
+        Swal.fire({icon:'error',title:'Kode Akses Salah',
+          html:'<p class="text-sm text-slate-600">Periksa kembali kode akses pada kartu yang diberikan Kepala Sekolah.</p>',
+          confirmButtonColor:'#ef4444'});
+        return;
+      }
+      loggedInEmployee = emp;
+      loadDashboard(emp);
+    }
+
+    // ── Dashboard ──────────────────────────────────────────────
+    async function loadDashboard(emp) {
+      document.getElementById('login-gate').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('btn-logout').classList.remove('hidden');
+
+      document.getElementById('dash-name').textContent    = emp.name;
+      document.getElementById('dash-subject').textContent = emp.subject || emp.role;
+      const photo = emp.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(emp.name) + '&background=475569&color=fff&size=80';
+      const photoEl = document.getElementById('dash-photo');
+      photoEl.src = photo;
+      photoEl.onerror = () => { photoEl.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(emp.name) + '&background=475569&color=fff&size=80'; };
+
+      // Load data from server first, fallback to localStorage
+      allTelaah = [];
+      allObservations = [];
+      try {
+        const [tRes, oRes] = await Promise.all([
+          fetch(API_BASE + 'api.php?action=get_all'),
+          fetch(API_BASE + 'api.php?action=get_all')
+        ]);
+        const tData = await tRes.json();
+        if (tData.telaah_rpp)     allTelaah       = (tData.telaah_rpp     || []).filter(t => t.teacherName === emp.name);
+        if (tData.observations)   allObservations  = (tData.observations   || []).filter(o => o.teacherName === emp.name);
+      } catch(e) {
+        console.warn('[Portal] Server data load failed, using localStorage:', e);
+      }
+      // Supplement with localStorage if server returned nothing
+      if (allTelaah.length === 0 && typeof KS_TELAAH_RPP_DB !== 'undefined') {
+        allTelaah = (KS_TELAAH_RPP_DB.getAll() || []).filter(t => t.teacherName === emp.name);
+      }
+      if (allObservations.length === 0 && typeof KS_OBSERVATION_DB !== 'undefined') {
+        allObservations = (KS_OBSERVATION_DB.getAll() || []).filter(o => o.teacherName === emp.name);
+      }
+
+      renderStats();
+      renderRekap();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function renderStats() {
+      const scores = allObservations
+        .map(o => parseFloat(o.finalScore || o.observationScore || 0))
+        .filter(s => !isNaN(s) && s > 0);
+      const avg  = scores.length ? (scores.reduce((a,b) => a+b,0)/scores.length).toFixed(1) : '—';
+      const last = allObservations.length ? allObservations[allObservations.length-1] : null;
+      document.getElementById('dash-total').textContent  = allTelaah.length;
+      document.getElementById('stat-t1').textContent     = allTelaah.length;
+      document.getElementById('stat-obs').textContent    = allObservations.length;
+      document.getElementById('stat-avg').textContent    = avg;
+      document.getElementById('stat-pred').textContent   = last ? (last.predicate || last.predikat || '—') : '—';
+    }
+
+    function renderRekap() {
+      const tbody = document.getElementById('rekap-tbody');
+      const empty = document.getElementById('rekap-empty');
+      const wrap  = document.getElementById('rekap-table-wrap');
+
+      if (!allTelaah.length) { empty.classList.remove('hidden'); wrap.classList.add('hidden'); return; }
+      empty.classList.add('hidden'); wrap.classList.remove('hidden');
+
+      const badge = (lbl, cls, ok) => ok
+        ? `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${cls}"><i class="fa-solid fa-check text-[9px]"></i>${lbl}</span>`
+        : `<span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-400 border border-slate-200">${lbl}</span>`;
+
+      const predCls = p => {
+        if (!p || p === '—') return 'text-slate-400';
+        const l = p.toLowerCase();
+        if (l.includes('amat') || l.includes('sangat')) return 'text-emerald-700 font-black';
+        if (l.includes('baik')) return 'text-blue-700 font-bold';
+        if (l.includes('cukup')) return 'text-amber-700 font-bold';
+        return 'text-rose-700 font-bold';
+      };
+
+      tbody.innerHTML = allTelaah.map((t, i) => {
+        const obs = allObservations.find(o => o.telaahId === t.id) || null;
+        const hasL1 = obs && obs.praObservation  && Array.isArray(obs.praObservation.questions)  && obs.praObservation.questions.length  > 0;
+        const hasL2 = obs && obs.criteria        && obs.criteria.length        > 0;
+        const hasL3 = obs && obs.pascaObservation && Array.isArray(obs.pascaObservation.questions) && obs.pascaObservation.questions.length > 0;
+        const score = obs ? (obs.finalScore || obs.observationScore || '—') : '—';
+        const pred  = obs ? (obs.predicate  || obs.predikat || '—') : '—';
+        return `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-4 text-center text-slate-400 font-mono text-xs">${i+1}</td>
+          <td class="p-4">
+            <div class="font-semibold text-slate-800">${t.subject || '—'}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${t.gradeClass || '—'} &middot; ${t.semester || ''} ${t.academicYear || ''}</div>
+          </td>
+          <td class="p-4">
+            <div class="text-slate-700 max-w-[150px] truncate" title="${t.topic || ''}">${t.topic || '—'}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${t.reviewDate ? new Date(t.reviewDate).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</div>
+          </td>
+          <td class="p-4 text-center">
+            <div class="flex flex-wrap gap-1 justify-center">
+              ${badge('T1','badge-t1',true)}
+              ${badge('L1','badge-l1',hasL1)}
+              ${badge('L2','badge-l2',hasL2)}
+              ${badge('L3','badge-l3',hasL3)}
+            </div>
+          </td>
+          <td class="p-4 text-center font-mono font-black text-base ${score !== '—' ? 'text-blue-700' : 'text-slate-300'}">${score}</td>
+          <td class="p-4 text-center text-sm ${predCls(pred)}">${pred}</td>
+          <td class="p-4 text-center no-print">
+            ${obs
+              ? `<button onclick="showReport('${t.id}','${obs.id||''}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg transition inline-flex items-center gap-1"><i class="fa-solid fa-file-lines"></i>Lihat</button>`
+              : `<span class="text-[11px] text-slate-300 italic">Belum ada</span>`}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── Report ─────────────────────────────────────────────────
+    function showReport(telaahId, obsId) {
+      const telaah = allTelaah.find(t => t.id === telaahId);
+      const obs    = allObservations.find(o => o.id === obsId);
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('report-section').classList.remove('hidden');
+      document.getElementById('report-teacher-name').textContent = loggedInEmployee.name;
+      const profile = (typeof KS_AUTH !== 'undefined') ? KS_AUTH.getProfile() : {};
+      document.getElementById('report-content').innerHTML = buildReport(telaah, obs, profile);
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function backToDashboard() {
+      document.getElementById('report-section').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function buildReport(t, obs, prof) {
+      const f = (v,d='—') => (v !== undefined && v !== null && v !== '') ? v : d;
+      const dt = d => d ? new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}) : '—';
+      const crCount = (obs && obs.criteria) ? obs.criteria.length : 0;
+      const computedMaxScore = obs?.maxScore || (crCount > 0 ? crCount * 4 : 56);
+
+      // Unique Categories
+      const catNames = Array.from(new Set((obs?.criteria || []).map(c => c.category || c.sectionTitle).filter(Boolean)));
+      const categoriesSummaryHtml = (typeof KS_INDICATOR_MANAGER !== 'undefined')
+        ? KS_INDICATOR_MANAGER.generateReportCategoriesSummary(catNames.length > 0 ? catNames : null, crCount, computedMaxScore)
+        : '';
+
+      // ── Header ──
+      let html = `
+        <div class="text-center border-b-2 border-slate-800 pb-6 mb-6">
+          <div class="flex items-center justify-center gap-3 mb-2">
+            <div class="w-10 h-10 rounded-xl bg-blue-900 text-white flex items-center justify-center">
+              <i class="fa-solid fa-school"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-black uppercase tracking-wider text-slate-900">LEMBAR HASIL OBSERVASI PEMBELAJARAN</h2>
+              <p class="text-xs font-bold text-slate-600 uppercase tracking-wide">SUPERVISI AKADEMIK TAHUN AJARAN ${f(prof.academicYear,'2025/2026')}</p>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500">Model Supervisi Klinis Berbasis ${crCount > 0 ? crCount : 14} Indikator Terpilih: Pembelajaran Mendalam &amp; Diferensiasi</p>
+        </div>
+
+        <!-- Identitas -->
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-8 text-xs">
+            <div class="flex"><span class="w-36 font-bold text-slate-500">Nama Sekolah</span><span class="font-semibold text-slate-800">: ${f(obs?.schoolName || prof.schoolName)}</span></div>
+            <div class="flex"><span class="w-36 font-bold text-slate-500">Tanggal Observasi</span><span class="font-semibold text-slate-800">: ${f(obs?.observationDate)}</span></div>
+            <div class="flex"><span class="w-36 font-bold text-slate-500">Nama Guru</span><span class="font-bold text-slate-900">: ${f(obs?.teacherName || t?.teacherName)}</span></div>
+            <div class="flex"><span class="w-36 font-bold text-slate-500">Mata Pelajaran</span><span class="font-semibold text-slate-800">: ${f(obs?.subject || t?.subject)}</span></div>
+            <div class="flex"><span class="w-36 font-bold text-slate-500">NIP Guru</span><span class="font-semibold text-slate-800">: ${f(obs?.nip || t?.nip)}</span></div>
+            <div class="flex"><span class="w-36 font-bold text-slate-500">Kelas / Semester</span><span class="font-semibold text-slate-800">: ${f(obs?.gradeClass || t?.gradeClass)} / ${f(obs?.semester || t?.semester)}</span></div>
+            <div class="flex"><span class="w-36 font-bold text-slate-500">Observer / KS</span><span class="font-semibold text-slate-800">: ${f(obs?.observerName || prof.fullName)}</span></div>
+            <div class="flex"><span class="w-36 font-bold text-slate-500">Nilai Akhir / Predikat</span><span class="font-bold text-blue-700">: ${f(obs?.finalScore,'—')} (${f(obs?.predicate,'—')})</span></div>
+          </div>
+        </div>
+
+        <!-- Ringkasan Kategori Supervisi Terpilih -->
+        ${categoriesSummaryHtml ? `<div class="mb-6">${categoriesSummaryHtml}</div>` : ''}
+        `;
+
+      // ── Criteria Table ──
+      if (obs && obs.criteria && obs.criteria.length > 0) {
+        const crRows = obs.criteria.map((c, idx) => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 text-center font-bold text-slate-400 text-xs">${idx+1}</td>
+            <td class="p-3">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">${f(c.category || c.sectionTitle, 'Bagian ' + f(c.section,''))}</span>
+                <span class="font-bold text-slate-800 text-xs">${f(c.title, c.indicator||c.name||'')}</span>
+              </div>
+              ${c.description && c.description !== c.title ? `<div class="text-[11px] text-slate-500 mt-0.5">${f(c.description,'')}</div>` : ''}
+              ${c.focus ? `<div class="text-[10px] text-slate-400 italic">Fokus: ${f(c.focus,'')}</div>` : ''}
+            </td>
+            <td class="p-3 text-center font-black text-blue-700 text-sm">${f(c.score,'—')}</td>
+            <td class="p-3 text-slate-600 italic text-xs">${f(c.comment,'-')}</td>
+          </tr>`).join('');
+
+        html += `
+          <div class="mb-6">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">A. Rincian Penilaian Indikator Standar Observasi (${crCount} Butir)</h4>
+            <div class="border border-slate-200 rounded-xl overflow-hidden">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold">
+                    <th class="p-3 w-10 text-center">No</th>
+                    <th class="p-3">Indikator Observasi</th>
+                    <th class="p-3 w-20 text-center">Skor (1-4)</th>
+                    <th class="p-3">Catatan / Bukti Pengamatan</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">${crRows}</tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Score summary -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-blue-50/60 rounded-2xl border border-blue-100 text-center mb-6">
+            <div><p class="text-[11px] font-bold text-slate-500 uppercase">Total Skor</p><h5 class="text-xl font-black text-slate-800 mt-0.5">${f(obs.totalScore,'0')} / ${computedMaxScore}</h5></div>
+            <div><p class="text-[11px] font-bold text-slate-500 uppercase">Nilai Konversi (100)</p><h5 class="text-2xl font-black text-blue-600 mt-0.5">${f(obs.finalScore,'0')}</h5></div>
+            <div><p class="text-[11px] font-bold text-slate-500 uppercase">Predikat Capaian</p><h5 class="text-base font-black text-emerald-600 mt-1">${f(obs.predicate,'-')}</h5></div>
+            <div><p class="text-[11px] font-bold text-slate-500 uppercase">Status</p><h5 class="text-xs font-bold text-slate-700 mt-1.5 px-2 py-0.5 rounded bg-white border border-slate-200 inline-block">${obs.isVerified ? 'Resmi Terverifikasi' : 'Draf Observasi'}</h5></div>
+          </div>`;
+      }
+
+      // ── Analisis & Rekomendasi ──
+      if (obs && (obs.strengthsNotes || obs.improvementsNotes || obs.criticalNotes)) {
+        html += `
+          <div class="mb-6 space-y-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">B. Analisis Hasil &amp; Rekomendasi Tindak Lanjut</h4>
+            <div class="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 text-xs">
+              <div class="p-4 bg-white">
+                <span class="font-bold text-emerald-700 block mb-1"><i class="fa-solid fa-circle-check mr-1.5"></i>Hal-hal Positif / Kelebihan Utama:</span>
+                <p class="text-slate-700 leading-relaxed">${f(obs.strengthsNotes,'Menunjukkan praktik baik dalam pembelajaran.')}</p>
+              </div>
+              <div class="p-4 bg-white">
+                <span class="font-bold text-blue-700 block mb-1"><i class="fa-solid fa-arrow-trend-up mr-1.5"></i>Hal yang Perlu Ditingkatkan:</span>
+                <p class="text-slate-700 leading-relaxed">${f(obs.improvementsNotes,'Pengayaan aspek pembelajaran.')}</p>
+              </div>
+              <div class="p-4 bg-white">
+                <span class="font-bold text-amber-700 block mb-1"><i class="fa-solid fa-clipboard-check mr-1.5"></i>Catatan Umum / Kesimpulan Supervisi:</span>
+                <p class="text-slate-700 leading-relaxed">${f(obs.criticalNotes,'Kualitas pembelajaran terlaksana dengan baik.')}</p>
+              </div>
+              ${obs.followUpPrograms && obs.followUpPrograms.length > 0 ? `
+              <div class="p-4 bg-white">
+                <span class="font-bold text-indigo-700 block mb-2"><i class="fa-solid fa-list-check mr-1.5"></i>Program &amp; Rekomendasi Tindak Lanjut:</span>
+                <div class="space-y-2">${obs.followUpPrograms.map((p,idx) => `
+                  <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50/60">
+                    <div class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                      <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] flex items-center justify-center font-bold">${idx+1}</span>
+                      <span>${f(p.program,'-')}</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mt-1.5 text-[11px] text-slate-600 pl-6">
+                      <div><span class="font-semibold text-slate-500">Target:</span> ${f(p.target,'-')}</div>
+                      <div><span class="font-semibold text-slate-500">Waktu:</span> ${f(p.timeframe,'-')}</div>
+                      <div><span class="font-semibold text-slate-500">PIC:</span> ${f(p.pic,'-')}</div>
+                    </div>
+                  </div>`).join('')}
+                </div>
+              </div>` : (obs.recommendations ? `<div class="p-4 bg-white"><span class="font-bold text-indigo-700 block mb-1">Rekomendasi:</span><p class="text-slate-700 italic text-xs leading-relaxed">${obs.recommendations}</p></div>` : '')}
+            </div>
+          </div>`;
+      }
+
+      // ── Pra Observasi (Langkah 1) ──
+      if (obs && obs.praObservation && Array.isArray(obs.praObservation.questions) && obs.praObservation.questions.length > 0) {
+        const praRows = obs.praObservation.questions.map(q => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-2.5 text-center font-bold text-slate-400 text-xs">${q.id}</td>
+            <td class="p-2.5 font-bold text-slate-800 text-xs">${q.question}</td>
+            <td class="p-2.5 text-blue-900 bg-blue-50/40 text-xs">${f(q.aiAnswer,'-')}</td>
+            <td class="p-2.5 text-slate-700 italic text-xs">${f(q.notes,'-')}</td>
+          </tr>`).join('');
+        html += `
+          <div class="mb-6 pt-4 border-t border-slate-200">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
+                <i class="fa-solid fa-comments text-blue-600"></i>
+                <span>C. Wawancara Pra Observasi (11 Butir Pertanyaan Coaching)</span>
+              </h4>
+              <span class="text-[10px] text-slate-500 font-semibold">Langkah 1 Supervisi</span>
+            </div>
+            <div class="border border-slate-200 rounded-xl overflow-hidden mb-3">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-blue-50 border-b border-blue-100 text-blue-950 font-bold">
+                    <th class="p-2.5 w-10 text-center">No</th>
+                    <th class="p-2.5 w-2/5">Pertanyaan Coaching</th>
+                    <th class="p-2.5 w-1/3">Jawaban Rekomendasi AI</th>
+                    <th class="p-2.5">Catatan Wawancara KS</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">${praRows}</tbody>
+              </table>
+            </div>
+            <div class="p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+              <span class="font-bold text-blue-900 block mb-0.5 text-xs">Kesimpulan Pra Observasi:</span>
+              <p class="text-slate-700 leading-relaxed italic text-xs">${f(obs.praObservation.conclusion,'Dialog pra-observasi telah dilaksanakan.')}</p>
+            </div>
+          </div>`;
+      }
+
+      // ── Pasca Observasi (Langkah 3) ──
+      if (obs && obs.pascaObservation && Array.isArray(obs.pascaObservation.questions) && obs.pascaObservation.questions.length > 0) {
+        const pascaRows = obs.pascaObservation.questions.map(q => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-2.5 text-center font-bold text-slate-400 text-xs">${q.id}</td>
+            <td class="p-2.5 font-bold text-slate-800 text-xs">${q.question}</td>
+            <td class="p-2.5 text-teal-900 bg-teal-50/40 text-xs">${f(q.aiAnswer,'-')}</td>
+            <td class="p-2.5 text-slate-700 italic text-xs">${f(q.notes,'-')}</td>
+          </tr>`).join('');
+        html += `
+          <div class="mb-6 pt-4 border-t border-slate-200">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-teal-900 flex items-center gap-1.5">
+                <i class="fa-solid fa-chart-bar text-teal-600"></i>
+                <span>D. Wawancara Pasca Observasi (Refleksi)</span>
+              </h4>
+              <span class="text-[10px] text-slate-500 font-semibold">Langkah 3 Supervisi</span>
+            </div>
+            <div class="border border-slate-200 rounded-xl overflow-hidden mb-3">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-teal-50 border-b border-teal-100 text-teal-950 font-bold">
+                    <th class="p-2.5 w-10 text-center">No</th>
+                    <th class="p-2.5 w-2/5">Pertanyaan Refleksi</th>
+                    <th class="p-2.5 w-1/3">Jawaban Rekomendasi AI</th>
+                    <th class="p-2.5">Catatan Wawancara KS</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">${pascaRows}</tbody>
+              </table>
+            </div>
+            ${obs.pascaObservation.generalImpression ? `<div class="p-3 bg-teal-50/50 rounded-xl border border-teal-100 mb-2">
+              <span class="font-bold text-teal-900 block mb-0.5 text-xs">Kesan Umum:</span>
+              <p class="text-slate-700 italic text-xs">${obs.pascaObservation.generalImpression}</p>
+            </div>` : ''}
+            <div class="p-3 bg-teal-50/50 rounded-xl border border-teal-100">
+              <span class="font-bold text-teal-900 block mb-0.5 text-xs">Kesimpulan Pasca Observasi:</span>
+              <p class="text-slate-700 leading-relaxed italic text-xs">${f(obs.pascaObservation.conclusion,'Kesimpulan dan rekomendasi tindak lanjut telah disepakati.')}</p>
+            </div>
+          </div>`;
+      }
+
+      // ── Tanda Tangan ──
+      html += `
+        <div class="mt-8 pt-6 border-t-2 border-slate-800 grid grid-cols-2 gap-8">
+          <div class="text-center">
+            <div class="text-xs text-slate-600 mb-16">Guru yang disupervisi,</div>
+            <div class="border-t border-slate-400 pt-2 text-xs font-bold text-slate-800">${f(obs?.teacherName || t?.teacherName)}</div>
+            <div class="text-[10px] text-slate-500">NIP: ${f(obs?.nip || t?.nip)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xs text-slate-600 mb-16">Kepala Sekolah / Supervisor,</div>
+            <div class="border-t border-slate-400 pt-2 text-xs font-bold text-slate-800">${f(obs?.observerName || t?.reviewerName || prof.fullName)}</div>
+            <div class="text-[10px] text-slate-500">NIP: ${f(obs?.observerNip || t?.reviewerNip || prof.nip)}</div>
+          </div>
+        </div>`;
+
+      return html;
+    }
+
+    // ── Logout ─────────────────────────────────────────────────
+    function doLogout() {
+      // Clear authenticated session and redirect to auth gate at /guru/supervisi/
+      localStorage.removeItem('supervisi_teacher_session');
+      localStorage.removeItem('ks_teacher_session');
+      loggedInEmployee = null;
+      allTelaah = [];
+      allObservations = [];
+      window.location.href = '../';
+    }
+
+    // ── Shake ──────────────────────────────────────────────────
+    function shakeEl(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('shake');
+      void el.offsetWidth;
+      el.classList.add('shake');
+      el.addEventListener('animationend', () => el.classList.remove('shake'), {once:true});
+    }
+  </script>
+</body>
+</html>

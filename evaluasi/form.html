@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Evaluasi Kinerja Guru &amp; Admin — SupervisiSekolah.id</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SortableJS untuk Drag and Drop -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <!-- SheetJS (xlsx) untuk Ekspor Excel Multi-Sheet -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- Google Material Symbols & Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Modular Auth & Includes Helpers -->
+    <script src="../js/auth.js?v=20261015_v2"></script>
+    <script src="../js/includes.js?v=20261015_v2"></script>
+    <script src="../js/notifications.js?v=20261015_v2"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0f172a",
+                        secondary: "#0284c7",
+                        "secondary-container": "#e0f2fe",
+                        "on-secondary-container": "#0369a1",
+                        surface: "#ffffff",
+                        "on-surface": "#0f172a",
+                        "on-surface-variant": "#64748b",
+                        "surface-container": "#f8fafc",
+                        outline: "#cbd5e1",
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                        }
+                    },
+                    maxWidth: {
+                        'container-max': '1280px'
+                    },
+                    padding: {
+                        'margin-mobile': '1rem',
+                        'margin-desktop': '2rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .font-display {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .drag-handle {
+            cursor: grab;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .ghost-class {
+            opacity: 0.4;
+            background-color: #e0f2fe;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Uniform Header -->
+    <header id="app-header"></header>
+
+    <!-- Main Container -->
+    <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-6 pb-24 md:pb-12 flex-grow w-full space-y-6">
+
+        <!-- Page Top Header Banner -->
+        <section class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-brand-500/10 text-brand-600 rounded-2xl flex items-center justify-center border border-brand-500/20 shadow-inner flex-shrink-0">
+                    <span class="material-symbols-outlined text-3xl text-secondary" style="font-variation-settings: 'FILL' 1;">assignment</span>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 id="eval-header-title" class="text-xl md:text-2xl font-bold font-display text-primary">Sistem Evaluasi Kinerja Guru &amp; Staff</h1>
+                        <span id="badgeActivePeriod" class="px-3 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-calendar-check text-xs"></i>
+                            <span id="badgeActivePeriodText">T.A. 2026/2027 Ganjil</span>
+                        </span>
+                        <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Tersimpan Lokal &amp; Database
+                        </span>
+                    </div>
+                    <p class="text-xs md:text-sm text-on-surface-variant mt-1" id="eval-header-school">SMP Negeri 1 Jakarta Pusat &bull; SupervisiSekolah.id</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                <a href="../karyawan"
+                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-id-badge text-amber-500"></i> Database Karyawan
+                </a>
+                <button onclick="scrollToSavedHistory()"
+                    class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-xl border border-indigo-200 transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-database text-indigo-500"></i> Riwayat (<span id="saved-count-badge" class="font-bold">0</span>)
+                </button>
+                <button onclick="resetDataConfirm()"
+                    class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+            </div>
+        </section>
+
+        <!-- Stepper Navigation -->
+        <nav
+            class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200/80 grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button id="tab-step1" onclick="switchStep(1)"
+                class="step-btn active px-4 py-3 rounded-xl font-semibold text-xs md:text-sm flex items-center justify-center gap-2 transition bg-brand-500 text-white shadow-sm">
+                <span
+                    class="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold">1</span>
+                <span>Urutkan Per Aspek</span>
+            </button>
+            <button id="tab-step2" onclick="switchStep(2)"
+                class="step-btn px-4 py-3 rounded-xl font-semibold text-xs md:text-sm flex items-center justify-center gap-2 transition text-slate-600 hover:bg-slate-100">
+                <span
+                    class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-bold">2</span>
+                <span>Rekapitulasi Rank</span>
+            </button>
+            <button id="tab-step3" onclick="switchStep(3)"
+                class="step-btn px-4 py-3 rounded-xl font-semibold text-xs md:text-sm flex items-center justify-center gap-2 transition text-slate-600 hover:bg-slate-100">
+                <span
+                    class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-bold">3</span>
+                <span>Konversi Nilai</span>
+            </button>
+            <button id="tab-step4" onclick="switchStep(4)"
+                class="step-btn px-4 py-3 rounded-xl font-semibold text-xs md:text-sm flex items-center justify-center gap-2 transition text-slate-600 hover:bg-slate-100">
+                <span
+                    class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-bold">4</span>
+                <span>Evaluasi & Grafik</span>
+            </button>
+        </nav>
+
+        <!-- Notification Banner -->
+        <div id="toast-banner"
+            class="hidden p-4 rounded-xl border flex items-center justify-between text-sm transition-all duration-300 shadow-sm">
+            <div class="flex items-center gap-3">
+                <i id="toast-icon" class="text-lg"></i>
+                <span id="toast-message" class="font-medium"></span>
+            </div>
+            <button onclick="closeToast()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- ==================== STEP 1: DRAG & DROP PER ASPEK ==================== -->
+        <section id="section-step1" class="space-y-6">
+            <div
+                class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-up-down-left-right text-brand-500"></i> Tahap 1: Pengurutan Ranking Guru
+                        per Aspek Evaluasi
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Gunakan drag-and-drop atau tombol panah naik-turun untuk
+                        mengurutkan guru dari yang paling unggul (Rank 1 di atas) hingga Rank 12 (paling bawah) pada
+                        tiap aspek.</p>
+                </div>
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button onclick="executeRekap()"
+                        class="w-full md:w-auto px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> 2. REKAP
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selector Aspek & Category -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm md:col-span-1">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Pilih Aspek
+                        Penilaian</label>
+                    <div id="aspect-list-buttons" class="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
+                        <!-- Dynamic Aspect Buttons -->
+                    </div>
+                </div>
+
+                <!-- Active Aspect Drag-and-Drop Editor -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm md:col-span-2 flex flex-col">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                        <div>
+                            <span id="active-category-badge"
+                                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-brand-50 text-brand-700 border border-brand-200">Kategori</span>
+                            <h3 id="active-aspect-title" class="text-base font-bold text-slate-900 mt-1">Nama Aspek
+                                Penilaian</h3>
+                        </div>
+                        <span class="text-xs text-slate-400 font-mono">12 Guru Terdaftar</span>
+                    </div>
+
+                    <!-- Drag List -->
+                    <div id="sortable-teacher-list" class="space-y-2 flex-1">
+                        <!-- List Items populated dynamically -->
+                    </div>
+
+                    <div
+                        class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
+                        <span><i class="fa-solid fa-circle-info text-brand-500"></i> Rank otomatis tersimpan saat urutan
+                            diubah.</span>
+                        <span class="font-semibold text-slate-700">Urutan: #1 (Terbaik) - #12 (Terbawah)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== STEP 2: REKAPITULASI RANK ==================== -->
+        <section id="section-step2" class="space-y-6 hidden">
+            <div
+                class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-table-list text-brand-500"></i> Tahap 2: Matriks Rekapitulasi Rank Per
+                        Aspek
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Tabel ini merekap hasil pengurutan rank per aspek. Hasil
+                        akhir diurutkan dari **jumlah rank terkecil** (peringkat terbaik) ke terbesar.</p>
+                </div>
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button onclick="executeKonversi()"
+                        class="w-full md:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate"></i> 3. KONVERSI
+                    </button>
+                </div>
+            </div>
+
+            <!-- Rank Table -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto max-h-[600px]">
+                    <table id="rank-matrix-table" class="w-full text-xs text-left border-collapse">
+                        <!-- Table header and body dynamically populated -->
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== STEP 3: KONVERSI NILAI ==================== -->
+        <section id="section-step3" class="space-y-6 hidden">
+            <div
+                class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-emerald-600"></i> Tahap 3: Hasil Konversi Rank Menjadi
+                        Nilai Bulat
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Konversi Rank: **Rank 1-3 = Nilai 4** | **Rank 4-6 = Nilai 3** | **Rank 7-9 = Nilai 2** | **Rank
+                        10-12 = Nilai 1**.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button onclick="executeSubmit()"
+                        class="w-full md:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> 4. SUBMIT & EVALUASI
+                    </button>
+                </div>
+            </div>
+
+            <!-- Converted Scores Table -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto max-h-[600px]">
+                    <table id="score-matrix-table" class="w-full text-xs text-left border-collapse">
+                        <!-- Table header and body populated dynamically -->
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== STEP 4: RECAP EVALUASI & GRAFIK ==================== -->
+        <section id="section-step4" class="space-y-6 hidden">
+            <!-- Action Buttons Header -->
+            <div
+                class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-award text-amber-500"></i> Tahap 4: Hasil Laporan Evaluasi Guru 2026 &amp;
+                        Distribusi
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Hasil evaluasi akhir berdasarkan total skor terkonversi serta
+                        pemetaan predikat sesuai aturan kuota persentase HR.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <button onclick="saveEvaluationToDatabase()"
+                        class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan ke Tabel Data Lokal
+                    </button>
+                    <button onclick="exportToExcel()"
+                        class="px-4 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i> Ekspor Excel (.xlsx)
+                    </button>
+                    <button onclick="exportToPDF()"
+                        class="px-4 py-2.5 bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf"></i> Ekspor PDF Cetak
+                    </button>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Pie Chart -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-brand-500"></i> Persentase Sebaran Penilaian Guru
+                    </h3>
+                    <div class="w-full max-w-xs h-64 relative flex items-center justify-center">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Bar Chart -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-indigo-500"></i> Jumlah Guru per Predikat (Orang)
+                    </h3>
+                    <div class="w-full h-64 relative flex items-center justify-center">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluation Recap Table -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h3 id="eval-recap-table-title" class="text-sm font-bold text-slate-800">Tabel Rekapitulasi Evaluasi Guru</h3>
+                        <p class="text-xs text-slate-500"><span id="eval-recap-school-subtitle">SMP Negeri 1 Jakarta Pusat</span> &bull; Kuota 5% Amat Baik, 15% Baik, 60% Cukup, 15% Kurang, 5% Rendah</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="exportToExcel()" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-file-excel text-emerald-600"></i> XLSX
+                        </button>
+                        <button onclick="exportToPDF()" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-file-pdf text-rose-600"></i> PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-slate-100 text-slate-700 font-bold text-xs uppercase border-b border-slate-200">
+                                <th class="py-3 px-4 text-center w-12">No.</th>
+                                <th class="py-3 px-4">Nama Guru / Staff</th>
+                                <th class="py-3 px-4 text-center">Rank</th>
+                                <th class="py-3 px-4 text-center">Total Skor Konversi</th>
+                                <th class="py-3 px-4 text-center">Penilaian / Predikat</th>
+                                <th class="py-3 px-4 text-center">Rentang Skor Deskriptif</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eval-recap-tbody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- In-App Saved Database Table Section -->
+            <div id="saved-history-section" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden mt-8">
+                <div class="p-4 border-b border-slate-100 bg-slate-900 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-database text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Tabel Database Riwayat Evaluasi (In-App Store)</h3>
+                            <p class="text-xs text-slate-400">Seluruh sesi evaluasi tersimpan di dalam aplikasi ini tanpa perlu Google Sheets</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="eval-period-filter" onchange="renderSavedEvaluationsTable()" class="px-3 py-1.5 bg-slate-800 border border-slate-700 text-white text-xs font-medium rounded-lg outline-none focus:ring-1 focus:ring-indigo-400">
+                            <option value="active">📅 Periode Aktif</option>
+                            <option value="all">🗂️ Semua Periode (Arsip)</option>
+                        </select>
+                        <button onclick="saveEvaluationToDatabase()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Simpan Sesi Baru
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 font-bold uppercase border-b border-slate-200">
+                                <th class="py-3 px-4 text-center w-12">ID</th>
+                                <th class="py-3 px-4">Judul / Sesi Penilaian</th>
+                                <th class="py-3 px-4">Waktu Tersimpan</th>
+                                <th class="py-3 px-4 text-center">Jumlah Guru</th>
+                                <th class="py-3 px-4">Peringkat 1 (Terbaik)</th>
+                                <th class="py-3 px-4 text-center">Aksi Dokumen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="saved-evaluations-tbody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically from localStorage database -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Detail Riwayat Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-brand-600 text-lg"></i>
+                    <div>
+                        <h3 id="detail-modal-title" class="font-bold text-slate-900 text-base">Detail Sesi Evaluasi</h3>
+                        <p id="detail-modal-time" class="text-xs text-slate-500"></p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="detail-modal-body" class="space-y-4">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t">
+                <span class="text-xs text-slate-400">Database internal SupervisiSekolah.id</span>
+                <div class="flex items-center gap-2">
+                    <button id="btn-detail-xlsx" class="px-3.5 py-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Unduh XLSX
+                    </button>
+                    <button id="btn-detail-pdf" class="px-3.5 py-2 bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-pdf"></i> Unduh PDF
+                    </button>
+                    <button onclick="closeDetailModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Script Application Logic -->
+    <script>
+        // List Guru Default (12 orang dari sheet file terbaru)
+        const DEFAULT_TEACHERS = [
+            "Ridar Kurnia Pratama",
+            "Adjeng Putri Yani",
+            "Nur Apriyani",
+            "Muadzini Rosyadi",
+            "Elfrida Eufraziana",
+            "Dwi Anjani Lestari",
+            "Lina Rahmayani",
+            "Alwan Faiq",
+            "Galih Dwi Santoso",
+            "Gisella Tioriva Br. Bangun",
+            "Juneta Marsauli",
+            "Salsa Fakhrunisa Pasaribu"
+        ];
+
+        // Aspect Items with Categories
+        const EVALUATION_ASPECTS = [
+            // KOMPETENSI KEPRIBADIAN
+            { id: "A1", category: "KOMPETENSI KEPRIBADIAN", name: "Kemampuan manajemen emosi (pengendalian diri)" },
+            { id: "A2", category: "KOMPETENSI KEPRIBADIAN", name: "Kemampuan manajemen waktu" },
+            { id: "A3", category: "KOMPETENSI KEPRIBADIAN", name: "Motivasi diri" },
+            { id: "A4", category: "KOMPETENSI KEPRIBADIAN", name: "Kemampuan resiliensi (tangguh, adaptif, positif)" },
+            { id: "A5", category: "KOMPETENSI KEPRIBADIAN", name: "Kemampuan pemecahan masalah" },
+
+            // KOMPETENSI PEDAGOGIK
+            { id: "A6", category: "KOMPETENSI PEDAGOGIK", name: "Perencanaan pembelajaran yang terstruktur dan menarik" },
+            { id: "A7", category: "KOMPETENSI PEDAGOGIK", name: "Pelaksanaan pembelajaran efektif & partisipatif" },
+            { id: "A8", category: "KOMPETENSI PEDAGOGIK", name: "Pengelolaan kelas dan kedisiplinan siswa" },
+            { id: "A9", category: "KOMPETENSI PEDAGOGIK", name: "Penggunaan strategi & media pembelajaran variatif" },
+            { id: "A10", category: "KOMPETENSI PEDAGOGIK", name: "Evaluasi dan umpan balik hasil belajar peserta didik" },
+
+            // KOMPETENSI PROFESIONAL
+            { id: "A11", category: "KOMPETENSI PROFESIONAL", name: "Mengembangkan diri dalam kegiatan kelas Bahasa Inggris" },
+            { id: "A12", category: "KOMPETENSI PROFESIONAL", name: "Mengembangkan diri melalui pelatihan/seminar mandiri" },
+            { id: "A13", category: "KOMPETENSI PROFESIONAL", name: "Mengembangkan keterampilan teknologi digital" },
+            { id: "A14", category: "KOMPETENSI PROFESIONAL", name: "Menggunakan teknologi digital dalam tugas sehari-hari" },
+            { id: "A15", category: "KOMPETENSI PROFESIONAL", name: "Mengembangkan kemampuan berpikir kritis dan kreatif" },
+
+            // KOMPETENSI SOSIAL
+            { id: "A16", category: "KOMPETENSI SOSIAL", name: "Sikap objektif terhadap siswa, sejawat, & Orang Tua" },
+            { id: "A17", category: "KOMPETENSI SOSIAL", name: "Sikap toleransi suku, agama, ras" },
+            { id: "A18", category: "KOMPETENSI SOSIAL", name: "Kerjasama dan kolaborasi dengan pimpinan & rekan" },
+            { id: "A19", category: "KOMPETENSI SOSIAL", name: "Komunikasi aktif & empatik" }
+        ];
+
+        // State Storage
+        let appState = {
+            teachers: [...DEFAULT_TEACHERS],
+            // aspectRankings: { aspectId: [teacherNameInOrderRank1To12] }
+            aspectRankings: {},
+            activeAspectId: "A1",
+            webhookUrl: "",
+            recapCalculated: false,
+            konversiCalculated: false,
+            submitCalculated: false
+        };
+
+        let sortableInstance = null;
+        let pieChartObj = null;
+        let barChartObj = null;
+
+        // Initialize App
+        function initializeApp() {
+            try {
+                syncEvaluasiHeaderProfile();
+            } catch (err) {
+                console.warn("Header profile sync warning:", err);
+            }
+
+            try {
+                loadLocalStorage();
+                initializeDefaultRankings();
+                renderAspectSelector();
+                renderActiveAspectDragList();
+                renderSavedEvaluationsTable();
+            } catch (err) {
+                console.error("Critical error during Evaluasi initialization:", err);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        function loadLocalStorage() {
+            const saved = localStorage.getItem('brighton_eval_2026_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+                } catch (e) {
+                    console.error("Gagal membaca localStorage", e);
+                }
+            }
+            if (!Array.isArray(appState.teachers) || appState.teachers.length !== DEFAULT_TEACHERS.length) {
+                appState.teachers = [...DEFAULT_TEACHERS];
+            }
+            if (!appState.aspectRankings || typeof appState.aspectRankings !== 'object') {
+                appState.aspectRankings = {};
+            }
+        }
+
+        function saveLocalStorage() {
+            localStorage.setItem('brighton_eval_2026_state', JSON.stringify(appState));
+        }
+
+        function initializeDefaultRankings() {
+            if (!appState.aspectRankings || typeof appState.aspectRankings !== 'object') {
+                appState.aspectRankings = {};
+            }
+            if (!Array.isArray(appState.teachers) || appState.teachers.length !== DEFAULT_TEACHERS.length) {
+                appState.teachers = [...DEFAULT_TEACHERS];
+            }
+            let hasRepaired = false;
+            EVALUATION_ASPECTS.forEach(asp => {
+                if (!Array.isArray(appState.aspectRankings[asp.id]) || appState.aspectRankings[asp.id].length !== appState.teachers.length) {
+                    // Default clone teacher order
+                    appState.aspectRankings[asp.id] = [...appState.teachers];
+                    hasRepaired = true;
+                }
+            });
+            // Ensure activeAspectId is valid
+            if (!EVALUATION_ASPECTS.some(a => a.id === appState.activeAspectId)) {
+                appState.activeAspectId = EVALUATION_ASPECTS[0].id;
+                hasRepaired = true;
+            }
+            if (hasRepaired) {
+                saveLocalStorage();
+            }
+        }
+
+        // Render Selector Buttons
+        function renderAspectSelector() {
+            const container = document.getElementById('aspect-list-buttons');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let currentCat = '';
+            EVALUATION_ASPECTS.forEach((asp, idx) => {
+                if (asp.category !== currentCat) {
+                    currentCat = asp.category;
+                    const catHeader = document.createElement('div');
+                    catHeader.className = 'text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-3 mb-1 px-2';
+                    catHeader.innerText = currentCat;
+                    container.appendChild(catHeader);
+                }
+
+                const btn = document.createElement('button');
+                const isActive = asp.id === appState.activeAspectId;
+                btn.className = `w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between font-medium ${isActive
+                        ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200 shadow-sm'
+                        : 'text-slate-600 hover:bg-slate-100 border border-transparent'
+                    }`;
+                btn.onclick = () => selectAspect(asp.id);
+                btn.innerHTML = `
+                    <span class="truncate max-w-[200px]">${idx + 1}. ${asp.name}</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] ${isActive ? 'text-brand-600' : 'text-slate-300'}"></i>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectAspect(aspId) {
+            appState.activeAspectId = aspId;
+            saveLocalStorage();
+            renderAspectSelector();
+            renderActiveAspectDragList();
+        }
+
+        // Render Drag and Drop / Slide Up Down list
+        function renderActiveAspectDragList() {
+            const asp = EVALUATION_ASPECTS.find(a => a.id === appState.activeAspectId) || EVALUATION_ASPECTS[0];
+            if (!asp) return;
+
+            const badgeEl = document.getElementById('active-category-badge');
+            const titleEl = document.getElementById('active-aspect-title');
+            if (badgeEl) badgeEl.innerText = asp.category;
+            if (titleEl) titleEl.innerText = asp.name;
+
+            const listContainer = document.getElementById('sortable-teacher-list');
+            if (!listContainer) return;
+            listContainer.innerHTML = '';
+
+            let currentOrder = appState.aspectRankings[asp.id];
+            if (!Array.isArray(currentOrder) || currentOrder.length === 0) {
+                currentOrder = [...appState.teachers];
+                appState.aspectRankings[asp.id] = currentOrder;
+            }
+
+            currentOrder.forEach((teacher, index) => {
+                const rankNum = index + 1;
+                const item = document.createElement('div');
+                item.className = 'bg-slate-50 border border-slate-200/90 hover:border-brand-300 rounded-xl p-2.5 flex items-center justify-between gap-3 transition shadow-2xs';
+                item.dataset.teacher = teacher;
+
+                // Rank Color Tag
+                let badgeStyle = 'bg-slate-200 text-slate-700';
+                if (rankNum <= 3) badgeStyle = 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold';
+                else if (rankNum <= 6) badgeStyle = 'bg-sky-100 text-sky-800 border border-sky-300 font-bold';
+                else if (rankNum <= 9) badgeStyle = 'bg-amber-100 text-amber-800 border border-amber-300 font-bold';
+                else badgeStyle = 'bg-rose-100 text-rose-800 border border-rose-300 font-bold';
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="drag-handle text-slate-400 hover:text-slate-600 px-1">
+                            <i class="fa-solid fa-grip-vertical"></i>
+                        </span>
+                        <span class="w-8 h-8 rounded-lg ${badgeStyle} flex items-center justify-center text-xs">
+                            #${rankNum}
+                        </span>
+                        <span class="text-xs font-semibold text-slate-800">${teacher}</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="moveUp(${index})" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center text-xs transition" title="Naik">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                        <button onclick="moveDown(${index})" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center text-xs transition" title="Turun">
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+
+            // Initialize SortableJS
+            try {
+                if (sortableInstance && typeof sortableInstance.destroy === 'function') {
+                    sortableInstance.destroy();
+                    sortableInstance = null;
+                }
+                if (typeof Sortable !== 'undefined' && listContainer) {
+                    sortableInstance = new Sortable(listContainer, {
+                        handle: '.drag-handle',
+                        ghostClass: 'ghost-class',
+                        animation: 150,
+                        onEnd: function () {
+                            updateOrderFromDOM();
+                        }
+                    });
+                }
+            } catch (sortErr) {
+                console.warn("SortableJS init warning:", sortErr);
+            }
+        }
+
+        function updateOrderFromDOM() {
+            const listContainer = document.getElementById('sortable-teacher-list');
+            const newOrder = [];
+            listContainer.querySelectorAll('[data-teacher]').forEach(el => {
+                newOrder.push(el.dataset.teacher);
+            });
+            appState.aspectRankings[appState.activeAspectId] = newOrder;
+            saveLocalStorage();
+            renderActiveAspectDragList();
+        }
+
+        function moveUp(index) {
+            if (index <= 0) return;
+            const order = appState.aspectRankings[appState.activeAspectId];
+            const temp = order[index];
+            order[index] = order[index - 1];
+            order[index - 1] = temp;
+            saveLocalStorage();
+            renderActiveAspectDragList();
+        }
+
+        function moveDown(index) {
+            const order = appState.aspectRankings[appState.activeAspectId];
+            if (index >= order.length - 1) return;
+            const temp = order[index];
+            order[index] = order[index + 1];
+            order[index + 1] = temp;
+            saveLocalStorage();
+            renderActiveAspectDragList();
+        }
+
+        // Navigation Switcher
+        function switchStep(stepNum) {
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`section-step${i}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-step${i}`);
+                btn.classList.remove('bg-brand-500', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600');
+                btn.querySelector('span').classList.remove('bg-white/20', 'text-white');
+                btn.querySelector('span').classList.add('bg-slate-200', 'text-slate-700');
+            }
+
+            document.getElementById(`section-step${stepNum}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-step${stepNum}`);
+            activeBtn.classList.add('bg-brand-500', 'text-white', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-600');
+            activeBtn.querySelector('span').classList.add('bg-white/20', 'text-white');
+            activeBtn.querySelector('span').classList.remove('bg-slate-200', 'text-slate-700');
+        }
+
+        // ==================== REKAP LOGIC (STEP 2) ====================
+        function executeRekap() {
+            // Build Matrix: Teacher vs Aspects -> Rank value (1 to 12)
+            const matrix = {}; // { teacherName: { aspectId: rankValue } }
+            appState.teachers.forEach(t => {
+                matrix[t] = { totalRankPoints: 0 };
+            });
+
+            EVALUATION_ASPECTS.forEach(asp => {
+                const rankingOrder = appState.aspectRankings[asp.id] || [...appState.teachers];
+                rankingOrder.forEach((teacherName, index) => {
+                    const rankVal = index + 1;
+                    if (matrix[teacherName]) {
+                        matrix[teacherName][asp.id] = rankVal;
+                        matrix[teacherName].totalRankPoints += rankVal;
+                    }
+                });
+            });
+
+            // Calculate overall rank (sorted by totalRankPoints ASC)
+            const sortedTeachers = [...appState.teachers].sort((a, b) => {
+                return matrix[a].totalRankPoints - matrix[b].totalRankPoints;
+            });
+
+            // Render Table Step 2
+            renderRankMatrixTable(matrix, sortedTeachers);
+
+            appState.recapCalculated = true;
+            saveLocalStorage();
+            switchStep(2);
+            showToast("Berhasil merekap urutan nama per aspek ke tabel Rank!", "success");
+        }
+
+        function renderRankMatrixTable(matrix, sortedTeachers) {
+            const table = document.getElementById('rank-matrix-table');
+            table.innerHTML = '';
+
+            // Header
+            let theadHTML = `<thead><tr class="bg-slate-800 text-white font-bold">
+                <th class="py-2.5 px-3 border border-slate-700 sticky left-0 bg-slate-800 z-10">No</th>
+                <th class="py-2.5 px-3 border border-slate-700 sticky left-10 bg-slate-800 z-10 min-w-[180px]">Aspek Penilaian</th>`;
+
+            sortedTeachers.forEach((t, i) => {
+                theadHTML += `<th class="py-2.5 px-2 border border-slate-700 text-center min-w-[110px]">
+                    <div class="text-[10px] text-brand-300 font-mono">Rank #${i + 1}</div>
+                    <div class="truncate max-w-[100px]">${t}</div>
+                </th>`;
+            });
+            theadHTML += `</tr></thead>`;
+
+            // Body
+            let tbodyHTML = `<tbody class="divide-y divide-slate-200">`;
+            EVALUATION_ASPECTS.forEach((asp, idx) => {
+                tbodyHTML += `<tr class="hover:bg-slate-50">
+                    <td class="py-2 px-3 border border-slate-200 text-center font-bold sticky left-0 bg-white">${idx + 1}</td>
+                    <td class="py-2 px-3 border border-slate-200 font-medium text-slate-800 sticky left-10 bg-white truncate max-w-[220px]" title="${asp.name}">${asp.name}</td>`;
+
+                sortedTeachers.forEach(t => {
+                    const rankVal = matrix[t][asp.id];
+                    let bg = "";
+                    if (rankVal <= 3) bg = "bg-emerald-50 text-emerald-700 font-bold";
+                    else if (rankVal <= 6) bg = "bg-sky-50 text-sky-700";
+                    else if (rankVal <= 9) bg = "bg-amber-50 text-amber-700";
+                    else bg = "bg-rose-50 text-rose-700";
+
+                    tbodyHTML += `<td class="py-2 px-2 border border-slate-200 text-center ${bg}">${rankVal}</td>`;
+                });
+                tbodyHTML += `</tr>`;
+            });
+
+            // Total Rank Row
+            tbodyHTML += `<tr class="bg-slate-100 font-bold border-t-2 border-slate-300 text-slate-900">
+                <td colspan="2" class="py-3 px-3 border border-slate-300 text-right sticky left-0 bg-slate-100">TOTAL SCORE RANK:</td>`;
+            sortedTeachers.forEach((t) => {
+                tbodyHTML += `<td class="py-3 px-2 border border-slate-300 text-center text-brand-700">${matrix[t].totalRankPoints}</td>`;
+            });
+            tbodyHTML += `</tr>`;
+
+            // Overall Rank
+            tbodyHTML += `<tr class="bg-brand-50 font-extrabold text-brand-900">
+                <td colspan="2" class="py-3 px-3 border border-brand-200 text-right sticky left-0 bg-brand-50">RANKING AKHIR GURU:</td>`;
+            sortedTeachers.forEach((t, i) => {
+                tbodyHTML += `<td class="py-3 px-2 border border-brand-200 text-center"><span class="px-2 py-0.5 rounded-full bg-brand-600 text-white text-xs">#${i + 1}</span></td>`;
+            });
+            tbodyHTML += `</tr>`;
+
+            tbodyHTML += `</tbody>`;
+            table.innerHTML = theadHTML + tbodyHTML;
+        }
+
+        // ==================== KONVERSI LOGIC (STEP 3) ====================
+        // Rule: rank 10-12 -> 1, rank 7-9 -> 2, rank 4-6 -> 3, rank 1-3 -> 4
+        function convertRankToScore(rankVal) {
+            if (rankVal >= 10) return 1;
+            if (rankVal >= 7) return 2;
+            if (rankVal >= 4) return 3;
+            return 4;
+        }
+
+        function executeKonversi() {
+            const matrix = {};
+            appState.teachers.forEach(t => {
+                matrix[t] = { totalRankPoints: 0, totalConvertedScore: 0 };
+            });
+
+            EVALUATION_ASPECTS.forEach(asp => {
+                const rankingOrder = appState.aspectRankings[asp.id] || [...appState.teachers];
+                rankingOrder.forEach((teacherName, index) => {
+                    const rankVal = index + 1;
+                    const convertedScore = convertRankToScore(rankVal);
+                    if (matrix[teacherName]) {
+                        matrix[teacherName][asp.id] = {
+                            rank: rankVal,
+                            score: convertedScore
+                        };
+                        matrix[teacherName].totalRankPoints += rankVal;
+                        matrix[teacherName].totalConvertedScore += convertedScore;
+                    }
+                });
+            });
+
+            // Sort Teachers based on totalRankPoints ASC (Primary) & totalConvertedScore DESC (Secondary)
+            const sortedTeachers = [...appState.teachers].sort((a, b) => {
+                if (matrix[a].totalRankPoints !== matrix[b].totalRankPoints) {
+                    return matrix[a].totalRankPoints - matrix[b].totalRankPoints;
+                }
+                return matrix[b].totalConvertedScore - matrix[a].totalConvertedScore;
+            });
+
+            renderScoreMatrixTable(matrix, sortedTeachers);
+
+            appState.konversiCalculated = true;
+            saveLocalStorage();
+            switchStep(3);
+            showToast("Berhasil mengkonversi rank per aspek menjadi nilai 1 - 4!", "success");
+        }
+
+        function renderScoreMatrixTable(matrix, sortedTeachers) {
+            const table = document.getElementById('score-matrix-table');
+            table.innerHTML = '';
+
+            // Header
+            let theadHTML = `<thead><tr class="bg-emerald-800 text-white font-bold">
+                <th class="py-2.5 px-3 border border-emerald-700 sticky left-0 bg-emerald-800 z-10">No</th>
+                <th class="py-2.5 px-3 border border-emerald-700 sticky left-10 bg-emerald-800 z-10 min-w-[180px]">Aspek Penilaian</th>`;
+
+            sortedTeachers.forEach((t, i) => {
+                theadHTML += `<th class="py-2.5 px-2 border border-emerald-700 text-center min-w-[110px]">
+                    <div class="text-[10px] text-emerald-200 font-mono">Rank #${i + 1}</div>
+                    <div class="truncate max-w-[100px]">${t}</div>
+                </th>`;
+            });
+            theadHTML += `</tr></thead>`;
+
+            // Body
+            let tbodyHTML = `<tbody class="divide-y divide-slate-200">`;
+            EVALUATION_ASPECTS.forEach((asp, idx) => {
+                tbodyHTML += `<tr class="hover:bg-slate-50">
+                    <td class="py-2 px-3 border border-slate-200 text-center font-bold sticky left-0 bg-white">${idx + 1}</td>
+                    <td class="py-2 px-3 border border-slate-200 font-medium text-slate-800 sticky left-10 bg-white truncate max-w-[220px]" title="${asp.name}">${asp.name}</td>`;
+
+                sortedTeachers.forEach(t => {
+                    const item = matrix[t][asp.id];
+                    let bg = "";
+                    if (item.score === 4) bg = "bg-emerald-100 text-emerald-800 font-bold";
+                    else if (item.score === 3) bg = "bg-sky-100 text-sky-800";
+                    else if (item.score === 2) bg = "bg-amber-100 text-amber-800";
+                    else bg = "bg-rose-100 text-rose-800";
+
+                    tbodyHTML += `<td class="py-2 px-2 border border-slate-200 text-center ${bg}">
+                        <span class="text-xs font-bold">${item.score}</span>
+                        <span class="text-[9px] text-slate-400 block">(r:${item.rank})</span>
+                    </td>`;
+                });
+                tbodyHTML += `</tr>`;
+            });
+
+            // Total Converted Score Row
+            tbodyHTML += `<tr class="bg-emerald-50 font-bold border-t-2 border-emerald-300 text-emerald-900">
+                <td colspan="2" class="py-3 px-3 border border-emerald-300 text-right sticky left-0 bg-emerald-50">TOTAL NILAI KONVERSI:</td>`;
+            sortedTeachers.forEach((t) => {
+                tbodyHTML += `<td class="py-3 px-2 border border-emerald-300 text-center text-emerald-700 text-sm font-bold">${matrix[t].totalConvertedScore}</td>`;
+            });
+            tbodyHTML += `</tr>`;
+
+            tbodyHTML += `</tbody>`;
+            table.innerHTML = theadHTML + tbodyHTML;
+        }
+
+        // ==================== SUBMIT LOGIC (STEP 4 & CHARTS) ====================
+        // Distribution Guidelines (Total 12 teachers):
+        // 5% (1 person)  -> Amat Baik  (Skor 91-100)
+        // 15% (2 persons) -> Baik       (Skor 81-90)
+        // 60% (7 persons) -> Cukup      (Skor 71-80)
+        // 15% (1 person)  -> Kurang     (Skor 61-70)
+        // 5% (1 person)   -> Rendah     (Skor 25-60)
+
+        function executeSubmit() {
+            // Calculate matrix rank total
+            const matrix = {};
+            appState.teachers.forEach(t => {
+                matrix[t] = { totalRankPoints: 0, totalConvertedScore: 0 };
+            });
+
+            EVALUATION_ASPECTS.forEach(asp => {
+                const rankingOrder = appState.aspectRankings[asp.id] || [...appState.teachers];
+                rankingOrder.forEach((teacherName, index) => {
+                    const rankVal = index + 1;
+                    const convertedScore = convertRankToScore(rankVal);
+                    if (matrix[teacherName]) {
+                        matrix[teacherName].totalRankPoints += rankVal;
+                        matrix[teacherName].totalConvertedScore += convertedScore;
+                    }
+                });
+            });
+
+            // Sort Teachers 1 to 12
+            const sortedTeachers = [...appState.teachers].sort((a, b) => {
+                if (matrix[a].totalRankPoints !== matrix[b].totalRankPoints) {
+                    return matrix[a].totalRankPoints - matrix[b].totalRankPoints;
+                }
+                return matrix[b].totalConvertedScore - matrix[a].totalConvertedScore;
+            });
+
+            // Map Teachers to Evaluasi Criteria based on requested exact HR percentage quotas
+            const evaluationData = sortedTeachers.map((teacherName, index) => {
+                const finalRank = index + 1;
+                let predikat = "";
+                let scoreRange = "";
+                let badgeClass = "";
+                let totalScore = 0;
+
+                // Hitung Skor Konversi Terkalkulasi (Skala 25 - 100) yang proporsional dengan 19 Aspek (Max raw 76, Min raw 19)
+                const rawScore = matrix[teacherName].totalConvertedScore;
+                totalScore = Math.round((rawScore / 76) * 100);
+
+                if (finalRank === 1) {
+                    predikat = "Amat Baik";
+                    scoreRange = "91-100";
+                    badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
+                    if (totalScore < 91) totalScore = 95;
+                } else if (finalRank >= 2 && finalRank <= 3) {
+                    predikat = "Baik";
+                    scoreRange = "81-90";
+                    badgeClass = "bg-sky-100 text-sky-800 border-sky-300 font-bold";
+                    if (totalScore < 81 || totalScore > 90) totalScore = Math.round(90 - (finalRank - 2) * 4);
+                } else if (finalRank >= 4 && finalRank <= 10) {
+                    predikat = "Cukup";
+                    scoreRange = "71-80";
+                    badgeClass = "bg-blue-50 text-blue-800 border-blue-200 font-medium";
+                    if (totalScore < 71 || totalScore > 80) totalScore = Math.round(80 - (finalRank - 4) * 1.3);
+                } else if (finalRank === 11) {
+                    predikat = "Kurang";
+                    scoreRange = "61-70";
+                    badgeClass = "bg-amber-100 text-amber-800 border-amber-300 font-bold";
+                    if (totalScore < 61 || totalScore > 70) totalScore = 67;
+                } else {
+                    predikat = "Rendah";
+                    scoreRange = "25-60";
+                    badgeClass = "bg-rose-100 text-rose-800 border-rose-300 font-bold";
+                    if (totalScore > 60) totalScore = 55;
+                }
+
+                return {
+                    no: finalRank,
+                    name: teacherName,
+                    rank: finalRank,
+                    totalScore: totalScore,
+                    rawScore: rawScore,
+                    predikat: predikat,
+                    scoreRange: scoreRange,
+                    badgeClass: badgeClass
+                };
+            });
+
+            // Render Recap Table
+            renderEvalRecapTable(evaluationData);
+
+            // Render Charts
+            renderCharts();
+
+            appState.submitCalculated = true;
+            saveLocalStorage();
+            switchStep(4);
+            showToast("Hasil evaluasi 2026 dan grafik sebaran berhasil dibuat!", "success");
+        }
+
+        function renderEvalRecapTable(data) {
+            const tbody = document.getElementById('eval-recap-tbody');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center font-bold text-slate-500">${item.no}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-900">${item.name}</td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full bg-slate-900 text-white text-xs font-bold">#${item.rank}</span>
+                    </td>
+                    <td class="py-3 px-4 text-center font-bold text-slate-800">${item.totalScore}</td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs border ${item.badgeClass}">${item.predikat}</span>
+                    </td>
+                    <td class="py-3 px-4 text-center text-slate-500 font-mono text-xs">${item.scoreRange}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderCharts() {
+            const labels = ['Amat Baik (5%)', 'Baik (15%)', 'Cukup (60%)', 'Kurang (15%)', 'Rendah (5%)'];
+            const dataCounts = [1, 2, 7, 1, 1]; // Exact headcount from rule
+            const bgColors = ['#10b981', '#0284c7', '#3b82f6', '#f59e0b', '#ef4444'];
+
+            // Pie Chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            if (pieChartObj) pieChartObj.destroy();
+            pieChartObj = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: [5, 15, 60, 15, 5], // Percentages
+                        backgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return ` ${context.label}: ${context.raw}% (${dataCounts[context.dataIndex]} Orang)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            if (barChartObj) barChartObj.destroy();
+            barChartObj = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Amat Baik', 'Baik', 'Cukup', 'Kurang', 'Rendah'],
+                    datasets: [{
+                        label: 'Jumlah Guru (Orang)',
+                        data: dataCounts,
+                        backgroundColor: bgColors,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // ==================== IN-APP LOCAL DATABASE & SESSIONS ====================
+        const DB_STORAGE_KEY = 'supervisi_evaluation_database_records';
+        const LEGACY_DB_STORAGE_KEY = 'ks_evaluation_database_records';
+
+        function buildCurrentEvaluationPayload() {
+            const matrix = {};
+            appState.teachers.forEach(t => {
+                matrix[t] = { totalRankPoints: 0, totalConvertedScore: 0 };
+            });
+
+            EVALUATION_ASPECTS.forEach(asp => {
+                const rankingOrder = appState.aspectRankings[asp.id] || [...appState.teachers];
+                rankingOrder.forEach((teacherName, index) => {
+                    const rankVal = index + 1;
+                    const convertedScore = convertRankToScore(rankVal);
+                    if (matrix[teacherName]) {
+                        matrix[teacherName][asp.id] = { rank: rankVal, score: convertedScore };
+                        matrix[teacherName].totalRankPoints += rankVal;
+                        matrix[teacherName].totalConvertedScore += convertedScore;
+                    }
+                });
+            });
+
+            const sortedTeachers = [...appState.teachers].sort((a, b) => {
+                if (matrix[a].totalRankPoints !== matrix[b].totalRankPoints) {
+                    return matrix[a].totalRankPoints - matrix[b].totalRankPoints;
+                }
+                return matrix[b].totalConvertedScore - matrix[a].totalConvertedScore;
+            });
+
+            const currentProfile = (window.KS_AUTH) ? window.KS_AUTH.getProfile() : null;
+            const schoolName = currentProfile ? (currentProfile.schoolName || 'SMP Negeri 1 Jakarta Pusat') : 'SMP Negeri 1 Jakarta Pusat';
+            const evaluatorName = currentProfile ? (currentProfile.fullName || 'Kepala Sekolah') : 'Kepala Sekolah';
+            const academicYear = currentProfile ? (currentProfile.academicYear || '2026/2027') : '2026/2027';
+            const semester = currentProfile ? (currentProfile.semester || 'Ganjil') : 'Ganjil';
+
+            const evalSummary = sortedTeachers.map((teacherName, index) => {
+                const finalRank = index + 1;
+                let predikat = "Cukup", scoreRange = "71-80";
+                let totalScore = Math.round((matrix[teacherName].totalConvertedScore / 76) * 100);
+
+                if (finalRank === 1) { 
+                    predikat = "Amat Baik"; scoreRange = "91-100"; 
+                    if (totalScore < 91) totalScore = 95;
+                } else if (finalRank <= 3) { 
+                    predikat = "Baik"; scoreRange = "81-90"; 
+                    if (totalScore < 81 || totalScore > 90) totalScore = Math.round(90 - (finalRank - 2) * 4);
+                } else if (finalRank <= 10) { 
+                    predikat = "Cukup"; scoreRange = "71-80"; 
+                    if (totalScore < 71 || totalScore > 80) totalScore = Math.round(80 - (finalRank - 4) * 1.3);
+                } else if (finalRank === 11) { 
+                    predikat = "Kurang"; scoreRange = "61-70"; 
+                    if (totalScore < 61 || totalScore > 70) totalScore = 67;
+                } else { 
+                    predikat = "Rendah"; scoreRange = "25-60"; 
+                    if (totalScore > 60) totalScore = 55;
+                }
+
+                return {
+                    no: finalRank,
+                    name: teacherName,
+                    rank: finalRank,
+                    totalScore: totalScore,
+                    predikat: predikat,
+                    scoreRange: scoreRange
+                };
+            });
+
+            const rankMatrix = [];
+            const rankHeader = ["No", "Aspek Penilaian", ...sortedTeachers.map((t, idx) => `(#${idx + 1}) ${t}`)];
+            rankMatrix.push(rankHeader);
+            EVALUATION_ASPECTS.forEach((asp, idx) => {
+                const row = [idx + 1, asp.name];
+                sortedTeachers.forEach(t => {
+                    row.push(matrix[t][asp.id] ? matrix[t][asp.id].rank : "-");
+                });
+                rankMatrix.push(row);
+            });
+            const totalRankRow = ["-", "TOTAL SCORE RANK", ...sortedTeachers.map(t => matrix[t].totalRankPoints)];
+            rankMatrix.push(totalRankRow);
+
+            const scoreMatrix = [];
+            const scoreHeader = ["No", "Aspek Penilaian", ...sortedTeachers.map((t, idx) => `(#${idx + 1}) ${t}`)];
+            scoreMatrix.push(scoreHeader);
+            EVALUATION_ASPECTS.forEach((asp, idx) => {
+                const row = [idx + 1, asp.name];
+                sortedTeachers.forEach(t => {
+                    row.push(matrix[t][asp.id] ? matrix[t][asp.id].score : "-");
+                });
+                scoreMatrix.push(row);
+            });
+            const totalScoreRow = ["-", "TOTAL NILAI KONVERSI", ...sortedTeachers.map(t => matrix[t].totalConvertedScore)];
+            scoreMatrix.push(totalScoreRow);
+
+            return {
+                id: 'EVAL-' + Date.now(),
+                title: `Evaluasi Kinerja Guru & Staf ${academicYear} (${semester})`,
+                academicYear: academicYear,
+                semester: semester,
+                school: schoolName,
+                evaluator: evaluatorName,
+                timestamp: new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' }),
+                isoDate: new Date().toISOString(),
+                teachersCount: appState.teachers.length,
+                topTeacher: evalSummary.length > 0 ? evalSummary[0].name : '-',
+                evalSummary: evalSummary,
+                rankMatrix: rankMatrix,
+                scoreMatrix: scoreMatrix,
+                aspectRankings: JSON.parse(JSON.stringify(appState.aspectRankings))
+            };
+        }
+
+        function getStoredEvaluations() {
+            try {
+                const data = localStorage.getItem(DB_STORAGE_KEY) || localStorage.getItem(LEGACY_DB_STORAGE_KEY);
+                let list = data ? JSON.parse(data) : [];
+                if (!Array.isArray(list)) list = [];
+
+                // Auto-bridge: Jika user telah memilih periode aktif baru (misal T.A. 2026/2027 Ganjil),
+                // bawa data evaluasi existing/legacy agar langsung tampil utuh di periode aktif tersebut.
+                const currentProfile = (window.SUPERVISI_AUTH || window.KS_AUTH) ? (window.SUPERVISI_AUTH || window.KS_AUTH).getProfile() : null;
+                const activeYear = currentProfile ? (currentProfile.academicYear || '2026/2027') : '2026/2027';
+                const activeSem = currentProfile ? (currentProfile.semester || 'Ganjil') : 'Ganjil';
+
+                let needsSync = false;
+                list.forEach(item => {
+                    if (!item.academicYear || !item.semester || item.academicYear !== activeYear || item.semester !== activeSem) {
+                        item.academicYear = activeYear;
+                        item.semester = activeSem;
+                        if (!item.title || item.title.includes('2025/2026')) {
+                            item.title = `Evaluasi Kinerja Guru & Staf ${activeYear} (${activeSem})`;
+                        }
+                        needsSync = true;
+                    }
+                });
+
+                // Auto-seed: Jika belum ada data riwayat sama sekali, generate dan simpan 1 sesi evaluasi awal aktif
+                if (list.length === 0) {
+                    try {
+                        const seedPayload = buildCurrentEvaluationPayload();
+                        seedPayload.title = `Evaluasi Kinerja Guru & Staf ${activeYear} (${activeSem})`;
+                        list.push(seedPayload);
+                        needsSync = true;
+                    } catch (seedErr) {
+                        console.warn("Could not generate seed payload:", seedErr);
+                    }
+                }
+
+                if (needsSync && list.length > 0) {
+                    const jsonStr = JSON.stringify(list);
+                    localStorage.setItem(DB_STORAGE_KEY, jsonStr);
+                    localStorage.setItem(LEGACY_DB_STORAGE_KEY, jsonStr);
+                }
+
+                return list;
+            } catch (e) {
+                console.error("Error reading evaluation database:", e);
+                return [];
+            }
+        }
+
+        function saveStoredEvaluations(list) {
+            const jsonStr = JSON.stringify(list);
+            localStorage.setItem(DB_STORAGE_KEY, jsonStr);
+            localStorage.setItem(LEGACY_DB_STORAGE_KEY, jsonStr);
+            renderSavedEvaluationsTable();
+        }
+
+        function saveEvaluationToDatabase() {
+            const payload = buildCurrentEvaluationPayload();
+            const list = getStoredEvaluations();
+            list.unshift(payload);
+            saveStoredEvaluations(list);
+            showToast(`Hasil evaluasi periode ${payload.academicYear} ${payload.semester} tersimpan di Database!`, "success");
+            scrollToSavedHistory();
+        }
+
+        function renderSavedEvaluationsTable() {
+            const list = getStoredEvaluations();
+            const tbody = document.getElementById('saved-evaluations-tbody');
+            const countBadge = document.getElementById('saved-count-badge');
+            
+            const currentProfile = (window.KS_AUTH) ? window.KS_AUTH.getProfile() : null;
+            const activeYear = currentProfile ? (currentProfile.academicYear || '2026/2027') : '2026/2027';
+            const activeSem = currentProfile ? (currentProfile.semester || 'Ganjil') : 'Ganjil';
+            
+            const filterEl = document.getElementById('eval-period-filter');
+            const filterVal = filterEl ? filterEl.value : 'active';
+
+            // Filter by active period or all
+            const filtered = list.filter(item => {
+                if (filterVal === 'active') {
+                    // If no items match the exact active period, include legacy or match active
+                    if (!item.academicYear && !item.semester) return true;
+                    return item.academicYear === activeYear && item.semester === activeSem;
+                }
+                return true;
+            });
+
+            // Update header badge: show total stored evaluations or filtered count
+            if (countBadge) {
+                if (filterVal === 'active' && filtered.length !== list.length) {
+                    countBadge.innerText = `${filtered.length} / ${list.length}`;
+                    countBadge.title = `${filtered.length} sesi aktif dari total ${list.length} sesi riwayat`;
+                } else {
+                    countBadge.innerText = list.length;
+                    countBadge.title = `Total ${list.length} sesi riwayat tersimpan`;
+                }
+            }
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-slate-400">
+                            <i class="fa-solid fa-inbox text-3xl mb-2 block text-slate-300"></i>
+                            Tidak ada sesi evaluasi untuk filter periode ini (${filterVal === 'active' ? activeYear + ' ' + activeSem : 'Semua'}).<br>
+                            Klik <strong>"Simpan Sesi Baru"</strong> untuk menyimpan hasil evaluasi aktif saat ini.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach((item, index) => {
+                const itemYear = item.academicYear || activeYear;
+                const itemSem = item.semester || activeSem;
+                const isCurrent = (itemYear === activeYear && itemSem === activeSem);
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center font-mono font-bold text-slate-400">#${index + 1}</td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-800 flex items-center gap-2">
+                            <span>${item.title}</span>
+                            ${isCurrent ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700">Aktif</span>' : '<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">Arsip</span>'}
+                        </div>
+                        <div class="text-[11px] text-slate-400 font-medium">Periode: <strong class="text-indigo-600">${itemYear} (${itemSem})</strong> &bull; ${item.school || 'SMP'} &bull; Evaluator: ${item.evaluator || 'Kepala Sekolah'}</div>
+                    </td>
+                    <td class="py-3 px-4 text-slate-600 text-xs">${item.timestamp}</td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200">
+                            ${item.teachersCount || appState.teachers.length} Guru
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-xs flex items-center gap-1.5 w-fit">
+                            <i class="fa-solid fa-trophy text-amber-500 text-[10px]"></i> ${item.topTeacher}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="viewEvaluationDetail('${item.id}')" class="px-2 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg text-xs font-semibold border border-brand-200 transition" title="Lihat Detail">
+                                <i class="fa-solid fa-eye"></i> Detail
+                            </button>
+                            <button onclick="exportSingleSessionExcel('${item.id}')" class="px-2 py-1 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg text-xs font-semibold border border-teal-200 transition" title="Ekspor Excel">
+                                <i class="fa-solid fa-file-excel"></i>
+                            </button>
+                            <button onclick="exportSingleSessionPDF('${item.id}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-semibold border border-rose-200 transition" title="Ekspor PDF">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </button>
+                            <button onclick="loadEvaluationSession('${item.id}')" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold border border-indigo-200 transition" title="Muat ke Editor">
+                                <i class="fa-solid fa-arrow-rotate-right"></i> Load
+                            </button>
+                            <button onclick="deleteEvaluationRecord('${item.id}')" class="px-2 py-1 bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg text-xs transition" title="Hapus">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadEvaluationSession(evalId) {
+            const list = getStoredEvaluations();
+            const item = list.find(x => x.id === evalId);
+            if (!item) return;
+
+            if (confirm(`Muat sesi penilaian "${item.title}" (${item.timestamp}) ke dalam formulir?`)) {
+                if (item.aspectRankings) {
+                    appState.aspectRankings = JSON.parse(JSON.stringify(item.aspectRankings));
+                }
+                saveLocalStorage();
+                renderActiveAspectDragList();
+                executeSubmit();
+                showToast("Sesi evaluasi berhasil dimuat ke editor!", "success");
+            }
+        }
+
+        function deleteEvaluationRecord(evalId) {
+            if (confirm("Apakah Anda yakin ingin menghapus data sesi evaluasi ini dari tabel database?")) {
+                let list = getStoredEvaluations();
+                list = list.filter(x => x.id !== evalId);
+                saveStoredEvaluations(list);
+                showToast("Data sesi berhasil dihapus dari tabel lokal.", "info");
+            }
+        }
+
+        function scrollToSavedHistory() {
+            switchStep(4);
+            const el = document.getElementById('saved-history-section');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function viewEvaluationDetail(evalId) {
+            const list = getStoredEvaluations();
+            const item = list.find(x => x.id === evalId);
+            if (!item) return;
+
+            document.getElementById('detail-modal-title').innerText = item.title;
+            document.getElementById('detail-modal-time').innerText = `${item.timestamp} &bull; Sekolah: ${item.school} &bull; Penilai: ${item.evaluator}`;
+            
+            const btnXlsx = document.getElementById('btn-detail-xlsx');
+            const btnPdf = document.getElementById('btn-detail-pdf');
+            btnXlsx.onclick = () => exportSingleSessionExcel(evalId);
+            btnPdf.onclick = () => exportSingleSessionPDF(evalId);
+
+            let rowsHTML = '';
+            item.evalSummary.forEach(t => {
+                let badge = 'bg-blue-50 text-blue-800 border-blue-200';
+                if (t.rank === 1) badge = 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold';
+                else if (t.rank <= 3) badge = 'bg-sky-100 text-sky-800 border-sky-300 font-bold';
+                else if (t.rank === 11) badge = 'bg-amber-100 text-amber-800 border-amber-300 font-bold';
+                else if (t.rank === 12) badge = 'bg-rose-100 text-rose-800 border-rose-300 font-bold';
+
+                rowsHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-2.5 px-3 text-center font-bold text-slate-500">#${t.rank}</td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-800">${t.name}</td>
+                        <td class="py-2.5 px-3 text-center font-bold text-slate-900">${t.totalScore}</td>
+                        <td class="py-2.5 px-3 text-center">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs border ${badge}">${t.predikat}</span>
+                        </td>
+                        <td class="py-2.5 px-3 text-center text-slate-500 font-mono text-xs">${t.scoreRange}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('detail-modal-body').innerHTML = `
+                <div class="rounded-xl border border-slate-200 overflow-hidden">
+                    <table class="w-full text-xs text-left">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
+                                <th class="py-2.5 px-3 text-center">Peringkat</th>
+                                <th class="py-2.5 px-3">Nama Guru / Staf</th>
+                                <th class="py-2.5 px-3 text-center">Total Skor</th>
+                                <th class="py-2.5 px-3 text-center">Predikat</th>
+                                <th class="py-2.5 px-3 text-center">Rentang Nilai</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${rowsHTML}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // ==================== EXPORT TO EXCEL (XLSX) ====================
+        function exportToExcel() {
+            const payload = buildCurrentEvaluationPayload();
+            generateAndDownloadXLSX(payload);
+        }
+
+        function exportSingleSessionExcel(evalId) {
+            const list = getStoredEvaluations();
+            const item = list.find(x => x.id === evalId);
+            if (item) {
+                generateAndDownloadXLSX(item);
+            }
+        }
+
+        function generateAndDownloadXLSX(payload) {
+            if (typeof XLSX === 'undefined') {
+                showToast("Library XLSX belum siap, periksa koneksi internet.", "error");
+                return;
+            }
+
+            try {
+                const wb = XLSX.utils.book_new();
+
+                // 1. Sheet 1: Rekapitulasi Evaluasi
+                const wsDataSummary = [
+                    ["LAPORAN HASIL EVALUASI KINERJA GURU & STAF"],
+                    ["Sekolah:", payload.school || "SMP Negeri 1 Jakarta Pusat"],
+                    ["Tanggal Evaluasi:", payload.timestamp || new Date().toLocaleString('id-ID')],
+                    ["Evaluator:", payload.evaluator || "Kepala Sekolah"],
+                    [],
+                    ["NO", "NAMA GURU / STAF", "PERINGKAT", "TOTAL SKOR KONVERSI", "PREDIKAT", "RENTANG NILAI DESKRIPTIF"]
+                ];
+
+                payload.evalSummary.forEach(item => {
+                    wsDataSummary.push([item.no, item.name, item.rank, item.totalScore, item.predikat, item.scoreRange]);
+                });
+
+                const wsSummary = XLSX.utils.aoa_to_sheet(wsDataSummary);
+                XLSX.utils.book_append_sheet(wb, wsSummary, "Rekap Evaluasi");
+
+                // 2. Sheet 2: Matriks Peringkat (Rank)
+                if (payload.rankMatrix && payload.rankMatrix.length > 0) {
+                    const wsRank = XLSX.utils.aoa_to_sheet(payload.rankMatrix);
+                    XLSX.utils.book_append_sheet(wb, wsRank, "Matriks Rank");
+                }
+
+                // 3. Sheet 3: Matriks Nilai Konversi
+                if (payload.scoreMatrix && payload.scoreMatrix.length > 0) {
+                    const wsScore = XLSX.utils.aoa_to_sheet(payload.scoreMatrix);
+                    XLSX.utils.book_append_sheet(wb, wsScore, "Matriks Nilai Konversi");
+                }
+
+                const fileName = `Evaluasi_Kinerja_Guru_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                showToast("File Excel (.xlsx) berhasil diekspor dan diunduh!", "success");
+            } catch (err) {
+                console.error("XLSX Export Error:", err);
+                showToast("Gagal mengekspor file Excel.", "error");
+            }
+        }
+
+        // ==================== EXPORT TO PDF ====================
+        function exportToPDF() {
+            const payload = buildCurrentEvaluationPayload();
+            generateAndDownloadPDF(payload);
+        }
+
+        function exportSingleSessionPDF(evalId) {
+            const list = getStoredEvaluations();
+            const item = list.find(x => x.id === evalId);
+            if (item) {
+                generateAndDownloadPDF(item);
+            }
+        }
+
+        function generateAndDownloadPDF(payload) {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                showToast("Library jsPDF belum siap.", "error");
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Header Dokumen Resmi
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.setTextColor(15, 23, 42);
+                doc.text("LAPORAN EVALUASI KINERJA GURU & STAF 2026", 14, 18);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(71, 85, 105);
+                doc.text(`Instansi: ${payload.school || "SMP Negeri 1 Jakarta Pusat"}`, 14, 25);
+                doc.text(`Waktu Penilaian: ${payload.timestamp || new Date().toLocaleString('id-ID')}`, 14, 30);
+                doc.text(`Evaluator: ${payload.evaluator || "Kepala Sekolah"} | Status: Terverifikasi Sistem SupervisiSekolah.id`, 14, 35);
+
+                doc.setDrawColor(203, 213, 225);
+                doc.setLineWidth(0.5);
+                doc.line(14, 38, 196, 38);
+
+                // Summary Table
+                const tableBody = payload.evalSummary.map(row => [
+                    `#${row.rank}`,
+                    row.name,
+                    row.totalScore.toString(),
+                    row.predikat,
+                    row.scoreRange
+                ]);
+
+                doc.autoTable({
+                    startY: 42,
+                    head: [['Rank', 'Nama Tenaga Pendidik', 'Skor Total', 'Predikat HR', 'Rentang Skor']],
+                    body: tableBody,
+                    theme: 'striped',
+                    headStyles: {
+                        fillColor: [2, 132, 199], // Brand 500
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'center'
+                    },
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 16, fontStyle: 'bold' },
+                        1: { cellWidth: 'auto', fontStyle: 'bold' },
+                        2: { halign: 'center', cellWidth: 24, fontStyle: 'bold' },
+                        3: { halign: 'center', cellWidth: 32 },
+                        4: { halign: 'center', cellWidth: 32 }
+                    },
+                    alternateRowStyles: {
+                        fillColor: [248, 250, 252]
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 3
+                    }
+                });
+
+                // Footer & Signatures
+                const finalY = doc.lastAutoTable.finalY + 12;
+                if (finalY < 250) {
+                    const prof = (window.KS_AUTH) ? window.KS_AUTH.getProfile() : null;
+                    const ksFullName = prof?.fullName || "Kepala Sekolah";
+                    const ksNip = prof?.nip || "-";
+
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 116, 139);
+                    doc.text("Catatan Distribusi HR: 5% Amat Baik, 15% Baik, 60% Cukup, 15% Kurang, 5% Rendah.", 14, finalY);
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text("Mengetahui,", 145, finalY + 10);
+                    doc.text("Kepala Sekolah", 145, finalY + 15);
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.text(ksFullName, 145, finalY + 35);
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8);
+                    doc.text(`NIP. ${ksNip}`, 145, finalY + 39);
+                }
+
+                const fileName = `Laporan_Evaluasi_Guru_${new Date().toISOString().slice(0, 10)}.pdf`;
+                doc.save(fileName);
+                showToast("Laporan PDF berhasil digenerate dan diunduh!", "success");
+            } catch (err) {
+                console.error("PDF Export Error:", err);
+                showToast("Gagal membuat file PDF.", "error");
+            }
+        }
+
+        // ==================== TOAST & UTILS ====================
+        function showToast(msg, type = "info") {
+            const banner = document.getElementById('toast-banner');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-message');
+
+            banner.className = "p-4 rounded-xl border flex items-center justify-between text-sm transition-all duration-300 shadow-sm ";
+
+            if (type === "success") {
+                banner.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-800");
+                icon.className = "fa-solid fa-circle-check text-emerald-600";
+            } else if (type === "warning") {
+                banner.classList.add("bg-amber-50", "border-amber-200", "text-amber-800");
+                icon.className = "fa-solid fa-triangle-exclamation text-amber-600";
+            } else if (type === "error") {
+                banner.classList.add("bg-rose-50", "border-rose-200", "text-rose-800");
+                icon.className = "fa-solid fa-circle-xmark text-rose-600";
+            } else {
+                banner.classList.add("bg-sky-50", "border-sky-200", "text-sky-800");
+                icon.className = "fa-solid fa-circle-info text-sky-600";
+            }
+
+            text.innerText = msg;
+            banner.classList.remove('hidden');
+
+            setTimeout(() => {
+                closeToast();
+            }, 5000);
+        }
+
+        function closeToast() {
+            document.getElementById('toast-banner').classList.add('hidden');
+        }
+
+        function resetDataConfirm() {
+            if (confirm("Apakah Anda yakin ingin mengembalikan urutan rank dan data ke kondisi awal?")) {
+                localStorage.removeItem('brighton_eval_2026_state');
+                location.reload();
+            }
+        }
+
+        // Initialize Uniform Footer, Mobile Navigation & Dynamic Period on Evaluasi Page
+        function syncEvaluasiHeaderProfile() {
+            if (window.KS_AUTH) {
+                const p = window.KS_AUTH.getProfile();
+                if (!p) return;
+                const schoolEl = document.getElementById('eval-header-school');
+                const schoolSubEl = document.getElementById('eval-recap-school-subtitle');
+                const titleHeaderEl = document.getElementById('eval-header-title');
+                const recapTableTitleEl = document.getElementById('eval-recap-table-title');
+                
+                const u = window.KS_AUTH.getUser();
+                const ksNameEl = document.getElementById('eval-header-ks-name');
+                if (ksNameEl) ksNameEl.innerText = u?.nickName || u?.fullName || p.nickName || p.fullName || 'Kepala Sekolah';
+                
+                const year = p.academicYear || '2026/2027';
+                const sem = p.semester || 'Ganjil';
+
+                if (schoolEl) schoolEl.innerText = `${p.schoolName || 'SMP Negeri 1 Jakarta Pusat'} • SupervisiSekolah.id`;
+                if (schoolSubEl) schoolSubEl.innerText = `${p.schoolName || 'SMP Negeri 1 Jakarta Pusat'} (T.A. ${year} Semester ${sem})`;
+                if (titleHeaderEl) titleHeaderEl.innerText = `Sistem Evaluasi Kinerja Guru & Staff T.A. ${year} (${sem})`;
+                if (recapTableTitleEl) recapTableTitleEl.innerText = `Tabel Rekapitulasi Evaluasi Guru T.A. ${year} (${sem})`;
+                const activePeriodTextEl = document.getElementById('badgeActivePeriodText');
+                if (activePeriodTextEl) activePeriodTextEl.innerText = `T.A. ${year} ${sem}`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.KS_AUTH) {
+                window.KS_AUTH.requireAuth();
+            }
+            if (window.KS_INCLUDES) {
+                window.KS_INCLUDES.init({
+                    type: 'dashboard',
+                    activeNav: 'evaluasi'
+                });
+            }
+            syncEvaluasiHeaderProfile();
+        });
+        window.addEventListener('pageshow', syncEvaluasiHeaderProfile);
+    </script>
+
+    <!-- Uniform Footer Container -->
+    <footer id="app-footer"></footer>
+
+    <!-- Uniform Mobile Bottom Navigation -->
+    <nav id="app-mobile-nav" class="md:hidden"></nav>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Pass Authorization header to PHP (Crucial for FastCGI / InfinityFree / cPanel)
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+    # Handle /evaluasi -> /evaluasi/form.html
+    RewriteRule ^evaluasi/?$ evaluasi/form.html [L,QSA]
+    
+    # Handle /dashboard -> /dashboard/index.html
+    RewriteRule ^dashboard/?$ dashboard/index.html [L,QSA]
+
+    # Handle /karyawan -> /karyawan/index.html
+    RewriteRule ^karyawan/?$ karyawan/index.html [L,QSA]
+
+    # Handle /observasi -> supak/observasi/index.html
+    RewriteRule ^observasi/?$ supak/observasi/index.html [L,QSA]
+
+    # Handle /profil or /pengaturan -> /pengaturan/index.html
+    RewriteRule ^profil/?$ pengaturan/index.html [L,QSA]
+    RewriteRule ^pengaturan/?$ pengaturan/index.html [L,QSA]
+
+    # Handle /supak -> supak/index.html
+    RewriteRule ^supak/?$ supak/index.html [L,QSA]
+
+    # Handle /supak/observasi and /supak/obervasi -> supak/observasi/index.html
+    RewriteRule ^supak/observasi/?$ supak/observasi/index.html [L,QSA]
+    RewriteRule ^supak/obervasi/?$ supak/observasi/index.html [L,QSA]
+
+    # Handle /supbk and /supak/supbk -> supak/supbk/index.html
+    RewriteRule ^supbk/?$ supak/supbk/index.html [L,QSA]
+    RewriteRule ^supak/supbk/?$ supak/supbk/index.html [L,QSA]
+
+    # Handle /gurubk and /guru/bk -> gurubk/index.html
+    RewriteRule ^guru/bk/?$ gurubk/index.html [L,QSA]
+    RewriteRule ^gurubk/?$ gurubk/index.html [L,QSA]
+
+    # Handle /guru -> /guru/index.html
+    RewriteRule ^guru/?$ guru/index.html [L,QSA]
+
+    # Handle /admin -> /admin/index.html
+    RewriteRule ^admin/?$ admin/index.html [L,QSA]
+
+    # Handle /tendik/portal and /portaltendik -> tendik/portal/index.html
+    RewriteRule ^tendik/portal/?$ tendik/portal/index.html [L,QSA]
+    RewriteRule ^portaltendik/?$ tendik/portal/index.html [L,QSA]
+
+    # Handle /tendik -> tendik/index.html
+    RewriteRule ^tendik/?$ tendik/index.html [L,QSA]
+
+    # Don't rewrite existing files or directories
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Rewrite any request without extension to .html if it exists
+    RewriteCond %{REQUEST_FILENAME}.html -f
+    RewriteRule ^(.*)$ $1.html [L,QSA]
+</IfModule>

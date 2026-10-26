@@ -1,0 +1,753 @@
+{
+    "coaching_tirta": [
+        {
+            "durasi": "3 menit",
+            "pertanyaan_dl": "",
+            "pertanyaan_dasar": "Bagaimana kabar Bapak\/Ibu hari ini? Sebelum mulai, apa yang Bapak\/Ibu harapkan dari percakapan ini? Kita sepakati waktu sekitar 40 menit dan fokus pada satu hingga dua hal yang paling penting, ya.",
+            "tahap": "Pembukaan",
+            "tujuan": "Membangun rasa aman dan kesepakatan proses. Coach menyampaikan bahwa coaching adalah ruang refleksi dan pengembangan, bukan penilaian ulang.",
+            "pertanyaan_litnum": ""
+        },
+        {
+            "durasi": "5 menit",
+            "pertanyaan_dl": "Bagaimana Bapak\/Ibu ingin peserta didik merasakan layanan BK yang mindful, meaningful, dan joyful? Apa yang ingin dicapai agar peserta didik memahami dirinya secara lebih mendalam?",
+            "pertanyaan_dasar": "Dari hasil supervisi tentang program, layanan, dan administrasi BK, bagian mana yang paling ingin Bapak\/Ibu perkuat? Seperti apa kondisi yang Bapak\/Ibu harapkan tiga bulan ke depan?",
+            "tahap": "T: Tujuan",
+            "tujuan": "Guru BK merumuskan tujuan coaching sendiri berdasarkan temuan supervisi. Coach menggali, bukan menentukan.",
+            "pertanyaan_litnum": "Kemampuan literasi atau numerasi apa yang ingin Bapak\/Ibu perkuat pada peserta didik melalui layanan BK? Apa tanda bahwa mereka mampu membaca informasi atau data tentang dirinya dan memakainya untuk mengambil keputusan?"
+        },
+        {
+            "durasi": "10 menit",
+            "pertanyaan_dl": "Pada layanan terakhir, kapan peserta didik tampak benar-benar terlibat dan merasa layanan itu bermakna? Kapan terasa hanya formalitas? Bagaimana pertanyaan pemantik dan refleksi selama ini digunakan?",
+            "pertanyaan_dasar": "Bagian mana dari asesmen kebutuhan, program tahunan\/semester, dan administrasi yang sudah berjalan baik? Apa yang masih menghambat? Bukti apa yang sudah ada dan apa yang belum?",
+            "tahap": "I: Identifikasi",
+            "tujuan": "Memetakan kondisi saat ini: kekuatan, hambatan, dan peluang. Coach menggunakan pertanyaan terbuka, parafrase, dan jeda.",
+            "pertanyaan_litnum": "Bagaimana data asesmen (angket, skor, grafik) selama ini dipakai untuk menentukan layanan? Pada layanan terakhir, kapan peserta didik membaca atau menafsirkan informasi atau data? Apa kesulitan yang muncul?"
+        },
+        {
+            "durasi": "10 menit",
+            "pertanyaan_dl": "Bagaimana Bapak\/Ibu dapat mengaitkan topik layanan dengan kehidupan nyata peserta didik dan menyiapkan pertanyaan pemantik? Aktivitas apa yang membuat layanan lebih menyenangkan dan reflektif?",
+            "pertanyaan_dasar": "Apa saja pilihan langkah untuk melengkapi dokumen atau layanan tersebut? Mana yang paling mungkin dilakukan dalam waktu dekat? Siapa yang dapat diajak berkolaborasi (wali kelas, kepala sekolah, MGBK)?",
+            "tahap": "R: Rencana aksi",
+            "tujuan": "Menggali beberapa pilihan, lalu memilih langkah yang konkret, kecil, dan dapat dilakukan. Coach membantu menimbang pilihan tanpa memberi jawaban.",
+            "pertanyaan_litnum": "Langkah apa yang dapat ditambahkan pada RPL agar peserta didik membaca teks dan menggunakan data atau angka dalam layanan? Media atau sumber apa (infografik, tabel hasil asesmen diri, artikel) yang bisa dipakai?"
+        },
+        {
+            "durasi": "7 menit",
+            "pertanyaan_dl": "Bagaimana Bapak\/Ibu akan mengetahui bahwa peserta didik merasakan layanan yang bermakna? Dengan cara apa umpan balik dan refleksi mereka akan dikumpulkan?",
+            "pertanyaan_dasar": "Langkah mana yang akan dilakukan lebih dulu, kapan selesai, dan bukti apa yang akan Bapak\/Ibu tunjukkan? Dukungan apa yang dibutuhkan dari saya atau sekolah?",
+            "tahap": "T: Tanggung jawab",
+            "tujuan": "Menguatkan komitmen: langkah pertama, waktu, bukti keberhasilan, dan dukungan yang dibutuhkan.",
+            "pertanyaan_litnum": "Indikator apa yang menunjukkan penguatan literasi dan numerasi berjalan? Bagaimana Bapak\/Ibu akan mencatatnya, dan kapan RPL diperiksa kembali dengan Lembar Telaah RPL?"
+        },
+        {
+            "durasi": "5 menit",
+            "pertanyaan_dl": "",
+            "pertanyaan_dasar": "Apa yang paling bermakna dari percakapan ini? Satu hal apa yang akan langsung Bapak\/Ibu lakukan setelah ini? Kapan sebaiknya kita bertemu lagi untuk melihat perkembangannya?",
+            "tahap": "Penutup dan refleksi",
+            "tujuan": "Merangkum, mengapresiasi, dan menetapkan jadwal tindak lanjut. Coach memastikan rencana berasal dari guru BK sendiri.",
+            "pertanyaan_litnum": ""
+        }
+    ],
+    "coaching_examples": [
+        {
+            "kategori": "Indikator Dasar",
+            "tujuan": "Program dan administrasi BK disusun berdasarkan data kebutuhan peserta didik.",
+            "bukti": "Dokumen rekap asesmen, catatan kumulatif mutakhir, dan jurnal harian.",
+            "temuan": "Program semester tersedia, tetapi asesmen kebutuhan belum terdokumentasi dan catatan kumulatif tidak rutin diperbarui.",
+            "rencana": "Menyusun rekap asesmen kebutuhan bulan ini, memperbarui catatan kumulatif setiap akhir bulan, dan berkonsultasi format ke MGBK."
+        },
+        {
+            "kategori": "Deep Learning",
+            "tujuan": "Layanan klasikal membuat peserta didik terlibat, mengaitkan topik dengan pengalaman diri, dan merefleksikannya.",
+            "bukti": "RPL revisi, lembar refleksi peserta didik, dokumentasi, dan umpan balik peserta didik.",
+            "temuan": "RPL memuat topik yang sesuai, tetapi kegiatan masih berupa ceramah; belum ada pertanyaan pemantik dan refleksi.",
+            "rencana": "Menambahkan dua pertanyaan pemantik, satu sesi refleksi (jurnal singkat), dan satu aktivitas kolaboratif yang menyenangkan pada RPL."
+        },
+        {
+            "kategori": "Literasi Numerasi",
+            "tujuan": "Peserta didik mampu membaca dan menafsirkan data dirinya (minat, nilai) untuk merencanakan studi lanjut.",
+            "bukti": "Lembar kerja peserta didik, RPL dengan aktivitas literasi dan numerasi, dan skor Lembar Telaah RPL meningkat.",
+            "temuan": "Hasil angket peminatan hanya dibacakan; peserta didik belum diajak menafsirkan tabel atau grafik; RPL belum memuat aktivitas literasi dan numerasi.",
+            "rencana": "Menyajikan hasil angket dalam tabel atau grafik sederhana, menyiapkan lembar kerja penafsiran data dan bacaan pendek tentang pilihan studi, lalu memeriksa RPL dengan Lembar Telaah RPL."
+        }
+    ],
+    "rpl_indicators": [
+        {
+            "description": "Tujuan layanan mengacu pada hasil asesmen kebutuhan dan dapat diamati ketercapaiannya.",
+            "number": 1,
+            "section": "A. TUJUAN LAYANAN BK",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Tujuan layanan dirumuskan jelas, terukur, dan sesuai dengan kebutuhan serta tahap perkembangan peserta didik."
+        },
+        {
+            "description": "Tujuan layanan mencantumkan kemampuan memahami teks, menganalisis informasi, atau menyampaikan kembali gagasan.",
+            "number": 2,
+            "section": "A. TUJUAN LAYANAN BK",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Memuat penguatan kompetensi literasi (memahami, menganalisis, dan merefleksikan informasi\/teks)."
+        },
+        {
+            "description": "Tujuan layanan memuat kegiatan seperti menghitung, membandingkan, memperkirakan, menafsirkan, mengambil keputusan, atau memecahkan masalah.",
+            "number": 3,
+            "section": "A. TUJUAN LAYANAN BK",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Memuat penguatan kompetensi numerasi (memahami, menerapkan, dan menalar data\/angka)."
+        },
+        {
+            "description": "Kata kerja seperti mengidentifikasi, menganalisis, menyimpulkan, menghitung, membandingkan, atau menafsirkan tercantum dalam tujuan layanan.",
+            "number": 4,
+            "section": "A. TUJUAN LAYANAN BK",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Dirumuskan dengan kata kerja operasional yang mencerminkan aktivitas literasi dan\/atau numerasi."
+        },
+        {
+            "description": "Tujuan layanan dikaitkan dengan situasi nyata yang dialami peserta didik.",
+            "number": 5,
+            "section": "A. TUJUAN LAYANAN BK",
+            "category": "Deep Learning",
+            "scale": 1,
+            "title": "Tujuan layanan menggunakan konteks kehidupan sehari-hari peserta didik."
+        },
+        {
+            "description": "Tujuan layanan mencantumkan kemampuan peserta didik memahami konsep diri\/masalah dengan memanfaatkan informasi dari berbagai sumber bacaan atau data.",
+            "number": 6,
+            "section": "A. TUJUAN LAYANAN BK",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Mendorong penggunaan strategi literasi sebagai sarana memahami diri dan memecahkan masalah."
+        },
+        {
+            "description": "Tujuan memuat penggunaan data\/angka (misalnya hasil asesmen, skor, statistik sederhana) untuk menyelesaikan masalah peserta didik.",
+            "number": 7,
+            "section": "A. TUJUAN LAYANAN BK",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Mendorong penggunaan penalaran numerasi untuk menyelesaikan masalah."
+        },
+        {
+            "description": "Materi yang dipilih selaras dengan tujuan dan bidang layanan (pribadi, sosial, belajar, karier).",
+            "number": 8,
+            "section": "B. PEMILIHAN MATERI DAN SUMBER LAYANAN",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Materi layanan sesuai dengan topik\/bidang layanan dan tujuan layanan BK yang dirumuskan."
+        },
+        {
+            "description": "Materi layanan mencantumkan sumber bacaan seperti buku, artikel, infografik, grafik, tabel, media digital, dan lain-lain.",
+            "number": 9,
+            "section": "B. PEMILIHAN MATERI DAN SUMBER LAYANAN",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Materi layanan dirancang dengan menggunakan berbagai sumber berbasis teks multimoda (buku, artikel, infografik, tabel, grafik, atau media digital)."
+        },
+        {
+            "description": "Daftar sumber layanan memuat berbagai referensi yang mendukung pemahaman informasi atau data secara kontekstual.",
+            "number": 10,
+            "section": "B. PEMILIHAN MATERI DAN SUMBER LAYANAN",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Guru BK memilih sumber layanan yang relevan, kontekstual, dan sesuai tingkat perkembangan peserta didik."
+        },
+        {
+            "description": "Materi layanan memuat informasi berbasis teks atau data disertai pertanyaan\/tugas analisis untuk mendorong pemahaman kritis.",
+            "number": 11,
+            "section": "B. PEMILIHAN MATERI DAN SUMBER LAYANAN",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Materi layanan mendorong peserta didik untuk membaca, memahami, dan mengolah informasi\/data secara kritis."
+        },
+        {
+            "description": "RPL mencantumkan jenis layanan (klasikal, kelompok, atau individual) beserta metode\/teknik yang digunakan.",
+            "number": 12,
+            "section": "C. PERANCANGAN STRATEGI PENGUATAN LITERASI DAN NUMERASI",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Strategi\/metode layanan BK dipilih sesuai dengan jenis layanan dan karakteristik peserta didik."
+        },
+        {
+            "description": "Mencantumkan kegiatan seperti membaca, mengamati teks, atau menelaah informasi sebelum diskusi\/eksplorasi materi layanan.",
+            "number": 13,
+            "section": "C. PERANCANGAN STRATEGI PENGUATAN LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Rancangan aktivitas layanan memuat kegiatan literasi."
+        },
+        {
+            "description": "Mencantumkan kegiatan seperti membaca data hasil asesmen, melihat grafik, menghitung, atau menganalisis data.",
+            "number": 14,
+            "section": "C. PERANCANGAN STRATEGI PENGUATAN LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Rancangan aktivitas layanan memuat kegiatan numerasi."
+        },
+        {
+            "description": "Memuat tahapan kegiatan yang melibatkan peserta didik membaca sumber informasi, mendiskusikan temuan, dan merefleksikan hasil pemahaman.",
+            "number": 15,
+            "section": "C. PERANCANGAN STRATEGI PENGUATAN LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Strategi penguatan mendorong peserta didik membaca, berdiskusi, menafsirkan, dan merefleksikan informasi yang diperoleh."
+        },
+        {
+            "description": "Memuat tahapan kegiatan yang melibatkan peserta didik menjelaskan dan menggunakan data untuk menarik kesimpulan.",
+            "number": 16,
+            "section": "C. PERANCANGAN STRATEGI PENGUATAN LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Strategi penguatan mendorong peserta didik menggunakan data\/grafik\/tabel untuk memecahkan masalah."
+        },
+        {
+            "description": "Strategi layanan memuat kegiatan menganalisis teks, menafsirkan data, serta refleksi untuk membangun pemahaman diri.",
+            "number": 17,
+            "section": "C. PERANCANGAN STRATEGI PENGUATAN LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Guru BK merancang strategi yang mengembangkan literasi kritis (analisis teks, interpretasi data, refleksi)."
+        },
+        {
+            "description": "RPL memuat tahapan kegiatan dan alokasi waktu yang realistis.",
+            "number": 18,
+            "section": "D. PERANCANGAN AKTIVITAS LAYANAN",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Langkah-langkah kegiatan layanan tersusun runtut (pembukaan, inti, penutup) dengan alokasi waktu yang jelas."
+        },
+        {
+            "description": "Langkah-langkah kegiatan layanan memuat aktivitas membaca dan memahami sumber informasi sebagai dasar diskusi\/refleksi.",
+            "number": 19,
+            "section": "D. PERANCANGAN AKTIVITAS LAYANAN",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Kegiatan layanan memberi kesempatan peserta didik membaca dan memahami berbagai sumber informasi\/data."
+        },
+        {
+            "description": "Peserta didik mengidentifikasi, menganalisis, menyimpulkan, merangkum informasi, atau menulis refleksi diri.",
+            "number": 20,
+            "section": "D. PERANCANGAN AKTIVITAS LAYANAN",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Aktivitas literasi: peserta didik mengidentifikasi, menganalisis, menyimpulkan, atau menuliskan kembali informasi."
+        },
+        {
+            "description": "Peserta didik menghitung, membandingkan, memperkirakan, menafsirkan, atau memecahkan masalah menggunakan data.",
+            "number": 21,
+            "section": "D. PERANCANGAN AKTIVITAS LAYANAN",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Aktivitas numerasi: peserta didik menghitung, membandingkan, menafsirkan, atau memecahkan masalah."
+        },
+        {
+            "description": "Pertanyaan dalam RPL mendorong analisis, interpretasi, atau refleksi terhadap bacaan atau data.",
+            "number": 22,
+            "section": "D. PERANCANGAN AKTIVITAS LAYANAN",
+            "category": "Deep Learning",
+            "scale": 1,
+            "title": "Guru BK merancang pertanyaan pemantik\/tugas yang mendorong pemahaman mendalam terhadap bacaan atau data."
+        },
+        {
+            "description": "RPL mencantumkan media\/alat bantu yang dapat digunakan di sekolah.",
+            "number": 23,
+            "section": "E. PEMANFAATAN MEDIA DAN TEKNOLOGI PENDUKUNG LITERASI DAN NUMERASI",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Media dan alat bantu layanan sesuai dengan tujuan, materi, dan kondisi sarana yang tersedia."
+        },
+        {
+            "description": "Menyiapkan bahan bacaan, lembar kerja berbasis teks, atau media digital berisi informasi\/data untuk dianalisis.",
+            "number": 24,
+            "section": "E. PEMANFAATAN MEDIA DAN TEKNOLOGI PENDUKUNG LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Guru BK menyiapkan media layanan multimodal."
+        },
+        {
+            "description": "Media layanan memfasilitasi peserta didik mengakses, memahami, dan mengolah informasi\/data sebagai dasar pemahaman.",
+            "number": 25,
+            "section": "E. PEMANFAATAN MEDIA DAN TEKNOLOGI PENDUKUNG LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Guru BK merancang penggunaan media yang membantu peserta didik mengakses, memahami, dan mengolah informasi\/data secara efektif."
+        },
+        {
+            "description": "RPL mencantumkan beragam sumber informasi (buku, artikel, grafik, video, atau sumber digital) yang digunakan dalam layanan.",
+            "number": 26,
+            "section": "E. PEMANFAATAN MEDIA DAN TEKNOLOGI PENDUKUNG LITERASI DAN NUMERASI",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Guru BK menyediakan variasi sumber informasi untuk memperkaya pengalaman peserta didik."
+        },
+        {
+            "description": "RPL memuat rencana penilaian proses dan hasil serta rencana tindak lanjut layanan.",
+            "number": 27,
+            "section": "F. PERENCANAAN PENILAIAN\/EVALUASI LAYANAN",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Rencana evaluasi layanan mencakup evaluasi proses, hasil, dan tindak lanjut."
+        },
+        {
+            "description": "Instrumen dapat mengukur kemampuan memahami teks, merangkum informasi, menganalisis data, atau menuliskan gagasan.",
+            "number": 28,
+            "section": "F. PERENCANAAN PENILAIAN\/EVALUASI LAYANAN",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Instrumen evaluasi dirancang untuk mengukur kemampuan literasi peserta didik."
+        },
+        {
+            "description": "Instrumen dapat mengukur kemampuan menyelesaikan masalah menggunakan data, tabel, diagram, atau bagan.",
+            "number": 29,
+            "section": "F. PERENCANAAN PENILAIAN\/EVALUASI LAYANAN",
+            "category": "Literasi Numerasi",
+            "scale": 1,
+            "title": "Evaluasi mengukur kemampuan numerasi peserta didik."
+        },
+        {
+            "description": "Rubrik evaluasi mencakup aspek kompetensi literasi dan\/atau numerasi.",
+            "number": 30,
+            "section": "F. PERENCANAAN PENILAIAN\/EVALUASI LAYANAN",
+            "category": "Indikator Dasar",
+            "scale": 1,
+            "title": "Kriteria penilaian\/evaluasi dirumuskan secara jelas."
+        }
+    ],
+    "coaching_refleksi": [
+        {
+            "number": 1,
+            "kategori": "Indikator Dasar",
+            "pernyataan": "Saya memahami temuan supervisi tentang kelengkapan program, layanan, dan administrasi BK saya."
+        },
+        {
+            "number": 2,
+            "kategori": "Indikator Dasar",
+            "pernyataan": "Saya memiliki langkah konkret dan jadwal untuk melengkapi dokumen atau layanan BK yang masih kurang."
+        },
+        {
+            "number": 3,
+            "kategori": "Indikator Dasar",
+            "pernyataan": "Saya mengetahui bukti kerja yang perlu saya siapkan dan dokumentasikan."
+        },
+        {
+            "number": 4,
+            "kategori": "Deep Learning",
+            "pernyataan": "Saya dapat menjelaskan cara membuat layanan BK saya lebih mindful, meaningful, dan joyful."
+        },
+        {
+            "number": 5,
+            "kategori": "Deep Learning",
+            "pernyataan": "Saya memiliki rencana menggunakan pertanyaan pemantik dan kegiatan refleksi dalam layanan."
+        },
+        {
+            "number": 6,
+            "kategori": "Deep Learning",
+            "pernyataan": "Saya terdorong mengaitkan topik layanan dengan kehidupan nyata peserta didik."
+        },
+        {
+            "number": 7,
+            "kategori": "Literasi Numerasi",
+            "pernyataan": "Saya memahami cara memasukkan aktivitas literasi (membaca, menganalisis, merefleksikan informasi) ke dalam RPL BK."
+        },
+        {
+            "number": 8,
+            "kategori": "Literasi Numerasi",
+            "pernyataan": "Saya memahami cara memanfaatkan data atau angka (asesmen, tabel, grafik) dalam layanan BK."
+        },
+        {
+            "number": 9,
+            "kategori": "Literasi Numerasi",
+            "pernyataan": "Saya akan menggunakan Lembar Telaah RPL untuk memeriksa RPL yang saya susun."
+        },
+        {
+            "number": 10,
+            "kategori": "Proses Coaching",
+            "pernyataan": "Saya merasa didengarkan dan dihargai selama proses coaching."
+        },
+        {
+            "number": 11,
+            "kategori": "Proses Coaching",
+            "pernyataan": "Pertanyaan coach membantu saya berpikir dan menemukan solusi sendiri."
+        },
+        {
+            "number": 12,
+            "kategori": "Proses Coaching",
+            "pernyataan": "Rencana tindak lanjut yang disepakati berasal dari gagasan dan komitmen saya."
+        }
+    ],
+    "supervisi_indicators": [
+        {
+            "number": 1,
+            "section": "A. PERSIAPAN PENYUSUNAN PROGRAM BK",
+            "scale": 5,
+            "title": "Mengampu minimal 5 kelas, dibuktikan dengan SK Pembagian Tugas.(Permendikdasmen Nomor 11 Tahun 2025)",
+            "category": "Indikator Dasar",
+            "subsection": "A. Persiapan Penyusunan Program BK"
+        },
+        {
+            "number": 2,
+            "section": "A. PERSIAPAN PENYUSUNAN PROGRAM BK",
+            "scale": 5,
+            "title": "Memiliki daftar siswa yang menjadi ampuannya.",
+            "category": "Indikator Dasar",
+            "subsection": "A. Persiapan Penyusunan Program BK"
+        },
+        {
+            "number": 3,
+            "section": "A. PERSIAPAN PENYUSUNAN PROGRAM BK",
+            "scale": 5,
+            "title": "Melakukan kegiatan asesmen kebutuhan layanan, dibuktikan dengan deskripsi kebutuhan siswa.",
+            "category": "Indikator Dasar",
+            "subsection": "A. Persiapan Penyusunan Program BK"
+        },
+        {
+            "number": 4,
+            "section": "A. PERSIAPAN PENYUSUNAN PROGRAM BK",
+            "scale": 5,
+            "title": "Menyusun visi misi layanan BK di sekolah sesuai kebutuhan dan mendukung tercapainya visi misi sekolah.",
+            "category": "Indikator Dasar",
+            "subsection": "A. Persiapan Penyusunan Program BK"
+        },
+        {
+            "number": 5,
+            "section": "B. PENYUSUNAN PROGRAM BK",
+            "scale": 5,
+            "title": "Menyusun Program Tahunan sesuai dengan POP BK 2016 dan disahkan oleh kepala sekolah.",
+            "category": "Indikator Dasar",
+            "subsection": "B. Penyusunan Program BK"
+        },
+        {
+            "number": 6,
+            "section": "B. PENYUSUNAN PROGRAM BK",
+            "scale": 5,
+            "title": "Menyusun Program Semester sesuai dengan POP BK 2016.",
+            "category": "Indikator Dasar",
+            "subsection": "B. Penyusunan Program BK"
+        },
+        {
+            "number": 7,
+            "section": "B. PENYUSUNAN PROGRAM BK",
+            "scale": 5,
+            "title": "Mensosialisasikan program BK kepada warga sekolah.",
+            "category": "Indikator Dasar",
+            "subsection": "B. Penyusunan Program BK"
+        },
+        {
+            "number": 8,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Melaksanakan bimbingan klasikal dan atau bimbingan kelompok di kelas secara rutin dan terjadwal.",
+            "category": "Indikator Dasar",
+            "subsection": "C.1 Layanan Dasar"
+        },
+        {
+            "number": 9,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Melakukan evaluasi setelah melaksanakan layanan klasikal.",
+            "category": "Indikator Dasar",
+            "subsection": "C.1 Layanan Dasar"
+        },
+        {
+            "number": 10,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Menyelenggarakan layanan dasar menggunakan media pemanfaaatan digital (papan bimbingan, poster, leaflet, kotak aspirasi\/kotak masalah, media sosial, dll).",
+            "category": "Indikator Dasar",
+            "subsection": "C.1 Layanan Dasar"
+        },
+        {
+            "number": 11,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Memiliki buku\/media layanan BK yang memadai, baik berupa sarana biblioedukasi\/konseling dan atau berupa sarana sinema edukasi maupun sinema terapi.",
+            "category": "Indikator Dasar",
+            "subsection": "C.1 Layanan Dasar"
+        },
+        {
+            "number": 12,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Menerapkan prinsip pembelajaran mendalam (deep learning) dalam layanan BK: mindful, meaningful, and joyful learning.",
+            "category": "Deep Learning",
+            "subsection": "C.1 Layanan Dasar"
+        },
+        {
+            "number": 13,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Melaksanakan layanan peminatan dan perencanaan individual: peminatan dan lintas minat, penempatan ekstrakurikuler, merencanakan arah karier dan studi lanjut (dibuktikan dengan angket).",
+            "category": "Indikator Dasar",
+            "subsection": "C.2 Layanan Peminatan dan Perencanaan Individual"
+        },
+        {
+            "number": 14,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Melaksanakan layanan responsif (konseling, alih tangan kasus, konsultasi, advokasi, kunjungan rumah, konferensi kasus, mediasi), dibuktikan dengan RPL, Evaluasi, Laporan.",
+            "category": "Indikator Dasar",
+            "subsection": "C.3 Layanan Responsif"
+        },
+        {
+            "number": 15,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Mengintegrasikan prinsip pembelajaran mendalam dalam proses konseling (mindful, meaningful, joyful).",
+            "category": "Deep Learning",
+            "subsection": "C.3 Layanan Responsif"
+        },
+        {
+            "number": 16,
+            "section": "C. PELAKSANAAN LAYANAN BIMBINGAN DAN KONSELING",
+            "scale": 5,
+            "title": "Memiliki buku\/media layanan BK yang memadai, baik berupa sarana biblioedukasi\/konseling dan atau berupa sarana sinema edukasi maupun sinema terapi.",
+            "category": "Indikator Dasar",
+            "subsection": "C.4 Bahan dan Sumber Pendukung Layanan BK"
+        },
+        {
+            "number": 17,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Catatan kumulatif (data siswa, rekap kehadiran, data hasil asesmen tes maupun non-tes, dll).",
+            "category": "Indikator Dasar",
+            "subsection": "D.1 Kegiatan Administrasi"
+        },
+        {
+            "number": 18,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Mendokumentasikan kegiatan harian dalam bentuk jurnal harian.",
+            "category": "Indikator Dasar",
+            "subsection": "D.1 Kegiatan Administrasi"
+        },
+        {
+            "number": 19,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Memiliki catatan anekdot\/catatan kejadian.",
+            "category": "Indikator Dasar",
+            "subsection": "D.1 Kegiatan Administrasi"
+        },
+        {
+            "number": 20,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Mengadministrasikan tamu yang hadir.",
+            "category": "Indikator Dasar",
+            "subsection": "D.1 Kegiatan Administrasi"
+        },
+        {
+            "number": 21,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Menyusun laporan di akhir tahun pelajaran.",
+            "category": "Indikator Dasar",
+            "subsection": "D.1 Kegiatan Administrasi"
+        },
+        {
+            "number": 22,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Menjalin komunikasi dan bekerja sama dengan pihak-pihak lain.",
+            "category": "Indikator Dasar",
+            "subsection": "D.2 Kegiatan Kolaborasi"
+        },
+        {
+            "number": 23,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Mengikuti kegiatan MGBK, workshop, dan kegiatan ilmiah, termasuk yang bertema pembelajaran mendalam.",
+            "category": "Indikator Dasar",
+            "subsection": "D.3 Kegiatan Tambahan dan Pengembangan Profesi"
+        },
+        {
+            "number": 24,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Menyusun dan mempublikasikan hasil karya ilmiah.",
+            "category": "Indikator Dasar",
+            "subsection": "D.3 Kegiatan Tambahan dan Pengembangan Profesi"
+        },
+        {
+            "number": 25,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Membuat\/menghasilkan produk inovatif guna meningkatkan mutu layanan BK, termasuk inovasi berbasis pembelajaran mendalam.",
+            "category": "Indikator Dasar",
+            "subsection": "D.3 Kegiatan Tambahan dan Pengembangan Profesi"
+        },
+        {
+            "number": 26,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Tersedia ruang BK (minimal 8x8 m) dengan fasilitas di dalamnya (ruang kerja, ruang konseling individu, ruang konseling kelompok\/bimbingan kelompok, ruang tamu, ruang data, ruang pertemuan\/administrasi).",
+            "category": "Indikator Dasar",
+            "subsection": "D.3 Kegiatan Tambahan dan Pengembangan Profesi"
+        },
+        {
+            "number": 27,
+            "section": "D. DUKUNGAN SISTEM",
+            "scale": 5,
+            "title": "Hadir dan berada di sekolah sesuai dengan ketentuan dan jam kerja yang berlaku.",
+            "category": "Indikator Dasar",
+            "subsection": "D.3 Kegiatan Tambahan dan Pengembangan Profesi"
+        },
+        {
+            "number": 28,
+            "section": "E. PENGUATAN LITERASI DAN NUMERASI DALAM LAYANAN BK",
+            "scale": 5,
+            "title": "Menyusun RPL layanan BK yang memuat penguatan literasi dan numerasi, dibuktikan dengan RPL dan Lembar Telaah RPL.",
+            "category": "Literasi Numerasi",
+            "subsection": "E. Penguatan Literasi dan Numerasi dalam Layanan BK"
+        },
+        {
+            "number": 29,
+            "section": "E. PENGUATAN LITERASI DAN NUMERASI DALAM LAYANAN BK",
+            "scale": 5,
+            "title": "Memanfaatkan data hasil asesmen (angket, skor, tabel, grafik) untuk menentukan prioritas kebutuhan layanan, dibuktikan dengan rekap dan analisis data asesmen.",
+            "category": "Literasi Numerasi",
+            "subsection": "E. Penguatan Literasi dan Numerasi dalam Layanan BK"
+        },
+        {
+            "number": 30,
+            "section": "E. PENGUATAN LITERASI DAN NUMERASI DALAM LAYANAN BK",
+            "scale": 5,
+            "title": "Melaksanakan layanan BK yang mendorong peserta didik membaca, memahami, dan merefleksikan berbagai sumber informasi (buku, artikel, infografik, media digital), dibuktikan dengan RPL, lembar kerja, dan dokumentasi.",
+            "category": "Literasi Numerasi",
+            "subsection": "E. Penguatan Literasi dan Numerasi dalam Layanan BK"
+        },
+        {
+            "number": 31,
+            "section": "E. PENGUATAN LITERASI DAN NUMERASI DALAM LAYANAN BK",
+            "scale": 5,
+            "title": "Melaksanakan layanan BK yang mendorong peserta didik menggunakan data\/angka (menghitung, membandingkan, menafsirkan tabel atau grafik) untuk memahami diri dan mengambil keputusan, misalnya perencanaan studi lanjut dan karier.",
+            "category": "Literasi Numerasi",
+            "subsection": "E. Penguatan Literasi dan Numerasi dalam Layanan BK"
+        },
+        {
+            "number": 32,
+            "section": "E. PENGUATAN LITERASI DAN NUMERASI DALAM LAYANAN BK",
+            "scale": 5,
+            "title": "Mengevaluasi capaian penguatan literasi dan numerasi peserta didik dalam layanan BK dengan instrumen\/rubrik yang jelas, dan menggunakan hasilnya untuk tindak lanjut layanan.",
+            "category": "Literasi Numerasi",
+            "subsection": "E. Penguatan Literasi dan Numerasi dalam Layanan BK"
+        },
+        {
+            "number": 33,
+            "section": "E. PENGUATAN LITERASI DAN NUMERASI DALAM LAYANAN BK",
+            "scale": 5,
+            "title": "Menyajikan laporan layanan BK berbasis data yang dapat ditafsirkan (rekap angka, tabel, atau grafik pencapaian layanan).",
+            "category": "Literasi Numerasi",
+            "subsection": "E. Penguatan Literasi dan Numerasi dalam Layanan BK"
+        }
+    ],
+    "active_categories_default": [
+        "Indikator Dasar",
+        "Deep Learning",
+        "Literasi Numerasi"
+    ],
+    "categories": [
+        {
+            "id": "BK-DAS",
+            "name": "Indikator Dasar",
+            "code": "BK-DAS",
+            "description": "Komponen standar supervisi guru BK (penugasan, program, layanan, administrasi, kolaborasi, pengembangan profesi, sarana) sesuai panduan POP BK.",
+            "icon": "verified",
+            "color": "blue",
+            "counts": {
+                "supervisi": 25,
+                "telaah_rpl": 8,
+                "total": 33
+            }
+        },
+        {
+            "id": "BK-DL",
+            "name": "Deep Learning",
+            "code": "BK-DL",
+            "description": "Penerapan prinsip pembelajaran mendalam (mindful, meaningful, joyful learning), pertanyaan pemantik, dan kontekstualisasi kehidupan nyata peserta didik.",
+            "icon": "psychology",
+            "color": "indigo",
+            "counts": {
+                "supervisi": 2,
+                "telaah_rpl": 2,
+                "total": 4
+            }
+        },
+        {
+            "id": "BK-LN",
+            "name": "Literasi Numerasi",
+            "code": "BK-LN",
+            "description": "Penguatan kompetensi literasi (memahami, menganalisis, merefleksikan informasi) dan penalaran numerasi (data, tabel, grafik, kalkulasi) dalam layanan BK.",
+            "icon": "menu_book",
+            "color": "emerald",
+            "counts": {
+                "supervisi": 6,
+                "telaah_rpl": 20,
+                "total": 26
+            }
+        }
+    ],
+    "reflection_indicators": [
+        {
+            "number": 1,
+            "category": "Indikator Dasar",
+            "statement": "Saya memahami temuan supervisi tentang kelengkapan program, layanan, dan administrasi BK saya."
+        },
+        {
+            "number": 2,
+            "category": "Indikator Dasar",
+            "statement": "Saya memiliki langkah konkret dan jadwal untuk melengkapi dokumen atau layanan BK yang masih kurang."
+        },
+        {
+            "number": 3,
+            "category": "Indikator Dasar",
+            "statement": "Saya mengetahui bukti kerja yang perlu saya siapkan dan dokumentasikan."
+        },
+        {
+            "number": 4,
+            "category": "Deep Learning",
+            "statement": "Saya dapat menjelaskan cara membuat layanan BK saya lebih mindful, meaningful, dan joyful."
+        },
+        {
+            "number": 5,
+            "category": "Deep Learning",
+            "statement": "Saya memiliki rencana menggunakan pertanyaan pemantik dan kegiatan refleksi dalam layanan."
+        },
+        {
+            "number": 6,
+            "category": "Deep Learning",
+            "statement": "Saya terdorong mengaitkan topik layanan dengan kehidupan nyata peserta didik."
+        },
+        {
+            "number": 7,
+            "category": "Literasi Numerasi",
+            "statement": "Saya memahami cara memasukkan aktivitas literasi (membaca, menganalisis, merefleksikan informasi) ke dalam RPL BK."
+        },
+        {
+            "number": 8,
+            "category": "Literasi Numerasi",
+            "statement": "Saya memahami cara memanfaatkan data atau angka (asesmen, tabel, grafik) dalam layanan BK."
+        },
+        {
+            "number": 9,
+            "category": "Literasi Numerasi",
+            "statement": "Saya akan menggunakan Lembar Telaah RPL untuk memeriksa RPL yang saya susun."
+        },
+        {
+            "number": 10,
+            "category": "Proses Coaching",
+            "statement": "Saya merasa didengarkan dan dihargai selama proses coaching."
+        },
+        {
+            "number": 11,
+            "category": "Proses Coaching",
+            "statement": "Pertanyaan coach membantu saya berpikir dan menemukan solusi sendiri."
+        },
+        {
+            "number": 12,
+            "category": "Proses Coaching",
+            "statement": "Rencana tindak lanjut yang disepakati berasal dari gagasan dan komitmen saya."
+        }
+    ]
+}

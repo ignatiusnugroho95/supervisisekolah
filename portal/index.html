@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Terpadu GTK (Guru dan Tenaga Kependidikan) — SupervisiSekolah.id</title>
+  <meta name="description"
+    content="Autentikasi 1 Pintu Portal GTK: Pintu masuk bagi Pendidik (Guru & Guru BK) serta Tenaga Kependidikan (Tendik & Karyawan) untuk akses jadwal, hasil supervisi, dan instrumen kinerja.">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Font Awesome -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- App Auth Helper -->
+  <script src="../js/auth.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif']
+          },
+          colors: {
+            gtk: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857'
+            },
+            tendik: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .font-display {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .bg-gtk-mesh {
+      background: radial-gradient(circle at 15% 15%, #0f172a 0%, #090d16 45%, #030712 100%);
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-input {
+      background: rgba(10, 15, 29, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.2s ease;
+    }
+
+    .glass-input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .glass-input.input-tendik:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.22;
+      pointer-events: none;
+      animation: floatOrb 16s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 520px;
+      height: 520px;
+      background: #059669;
+      top: -120px;
+      left: -100px;
+    }
+
+    .orb-2 {
+      width: 480px;
+      height: 480px;
+      background: #d97706;
+      bottom: -120px;
+      right: -100px;
+      animation-delay: -6s;
+    }
+
+    .orb-3 {
+      width: 400px;
+      height: 400px;
+      background: #6366f1;
+      top: 40%;
+      left: 35%;
+      animation-delay: -11s;
+    }
+
+    @keyframes floatOrb {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -20px) scale(1.06);
+      }
+
+      66% {
+        transform: translate(-25px, 25px) scale(0.94);
+      }
+    }
+
+    .code-input {
+      letter-spacing: 0.25em;
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .step-active {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+    }
+
+    .step-done {
+      border-color: #059669;
+      background: #059669;
+      color: white;
+    }
+
+    .step-locked {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-6px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(6px);
+      }
+    }
+
+    .shake-animation {
+      animation: shake 0.4s ease-in-out;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-gtk-mesh text-slate-100 min-h-screen relative flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- Ambient Light Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- TOP APP BAR -->
+  <header class="sticky top-0 z-50 glass-card border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+
+      <!-- Brand -->
+      <a href="../" class="flex items-center gap-3 group">
+        <div
+          class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-600 to-amber-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white group-hover:scale-105 transition">
+          <i class="fa-solid fa-graduation-cap text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-black text-base text-white tracking-tight">SupervisiSekolah<span
+                class="text-emerald-400">.id</span></span>
+            <span
+              class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">Portal
+              GTK</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">Autentikasi 1 Pintu Guru &amp; Tenaga Kependidikan</p>
+        </div>
+      </a>
+
+      <!-- Quick Nav Buttons -->
+      <div class="flex items-center gap-2">
+        <a href="../"
+          class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs font-semibold border border-white/10 transition hidden sm:inline-flex items-center gap-1.5">
+          <i class="fa-solid fa-house text-slate-400"></i>
+          <span>Beranda</span>
+        </a>
+        <a href="../dashboard/"
+          class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-lock text-amber-400"></i>
+          <span>Login Kepala Sekolah</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN AUTHENTICATION CONTAINER -->
+  <main class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12 relative z-10">
+    <div class="w-full max-w-xl space-y-6">
+
+      <!-- Hero Header -->
+      <div class="text-center space-y-2">
+        <div
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold shadow-xs">
+          <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+          <span>Portal Mandiri GTK (Guru &amp; Tenaga Kependidikan)</span>
+        </div>
+        <h1 class="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
+          Masuk ke <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300">Portal
+            GTK</span>
+        </h1>
+        <p class="text-slate-300 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+          Autentikasi 1 pintu bagi Guru Mata Pelajaran, Guru BK, Kepala TU, Staf Sarpras/Perpustakaan/Laboran, Satpam,
+          hingga Tenaga Kebersihan.
+        </p>
+      </div>
+
+      <!-- Main Login Card -->
+      <div id="auth-main-card"
+        class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-white/15">
+        <div class="absolute -top-12 -right-12 w-36 h-36 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none">
+        </div>
+        <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-amber-500/15 rounded-full blur-3xl pointer-events-none">
+        </div>
+
+        <!-- 4-STEP BREADCRUMB INDICATOR -->
+        <div class="mb-6 pb-4 border-b border-white/10">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-400">
+            <div id="step-badge-1"
+              class="flex items-center gap-1.5 step-active px-2.5 py-1 rounded-lg border transition">
+              <span
+                class="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center">1</span>
+              <span>Sekolah</span>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+            <div id="step-badge-2"
+              class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent text-slate-500 transition">
+              <span
+                class="w-4 h-4 rounded-full bg-slate-800 text-slate-300 font-bold text-[10px] flex items-center justify-center">2</span>
+              <span>Kode Sekolah</span>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+            <div id="step-badge-3"
+              class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent text-slate-500 transition">
+              <span
+                class="w-4 h-4 rounded-full bg-slate-800 text-slate-300 font-bold text-[10px] flex items-center justify-center">3</span>
+              <span>Nama GTK</span>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+            <div id="step-badge-4"
+              class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent text-slate-500 transition">
+              <span
+                class="w-4 h-4 rounded-full bg-slate-800 text-slate-300 font-bold text-[10px] flex items-center justify-center">4</span>
+              <span>Kode GTK</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM -->
+        <form id="gtk-auth-form" onsubmit="handleGtkSubmit(event)" class="space-y-5">
+
+          <!-- STEP 1: PILIH SEKOLAH -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-emerald-300 flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-school text-emerald-400"></i>
+                <span>1. Pilih Satuan Pendidikan (Sekolah) *</span>
+              </span>
+              <span id="school-count-badge" class="text-[10px] text-slate-400 font-normal">Memuat sekolah...</span>
+            </label>
+            <div class="relative">
+              <select id="input-school-select" onchange="onSchoolSelectChange(this.value)" required
+                class="glass-input w-full px-3.5 py-2.5 rounded-xl text-white text-xs font-semibold focus:outline-none appearance-none cursor-pointer">
+                <option value="">-- Memuat daftar sekolah... --</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-3.5 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: KODE AKSES SEKOLAH -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-emerald-300 flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-emerald-400"></i>
+                <span>2. Kode Akses Sekolah *</span>
+              </span>
+              <span class="text-[10px] text-slate-400">Diberikan oleh Kepala Sekolah</span>
+            </label>
+            <div class="flex gap-2">
+              <div class="relative flex-1">
+                <input type="text" id="input-school-code" required placeholder="CONTOH: BRI-TF8U" maxlength="10"
+                  oninput="formatSchoolCodeInput(this)" onblur="triggerAutoVerifySchool()"
+                  class="glass-input code-input w-full px-3.5 py-2.5 rounded-xl text-emerald-400 text-sm font-black focus:outline-none placeholder:text-slate-600">
+              </div>
+              <button type="button" id="btn-verify-school" onclick="verifySchoolCode(true)"
+                class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Verifikasi</span>
+              </button>
+            </div>
+
+            <!-- Verified School Banner (Hidden until verified) -->
+            <div id="school-verified-banner"
+              class="hidden mt-2 p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div
+                  class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-shield-check text-base"></i>
+                </div>
+                <div class="min-w-0">
+                  <div class="font-bold text-emerald-200 truncate" id="verified-school-name">SMP Brighton</div>
+                  <div class="text-[10px] text-emerald-400/80 font-mono" id="verified-school-meta">NPSN: 20269341 &bull;
+                    2026/2027 Ganjil</div>
+                </div>
+              </div>
+              <span
+                class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase flex-shrink-0">Terverifikasi</span>
+            </div>
+          </div>
+
+          <!-- STEP 3: PILIH IDENTITAS PERSONAL GTK (TERMUAT SETELAH KODE SEKOLAH BENAR) -->
+          <div id="section-gtk-select" class="space-y-2 pt-2 border-t border-white/10 step-locked">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-teal-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-check text-teal-400"></i>
+                <span>3. Memilih Identitas Personal GTK *</span>
+              </label>
+              <span id="gtk-count-badge" class="text-[10px] text-slate-400 font-mono">0 personil</span>
+            </div>
+
+            <div class="relative">
+              <select id="input-gtk-select" onchange="onGtkSelectChange(this.value)" disabled required
+                class="glass-input w-full px-3.5 py-2.5 rounded-xl text-white text-xs font-semibold focus:outline-none appearance-none cursor-pointer">
+                <option value="">-- Masukkan &amp; verifikasi kode sekolah dahulu --</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-3.5 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
+
+            <!-- Person Summary Card Preview (Hidden until GTK selected) -->
+            <div id="gtk-preview-card"
+              class="hidden p-3.5 rounded-2xl bg-slate-900/90 border border-teal-500/30 space-y-3">
+              <div class="flex items-center gap-3">
+                <img id="preview-photo" src="" alt="Avatar"
+                  class="w-12 h-12 rounded-xl object-cover border border-teal-400/30 shadow-md">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span id="preview-role-badge"
+                      class="px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-300 font-bold text-[10px] uppercase border border-teal-400/30">Guru</span>
+                    <span id="preview-nip" class="text-[11px] text-slate-400 font-mono">NIP. -</span>
+                  </div>
+                  <h4 id="preview-name" class="font-bold text-xs sm:text-sm text-white truncate mt-0.5">Nama Personil
+                  </h4>
+                  <p id="preview-task" class="text-[11px] text-slate-300 truncate">Mata Pelajaran / Tugas Tambahan</p>
+                </div>
+              </div>
+
+              <!-- DESTINATION PORTAL TOGGLE (AUTO-DETECTED / MANUAL SWITCH) -->
+              <div class="pt-2 border-t border-white/10">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Pilih Portal Masuk:</span>
+                  <span id="auto-detect-tag" class="text-[10px] text-emerald-400 font-semibold italic">Direkomendasikan
+                    otomatis</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <label id="dest-card-guru"
+                    class="cursor-pointer p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 transition flex items-center gap-2.5">
+                    <input type="radio" name="dest_portal" value="guru" id="radio-dest-guru" checked
+                      onchange="onDestinationChange('guru')" class="text-emerald-500 focus:ring-0">
+                    <div class="min-w-0">
+                      <div class="font-bold text-xs text-emerald-300 flex items-center gap-1">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        <span>Portal Guru</span>
+                      </div>
+                      <div class="text-[10px] text-slate-400 truncate">RPP, Observasi &amp; AI</div>
+                    </div>
+                  </label>
+
+                  <label id="dest-card-tendik"
+                    class="cursor-pointer p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-amber-500/10 transition flex items-center gap-2.5">
+                    <input type="radio" name="dest_portal" value="tendik" id="radio-dest-tendik"
+                      onchange="onDestinationChange('tendik')" class="text-amber-500 focus:ring-0">
+                    <div class="min-w-0">
+                      <div class="font-bold text-xs text-amber-300 flex items-center gap-1">
+                        <i class="fa-solid fa-id-badge"></i>
+                        <span>Portal Tendik</span>
+                      </div>
+                      <div class="text-[10px] text-slate-400 truncate">7 Instrumen GTK</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: KODE AKSES PERSONAL GTK -->
+          <div id="section-personal-code" class="space-y-1.5 step-locked">
+            <label class="block text-xs font-bold text-amber-300 flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                <span>4. Kode Akses Personal GTK *</span>
+              </span>
+              <span class="text-[10px] text-slate-400">8 digit (contoh: GBVZ-EJNX)</span>
+            </label>
+            <div class="relative">
+              <input type="text" id="input-personal-code" required placeholder="XXXX-XXXX" maxlength="9" disabled
+                oninput="formatPersonalCodeInput(this)"
+                class="glass-input code-input w-full px-3.5 py-2.5 rounded-xl text-amber-400 text-sm font-black focus:outline-none placeholder:text-slate-600">
+            </div>
+            <p class="text-[11px] text-slate-400 italic">
+              Kode personal tercantum pada kartu akses yang dibagikan oleh Kepala Sekolah.
+            </p>
+          </div>
+
+          <!-- STEP 5: SUBMIT BUTTON -->
+          <div class="pt-3">
+            <button type="submit" id="btn-submit-gtk"
+              class="w-full py-3.5 bg-gradient-to-r from-emerald-500 via-teal-600 to-amber-500 hover:from-emerald-600 hover:to-amber-600 active:scale-98 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-emerald-500/20 transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-arrow-right-to-bracket text-base"></i>
+              <span id="btn-submit-label">Masuk ke Dashboard GTK</span>
+            </button>
+          </div>
+
+          <!-- Footer Information -->
+          <div class="pt-3 border-t border-white/10 text-center space-y-1 text-[11px] text-slate-400">
+            <p>Belum memiliki kode akses atau lupa kode?</p>
+            <button type="button" onclick="showHelpModal()"
+              class="text-emerald-400 hover:text-emerald-300 underline font-semibold transition">
+              Panduan Memperoleh Kode Akses GTK
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: BANTUAN KODE AKSES -->
+  <div id="modal-help"
+    class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
+    <div class="glass-card rounded-3xl w-full max-w-md p-6 border border-white/15 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i class="fa-solid fa-circle-question text-lg"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white">Panduan Kode Akses GTK</h3>
+            <p class="text-[11px] text-slate-400">Informasi keamanan autentikasi portal</p>
+          </div>
+        </div>
+        <button onclick="closeHelpModal()"
+          class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
+          <strong class="text-emerald-400 block font-bold">1. Kode Akses Sekolah (Contoh: BRI-TF8U)</strong>
+          <p>Kode khusus satuan pendidikan yang diterbitkan di menu Profil Kepala Sekolah. Seluruh guru dan staf pada
+            sekolah yang sama menggunakan kode sekolah yang sama.</p>
+        </div>
+
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
+          <strong class="text-amber-400 block font-bold">2. Kode Akses Personal GTK (Contoh: GBVZ-EJNX)</strong>
+          <p>Kode rahasia 8 digit yang khusus milik Anda. Kepala Sekolah dapat mencetak <em>Kartu Akses Karyawan</em>
+            atau membagikan teks kode melalui WhatsApp grup sekolah di menu <strong>Data Karyawan &gt; Kelola Kode Akses
+              Karyawan</strong>.</p>
+        </div>
+
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
+          <strong class="text-purple-400 block font-bold">3. Akses Otomatis Guru vs Tendik</strong>
+          <p>Setelah memilih nama, sistem akan otomatis mengarahkan Anda ke portal yang sesuai (Portal Guru untuk proses
+            pembelajaran, atau Portal Tendik untuk 7 instrumen kinerja). Anda juga bebas memilih portal tujuan.</p>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="closeHelpModal()"
+          class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition">
+          Tutup Panduan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // State Variables
+    let publicSchools = [];
+    let verifiedSchool = null;
+    let schoolEmployees = [];
+    let selectedEmployee = null;
+    let selectedDestination = 'guru';
+
+    // Base API URL
+    function getApiUrl() {
+      if (typeof window.KS_AUTH !== 'undefined' && typeof window.KS_AUTH.getBaseUrl === 'function') {
+        return window.KS_AUTH.getBaseUrl() + 'api.php';
+      }
+      return '../api.php';
+    }
+
+    // Helper: Escape HTML
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Formatter Helpers
+    function formatSchoolCodeInput(el) {
+      let v = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (v.length > 3) {
+        v = v.slice(0, 3) + '-' + v.slice(3, 7);
+      }
+      el.value = v;
+    }
+
+    function formatPersonalCodeInput(el) {
+      let v = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (v.length > 4) {
+        v = v.slice(0, 4) + '-' + v.slice(4, 8);
+      }
+      el.value = v;
+    }
+
+    // On DOM Loaded
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadPublicSchools();
+      checkExistingSession();
+    });
+
+    // ── Check if User Already Logged In ─────────────────────────────────
+    function checkExistingSession() {
+      try {
+        const rawGuru = localStorage.getItem('supervisi_guru_session') || localStorage.getItem('ks_guru_session');
+        const rawTeacher = localStorage.getItem('supervisi_teacher_session') || localStorage.getItem('ks_teacher_session');
+        const rawTendik = localStorage.getItem('ks_tendik_portal_session');
+
+        if (rawGuru || rawTendik) {
+          const session = rawTendik ? JSON.parse(rawTendik) : JSON.parse(rawGuru);
+          const tName = session.teacher ? session.teacher.name : (session.teacherName || 'GTK');
+          const schName = session.school ? session.school.name : (session.schoolName || '');
+
+          // Pre-populate school if available
+          if (schName) {
+            const select = document.getElementById('input-school-select');
+            for (let i = 0; i < select.options.length; i++) {
+              if (select.options[i].text.includes(schName)) {
+                select.selectedIndex = i;
+                break;
+              }
+            }
+          }
+        }
+      } catch (e) { }
+    }
+
+    // ── 1. Load Public Schools ──────────────────────────────────────────
+    async function loadPublicSchools() {
+      const select = document.getElementById('input-school-select');
+      const badge = document.getElementById('school-count-badge');
+      try {
+        const res = await fetch(`${getApiUrl()}?action=get_public_schools`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.schools) && data.schools.length > 0) {
+          publicSchools = data.schools;
+          badge.textContent = `${publicSchools.length} sekolah terdaftar`;
+
+          select.innerHTML = '<option value="">-- Pilih Nama Sekolah Anda --</option>' +
+            publicSchools.map(s => {
+              const npsnInfo = s.npsn ? ` (NPSN: ${s.npsn})` : '';
+              return `<option value="${escapeHtml(s.id)}" data-name="${escapeHtml(s.name)}" data-npsn="${escapeHtml(s.npsn || '')}">${escapeHtml(s.name)}${npsnInfo}</option>`;
+            }).join('');
+
+          // If only 1 school, select it automatically
+          if (publicSchools.length === 1) {
+            select.selectedIndex = 1;
+            onSchoolSelectChange(select.value);
+          }
+        } else {
+          select.innerHTML = '<option value="">-- Belum ada data sekolah terdaftar --</option>';
+          badge.textContent = '0 sekolah';
+        }
+      } catch (err) {
+        console.warn('Gagal memuat daftar sekolah publik:', err);
+        select.innerHTML = '<option value="">-- Gagal memuat sekolah. Silakan refresh --</option>';
+      }
+    }
+
+    // On School Select Change
+    function onSchoolSelectChange(schoolId) {
+      // Reset verified status when school changes
+      verifiedSchool = null;
+      document.getElementById('school-verified-banner').classList.add('hidden');
+      document.getElementById('step-badge-2').className = 'flex items-center gap-1.5 step-active px-2.5 py-1 rounded-lg border transition';
+      document.getElementById('step-badge-3').className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent text-slate-500 transition';
+      document.getElementById('step-badge-4').className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent text-slate-500 transition';
+
+      // Lock step 3 & 4
+      lockStep3And4();
+
+      const codeInput = document.getElementById('input-school-code');
+      if (codeInput) {
+        codeInput.focus();
+      }
+    }
+
+    // ── 2. Verify School Code ───────────────────────────────────────────
+    function triggerAutoVerifySchool() {
+      const code = document.getElementById('input-school-code').value.trim();
+      if (code.length >= 6 && !verifiedSchool) {
+        verifySchoolCode(false);
+      }
+    }
+
+    async function verifySchoolCode(showUserAlert = true) {
+      const select = document.getElementById('input-school-select');
+      const selectedOpt = select.selectedOptions[0];
+      const schoolName = selectedOpt ? (selectedOpt.getAttribute('data-name') || selectedOpt.text) : '';
+      const schoolCode = document.getElementById('input-school-code').value.trim();
+      const btn = document.getElementById('btn-verify-school');
+
+      if (!schoolName) {
+        if (showUserAlert) {
+          Swal.fire({ icon: 'warning', title: 'Pilih Sekolah', text: 'Silakan pilih nama sekolah Anda terlebih dahulu pada langkah 1.' });
+        }
+        select.focus();
+        return false;
+      }
+
+      if (!schoolCode) {
+        if (showUserAlert) {
+          Swal.fire({ icon: 'warning', title: 'Kode Sekolah Kosong', text: 'Masukkan kode akses sekolah dari Kepala Sekolah Anda.' });
+        }
+        document.getElementById('input-school-code').focus();
+        return false;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Cek...</span>';
+
+      try {
+        const res = await fetch(`${getApiUrl()}?action=verify_school_code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ schoolName, schoolCode })
+        });
+        const data = await res.json();
+
+        if (data.success && data.school) {
+          verifiedSchool = data.school;
+
+          // Show Verified Banner
+          document.getElementById('verified-school-name').textContent = verifiedSchool.name;
+          document.getElementById('verified-school-meta').textContent = `NPSN: ${verifiedSchool.npsn || '-'} • TA ${verifiedSchool.academicYear || '2026/2027'} (${verifiedSchool.semester || 'Ganjil'})`;
+          document.getElementById('school-verified-banner').classList.remove('hidden');
+
+          // Update Step 1 & 2 Badges
+          document.getElementById('step-badge-1').className = 'flex items-center gap-1.5 step-done px-2.5 py-1 rounded-lg border transition';
+          document.getElementById('step-badge-2').className = 'flex items-center gap-1.5 step-done px-2.5 py-1 rounded-lg border transition';
+          document.getElementById('step-badge-3').className = 'flex items-center gap-1.5 step-active px-2.5 py-1 rounded-lg border transition';
+
+          // Unlock & Load Step 3 (Personal GTK)
+          await loadEmployeesForSchool(verifiedSchool.id || select.value);
+
+          if (showUserAlert) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Sekolah Terverifikasi!',
+              text: `Selamat datang di ${verifiedSchool.name}. Silakan pilih nama Anda pada langkah ke-3.`,
+              timer: 1600,
+              showConfirmButton: false
+            });
+          }
+          return true;
+        } else {
+          verifiedSchool = null;
+          lockStep3And4();
+          if (showUserAlert) {
+            triggerCardShake();
+            Swal.fire({
+              icon: 'error',
+              title: 'Kode Sekolah Tidak Cocok',
+              text: data.error || 'Kode sekolah tidak cocok dengan database. Silakan tanyakan kode akses ke Kepala Sekolah.',
+              confirmButtonColor: '#10b981'
+            });
+          }
+          return false;
+        }
+      } catch (err) {
+        console.error('Verifikasi kode sekolah gagal:', err);
+        if (showUserAlert) {
+          Swal.fire({ icon: 'error', title: 'Kesalahan Sistem', text: 'Gagal menghubungi server verifikasi sekolah.' });
+        }
+        return false;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>Verifikasi</span>';
+      }
+    }
+
+    // ── 3. Load GTK Employees for Verified School ───────────────────────
+    async function loadEmployeesForSchool(schoolId) {
+      const select = document.getElementById('input-gtk-select');
+      const badge = document.getElementById('gtk-count-badge');
+      const secGtk = document.getElementById('section-gtk-select');
+
+      select.innerHTML = '<option value="">Memuat daftar personil sekolah...</option>';
+      select.disabled = true;
+
+      try {
+        const res = await fetch(`${getApiUrl()}?action=get_employees_public&include_staff=1&school_id=${encodeURIComponent(schoolId)}`);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.employees) && data.employees.length > 0) {
+          schoolEmployees = data.employees;
+          badge.textContent = `${schoolEmployees.length} personil GTK`;
+
+          // Group into Pendidik (Guru) and Tenaga Kependidikan (Staff/Tendik)
+          const teachers = [];
+          const staffs = [];
+
+          schoolEmployees.forEach(emp => {
+            const roleLower = (emp.role || '').toLowerCase();
+            if (roleLower.includes('staff') || roleLower.includes('tendik') || roleLower.includes('security') || roleLower.includes('satpam') || roleLower.includes('ob') || roleLower.includes('office boy') || roleLower.includes('kebersihan')) {
+              staffs.push(emp);
+            } else {
+              teachers.push(emp);
+            }
+          });
+
+          let html = '<option value="">-- Pilih Nama Anda dari Daftar --</option>';
+
+          if (teachers.length > 0) {
+            html += '<optgroup label="Pendidik (Guru &amp; Guru BK)">';
+            teachers.forEach(t => {
+              const info = t.subject ? ` (${t.subject})` : (t.task ? ` (${t.task})` : '');
+              html += `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)} — [${escapeHtml(t.role || 'Guru')}]${escapeHtml(info)}</option>`;
+            });
+            html += '</optgroup>';
+          }
+
+          if (staffs.length > 0) {
+            html += '<optgroup label="Tenaga Kependidikan (Tendik &amp; Karyawan)">';
+            staffs.forEach(s => {
+              const info = s.task ? ` (${s.task})` : (s.subject ? ` (${s.subject})` : '');
+              html += `<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)} — [${escapeHtml(s.role || 'Staff')}]${escapeHtml(info)}</option>`;
+            });
+            html += '</optgroup>';
+          }
+
+          select.innerHTML = html;
+          select.disabled = false;
+          secGtk.classList.remove('step-locked');
+          select.focus();
+        } else {
+          select.innerHTML = '<option value="">-- Belum ada personil GTK terdaftar pada sekolah ini --</option>';
+          badge.textContent = '0 personil';
+        }
+      } catch (err) {
+        console.error('Gagal memuat personil GTK:', err);
+        select.innerHTML = '<option value="">-- Gagal memuat daftar personil --</option>';
+      }
+    }
+
+    // On GTK Employee Select Change
+    function onGtkSelectChange(empId) {
+      selectedEmployee = schoolEmployees.find(e => e.id === empId) || null;
+      const previewCard = document.getElementById('gtk-preview-card');
+      const secPersonal = document.getElementById('section-personal-code');
+      const inputPersonal = document.getElementById('input-personal-code');
+
+      if (!selectedEmployee) {
+        previewCard.classList.add('hidden');
+        secPersonal.classList.add('step-locked');
+        inputPersonal.disabled = true;
+        document.getElementById('step-badge-3').className = 'flex items-center gap-1.5 step-active px-2.5 py-1 rounded-lg border transition';
+        document.getElementById('step-badge-4').className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent text-slate-500 transition';
+        return;
+      }
+
+      // Populate Preview Card
+      document.getElementById('preview-name').textContent = selectedEmployee.name;
+      document.getElementById('preview-nip').textContent = selectedEmployee.nip ? `NIP. ${selectedEmployee.nip}` : 'NIP. -';
+      document.getElementById('preview-role-badge').textContent = selectedEmployee.role || 'GTK';
+      document.getElementById('preview-task').textContent = selectedEmployee.task || selectedEmployee.subject || selectedEmployee.department || 'Tenaga Pendidik / Kependidikan';
+      document.getElementById('preview-photo').src = selectedEmployee.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedEmployee.name)}&background=059669&color=fff`;
+
+      // Auto-Detect Recommended Destination Portal
+      const roleLower = (selectedEmployee.role || '').toLowerCase();
+      const isTendikRole = roleLower.includes('staff') || roleLower.includes('tendik') || roleLower.includes('security') || roleLower.includes('satpam') || roleLower.includes('ob') || roleLower.includes('kebersihan');
+
+      if (isTendikRole) {
+        setDestination('tendik');
+        document.getElementById('auto-detect-tag').textContent = 'Direkomendasikan: Portal Tendik';
+      } else {
+        setDestination('guru');
+        document.getElementById('auto-detect-tag').textContent = 'Direkomendasikan: Portal Guru';
+      }
+
+      previewCard.classList.remove('hidden');
+
+      // Unlock Step 4 (Personal Access Code)
+      secPersonal.classList.remove('step-locked');
+      inputPersonal.disabled = false;
+      document.getElementById('step-badge-3').className = 'flex items-center gap-1.5 step-done px-2.5 py-1 rounded-lg border transition';
+      document.getElementById('step-badge-4').className = 'flex items-center gap-1.5 step-active px-2.5 py-1 rounded-lg border transition';
+      inputPersonal.focus();
+    }
+
+    // Destination Toggle Handler
+    function onDestinationChange(dest) {
+      setDestination(dest);
+    }
+
+    function setDestination(dest) {
+      selectedDestination = dest;
+      const rGuru = document.getElementById('radio-dest-guru');
+      const rTendik = document.getElementById('radio-dest-tendik');
+      const cardGuru = document.getElementById('dest-card-guru');
+      const cardTendik = document.getElementById('dest-card-tendik');
+      const submitLabel = document.getElementById('btn-submit-label');
+
+      if (dest === 'guru') {
+        rGuru.checked = true;
+        cardGuru.className = 'cursor-pointer p-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/20 transition flex items-center gap-2.5 shadow-xs';
+        cardTendik.className = 'cursor-pointer p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-amber-500/10 transition flex items-center gap-2.5';
+        submitLabel.textContent = 'Masuk ke Dashboard Portal Guru';
+      } else {
+        rTendik.checked = true;
+        cardTendik.className = 'cursor-pointer p-2.5 rounded-xl border border-amber-500/40 bg-amber-500/20 transition flex items-center gap-2.5 shadow-xs';
+        cardGuru.className = 'cursor-pointer p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-emerald-500/10 transition flex items-center gap-2.5';
+        submitLabel.textContent = 'Masuk ke Dashboard Portal Tendik';
+      }
+    }
+
+    function lockStep3And4() {
+      const secGtk = document.getElementById('section-gtk-select');
+      const selectGtk = document.getElementById('input-gtk-select');
+      const previewCard = document.getElementById('gtk-preview-card');
+      const secPersonal = document.getElementById('section-personal-code');
+      const inputPersonal = document.getElementById('input-personal-code');
+
+      secGtk.classList.add('step-locked');
+      selectGtk.disabled = true;
+      selectGtk.innerHTML = '<option value="">-- Masukkan &amp; verifikasi kode sekolah dahulu --</option>';
+      previewCard.classList.add('hidden');
+      secPersonal.classList.add('step-locked');
+      inputPersonal.disabled = true;
+      inputPersonal.value = '';
+      selectedEmployee = null;
+    }
+
+    function triggerCardShake() {
+      const card = document.getElementById('auth-main-card');
+      if (card) {
+        card.classList.add('shake-animation');
+        setTimeout(() => card.classList.remove('shake-animation'), 450);
+      }
+    }
+
+    // ── 4. Handle Final Submit GTK Login ────────────────────────────────
+    async function handleGtkSubmit(e) {
+      e.preventDefault();
+
+      const schoolCode = document.getElementById('input-school-code').value.trim();
+      const schoolSelect = document.getElementById('input-school-select');
+      const schoolName = verifiedSchool ? verifiedSchool.name : (schoolSelect.selectedOptions[0]?.getAttribute('data-name') || '');
+
+      if (!verifiedSchool) {
+        const ok = await verifySchoolCode(true);
+        if (!ok) return;
+      }
+
+      if (!selectedEmployee) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Pilih Identitas GTK',
+          text: 'Silakan pilih nama Anda pada langkah ke-3.',
+          confirmButtonColor: '#10b981'
+        });
+        document.getElementById('input-gtk-select').focus();
+        return;
+      }
+
+      const personalCode = document.getElementById('input-personal-code').value.trim();
+      if (!personalCode) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Kode Akses GTK Kosong',
+          text: 'Silakan isi kode akses personal Anda yang tercantum pada kartu akses.',
+          confirmButtonColor: '#10b981'
+        });
+        document.getElementById('input-personal-code').focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-gtk');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-base"></i><span>Memverifikasi Akun GTK...</span>';
+
+      const payload = {
+        schoolName: schoolName,
+        schoolCode: schoolCode,
+        teacherName: selectedEmployee.name,
+        teacherId: selectedEmployee.id,
+        teacherCode: personalCode
+      };
+
+      try {
+        const res = await fetch(`${getApiUrl()}?action=guru_portal_login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.teacher) {
+          // 1. SAVE SESSIONS TO LOCALSTORAGE (Unified synergy for Guru, Tendik, and GTK)
+
+          // Guru Portal Sessions
+          const guruSessionPayload = JSON.stringify({
+            schoolName: data.school.name,
+            schoolCode: data.school.schoolCode || schoolCode,
+            teacherName: data.teacher.name,
+            teacherId: data.teacher.id,
+            teacherNip: data.teacher.nip,
+            teacherSubject: data.teacher.subject,
+            photo: data.teacher.photo,
+            authenticated: true,
+            timestamp: new Date().toISOString()
+          });
+          localStorage.setItem('supervisi_guru_session', guruSessionPayload);
+          localStorage.setItem('ks_guru_session', guruSessionPayload);
+
+          const teacherSessionPayload = JSON.stringify({
+            ...data.teacher,
+            authenticated: true,
+            authTime: new Date().toISOString()
+          });
+          localStorage.setItem('supervisi_teacher_session', teacherSessionPayload);
+          localStorage.setItem('ks_teacher_session', teacherSessionPayload);
+
+          // Tendik Portal Session
+          localStorage.setItem('ks_tendik_portal_session', JSON.stringify(data));
+
+          // GTK Unified Session
+          localStorage.setItem('supervisi_gtk_session', JSON.stringify(data));
+
+          // Success notification
+          const destTitle = selectedDestination === 'guru' ? 'Portal Guru' : 'Portal Tendik';
+          Swal.fire({
+            icon: 'success',
+            title: `Selamat Datang, ${data.teacher.name}!`,
+            text: `Autentikasi GTK berhasil. Membuka ${destTitle}...`,
+            timer: 1600,
+            showConfirmButton: false
+          });
+
+          // Redirect to appropriate portal based on choice
+          setTimeout(() => {
+            if (selectedDestination === 'guru') {
+              window.location.href = '../guru/';
+            } else {
+              window.location.href = '../tendik/portal/';
+            }
+          }, 1500);
+
+        } else {
+          triggerCardShake();
+          Swal.fire({
+            icon: 'error',
+            title: 'Akses Ditolak',
+            text: data.error || 'Kode akses personal GTK tidak cocok. Periksa kembali kartu akses Anda.',
+            confirmButtonColor: '#10b981'
+          });
+          document.getElementById('input-personal-code').focus();
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Kesalahan Sistem',
+          text: 'Gagal menghubungi server. Pastikan koneksi server aktif.'
+        });
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket text-base"></i><span>Masuk ke Dashboard ${selectedDestination === 'guru' ? 'Portal Guru' : 'Portal Tendik'}</span>`;
+      }
+    }
+
+    // Modal Help
+    function showHelpModal() {
+      const m = document.getElementById('modal-help');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeHelpModal() {
+      const m = document.getElementById('modal-help');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+  </script>
+</body>
+
+</html>

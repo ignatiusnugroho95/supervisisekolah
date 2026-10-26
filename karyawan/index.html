@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Kepegawaian &amp; Profil Karyawan — SupervisiSekolah.id</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- App Modules -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/includes.js"></script>
+    <!-- SheetJS for XLSX parsing -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0f172a",
+                        secondary: "#0284c7",
+                        "secondary-container": "#e0f2fe",
+                        "on-secondary-container": "#0369a1",
+                        surface: "#ffffff",
+                        "on-surface": "#0f172a",
+                        "on-surface-variant": "#64748b",
+                        "surface-container": "#f8fafc",
+                        outline: "#cbd5e1"
+                    },
+                    maxWidth: {
+                        'container-max': '1280px'
+                    },
+                    padding: {
+                        'margin-mobile': '1rem',
+                        'margin-desktop': '2rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .font-display {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+    <!-- Uniform Header -->
+    <header id="app-header"></header>
+
+    <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-6 pb-24 md:pb-12 flex-grow w-full space-y-6">
+        
+        <!-- Page Top Header Banner -->
+        <section class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-brand-500/10 text-brand-600 rounded-2xl flex items-center justify-center border border-brand-500/20 shadow-inner">
+                    <span class="material-symbols-outlined text-3xl text-secondary" style="font-variation-settings: 'FILL' 1;">badge</span>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 class="text-2xl font-bold font-display text-primary">Database Profil Karyawan</h1>
+                        <span id="total-count-badge" class="px-3 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold">Memuat...</span>
+                        <span id="active-school-badge" class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 hidden"></span>
+                    </div>
+                    <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Direktori Data Pokok Kepala Sekolah, Tenaga Pendidik (Guru), Administrasi, Security, &amp; OB.</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <!-- View Mode Toggle -->
+                <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200 text-xs font-semibold">
+                    <button id="view-mode-table-btn" onclick="setViewMode('table')" class="px-3 py-1.5 rounded-lg bg-white shadow-xs text-primary font-bold transition flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-base">table_rows</span>
+                        Tabel Lengkap
+                    </button>
+                    <button id="view-mode-grid-btn" onclick="setViewMode('grid')" class="px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-base">grid_view</span>
+                        Kartu Personil
+                    </button>
+                </div>
+
+                <button onclick="openAccessCodeModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-key text-sm"></i>
+                    Kode Akses Karyawan
+                </button>
+                <button onclick="openBulkImportModal()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-file-excel text-sm"></i>
+                    Import XLSX
+                </button>
+                <button onclick="openAddEmployeeModal()" class="px-4 py-2 bg-secondary text-white rounded-xl text-xs font-bold hover:bg-sky-700 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+                    <span class="material-symbols-outlined text-base">person_add</span>
+                    Tambah Personil
+                </button>
+            </div>
+        </section>
+
+        <!-- Stats Summary Quick Strip -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div onclick="filterByRole('ALL')" class="role-stat-card cursor-pointer bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-secondary transition shadow-xs">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-slate-400">Total Karyawan</div>
+                <div class="text-2xl font-bold text-slate-900 font-display mt-1" id="stat-all">-</div>
+                <div class="text-[11px] text-slate-500 mt-1">Semua Divisi</div>
+            </div>
+            <div onclick="filterByRole('Guru')" class="role-stat-card cursor-pointer bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-secondary transition shadow-xs">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-emerald-600">Tenaga Pendidik</div>
+                <div class="text-2xl font-bold text-emerald-700 font-display mt-1" id="stat-guru">-</div>
+                <div class="text-[11px] text-emerald-600/80 mt-1">Guru Mapel &amp; BK</div>
+            </div>
+            <div onclick="filterByRole('Administrasi')" class="role-stat-card cursor-pointer bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-secondary transition shadow-xs">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-blue-600">Tata Usaha</div>
+                <div class="text-2xl font-bold text-blue-700 font-display mt-1" id="stat-tu">-</div>
+                <div class="text-[11px] text-blue-600/80 mt-1">Administrasi &amp; BOS</div>
+            </div>
+            <div onclick="filterByRole('Security')" class="role-stat-card cursor-pointer bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-secondary transition shadow-xs">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-amber-600">Keamanan</div>
+                <div class="text-2xl font-bold text-amber-700 font-display mt-1" id="stat-security">-</div>
+                <div class="text-[11px] text-amber-600/80 mt-1">Security Satpam</div>
+            </div>
+            <div onclick="filterByRole('Office Boy (OB)')" class="role-stat-card cursor-pointer bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-secondary transition shadow-xs col-span-2 sm:col-span-1">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-purple-600">Kebersihan</div>
+                <div class="text-2xl font-bold text-purple-700 font-display mt-1" id="stat-ob">-</div>
+                <div class="text-[11px] text-purple-600/80 mt-1">Office Boy (OB)</div>
+            </div>
+        </section>
+
+        <!-- Filter & Search Controls Bar -->
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+            <div class="relative flex-1">
+                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                <input id="search-input" oninput="applyFilters()" type="text" placeholder="Cari nama, NIP, mata pelajaran, posisi, no HP..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition outline-none" />
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+                <select id="role-select" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:bg-white outline-none">
+                    <option value="ALL">Semua Jabatan</option>
+                    <option value="Kepala Sekolah">Kepala Sekolah</option>
+                    <option value="Guru">Guru (Pendidik)</option>
+                    <option value="Guru BK">Guru BK (Bimbingan Konseling)</option>
+                    <option value="Administrasi">Administrasi (TU)</option>
+                    <option value="Security">Security (Keamanan)</option>
+                    <option value="Office Boy (OB)">Office Boy (OB)</option>
+                </select>
+
+                <select id="status-select" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:bg-white outline-none">
+                    <option value="ALL">Semua Status</option>
+                    <option value="PNS">PNS</option>
+                    <option value="PPPK">PPPK</option>
+                    <option value="GTT / Tetap Yayasan">GTT / Tetap Yayasan</option>
+                    <option value="GTT / Kontrak">GTT / Kontrak</option>
+                    <option value="PTT / Kontrak">PTT / Kontrak</option>
+                    <option value="Tenaga Alih Daya (Outsourcing)">Outsourcing</option>
+                    <option value="Tenaga Harian Lepas">Harian Lepas</option>
+                </select>
+
+                <button onclick="resetFilters()" class="px-3 py-2.5 text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold transition" title="Reset Filter">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- CONTAINER 1: Table View Mode -->
+        <section id="employee-table-container" class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-100/90 text-slate-700 uppercase font-bold border-b border-slate-200 text-[11px] tracking-wider">
+                        <tr>
+                            <th class="py-3.5 px-4 text-center">No</th>
+                            <th class="py-3.5 px-4">Nama Lengkap &amp; Panggilan</th>
+                            <th class="py-3.5 px-4">Jabatan / Divisi</th>
+                            <th class="py-3.5 px-4">NIP / NUPTK</th>
+                            <th class="py-3.5 px-4">Status Kepegawaian</th>
+                            <th class="py-3.5 px-4">Kontak (Email / Telp)</th>
+                            <th class="py-3.5 px-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employee-table-body" class="divide-y divide-slate-100">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination Info / Empty State -->
+            <div id="table-footer-info" class="p-4 bg-slate-50 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center">
+                <span id="showing-records-text">Memuat personil...</span>
+            </div>
+        </section>
+
+        <!-- CONTAINER 2: Grid / Card View Mode -->
+        <section id="employee-grid-container" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Rendered by JS -->
+        </section>
+
+    </main>
+
+    <!-- Modal Detail Profil Karyawan (Display Single Employee) -->
+    <div id="employee-detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <!-- Close Button -->
+            <button onclick="closeDetailModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <div id="modal-detail-content">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form Tambah / Edit Karyawan -->
+    <div id="employee-form-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <!-- Close Button -->
+            <button onclick="closeFormModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <div class="mb-6">
+                <h3 id="form-modal-title" class="text-xl font-bold font-display text-primary">Tambah Personil Baru</h3>
+                <p class="text-xs text-on-surface-variant mt-0.5">Lengkapi data profil kepegawaian di bawah ini</p>
+            </div>
+
+            <form id="employee-crud-form" onsubmit="saveEmployeeForm(event)" class="space-y-4">
+                <input type="hidden" id="form-employee-id" value="" />
+
+                <!-- Photo Upload -->
+                <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="relative flex-shrink-0">
+                        <img id="form-photo-preview" src="https://ui-avatars.com/api/?name=?&background=cbd5e1&color=fff&size=80"
+                            class="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-sm" />
+                        <label for="form-photo-input" class="absolute -bottom-1 -right-1 w-6 h-6 bg-secondary text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-sky-700 transition shadow" title="Unggah Foto">
+                            <i class="fa-solid fa-camera text-[10px]"></i>
+                        </label>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-slate-700 mb-0.5">Foto Profil</div>
+                        <div class="text-[11px] text-slate-500 mb-2">JPG atau PNG, maks. 500 KB. Foto akan disimpan di server.</div>
+                        <input id="form-photo-input" type="file" accept="image/jpeg,image/png" class="hidden" onchange="previewFormPhoto(event)" />
+                        <label for="form-photo-input" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:border-secondary text-slate-600 hover:text-secondary text-[11px] font-semibold rounded-lg cursor-pointer transition">
+                            <i class="fa-solid fa-upload text-[10px]"></i>
+                            Pilih Foto
+                        </label>
+                        <span id="form-photo-name" class="ml-2 text-[11px] text-slate-400 italic">Belum dipilih</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-name">Nama Lengkap &amp; Gelar *</label>
+                        <input id="f-name" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="Contoh: Budi Santoso, S.Pd." />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-nickname">Nama Panggilan</label>
+                        <input id="f-nickname" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="Contoh: Pak Budi" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-role">Jabatan / Role *</label>
+                        <select id="f-role" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none">
+                            <option value="Guru">Guru</option>
+                            <option value="Guru BK">Guru BK</option>
+                            <option value="Administrasi">Administrasi (TU)</option>
+                            <option value="Security">Security</option>
+                            <option value="Office Boy (OB)">Office Boy (OB)</option>
+                            <option value="Kepala Sekolah">Kepala Sekolah</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-gender">Jenis Kelamin</label>
+                        <select id="f-gender" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none">
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-status">Status Pegawai</label>
+                        <select id="f-status" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none">
+                            <option value="PNS">PNS</option>
+                            <option value="PPPK">PPPK</option>
+                            <option value="GTT / Tetap Yayasan">GTT / Tetap Yayasan</option>
+                            <option value="GTT / Kontrak">GTT / Kontrak</option>
+                            <option value="PTT / Kontrak">PTT / Kontrak</option>
+                            <option value="Tenaga Alih Daya (Outsourcing)">Outsourcing</option>
+                            <option value="Tenaga Harian Lepas">Harian Lepas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-nip">NIP</label>
+                        <input id="f-nip" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="19850415..." />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-nuptk">NUPTK</label>
+                        <input id="f-nuptk" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="1934763..." />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-subject">Mata Pelajaran / Spesialisasi</label>
+                        <input id="f-subject" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="Misal: Matematika / Tata Usaha" />
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600" for="f-task">Tugas Tambahan / Peran</label>
+                            <span class="text-[10px] text-slate-400 font-medium">Bisa dropdown / ketik</span>
+                        </div>
+                        <div class="space-y-1.5">
+                            <select id="f-task-select" onchange="onTaskPresetSelect(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary outline-none text-slate-700 font-medium">
+                                <option value="">-- Pilih Tugas Tambahan / Peran Standar --</option>
+                                <option value="Kepala Tenaga Administrasi">Kepala Tenaga Administrasi</option>
+                                <option value="PJ Arsip dan Persuratan">PJ Arsip dan Persuratan</option>
+                                <option value="PJ Sarana dan Prasarana">PJ Sarana dan Prasarana</option>
+                                <option value="Tenaga Kebersihan">Tenaga Kebersihan</option>
+                                <option value="Kepala Perpustakaan">Kepala Perpustakaan</option>
+                                <option value="Kepala Laboratorium">Kepala Laboratorium</option>
+                                <option value="Petugas Keamanan">Petugas Keamanan</option>
+                                <option value="__CUSTOM__">-- Lainnya / Ketik Manual --</option>
+                            </select>
+                            <input id="f-task" type="text" list="task-preset-list" oninput="onTaskInputTyped(this.value)" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="Pilih dropdown di atas atau ketik tugas tambahan di sini..." />
+                            <datalist id="task-preset-list">
+                                <option value="Kepala Tenaga Administrasi"></option>
+                                <option value="PJ Arsip dan Persuratan"></option>
+                                <option value="PJ Sarana dan Prasarana"></option>
+                                <option value="Tenaga Kebersihan"></option>
+                                <option value="Kepala Perpustakaan"></option>
+                                <option value="Kepala Laboratorium"></option>
+                                <option value="Petugas Keamanan"></option>
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-email">Email</label>
+                        <input id="f-email" type="email" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="nama@smpn1jakpus.sch.id" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-phone">Nomor Telepon / WhatsApp</label>
+                        <input id="f-phone" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="0812-xxxx-xxxx" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-education">Pendidikan Terakhir</label>
+                        <input id="f-education" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="S1 Pendidikan Matematika..." />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="f-address">Alamat Domisili</label>
+                        <input id="f-address" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-secondary transition outline-none" placeholder="Jl. Salemba Raya..." />
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeFormModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-secondary text-white font-bold text-xs rounded-xl hover:bg-sky-700 transition flex items-center gap-1.5 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">save</span>
+                        Simpan Data Personil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MODAL: Kelola Kode Akses Karyawan
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="modal-access-codes" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[300] hidden items-center justify-center p-4">
+      <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col">
+        <!-- Header -->
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Kelola Kode Akses Karyawan</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Kode akses personal bagi Guru dan Tenaga Kependidikan (Tendik) untuk login portal supervisi mandiri.</p>
+            </div>
+          </div>
+          <button onclick="closeAccessCodeModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition">
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+        <!-- Action Bar -->
+        <div class="px-6 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="handleGenerateAll()" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              Generate Semua
+            </button>
+            <button onclick="handleResetAll()" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-rotate"></i>
+              Reset Semua
+            </button>
+            <button onclick="copyAllAccessCodesWhatsApp()" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-300 transition flex items-center gap-1.5">
+              <i class="fa-brands fa-whatsapp text-emerald-600"></i>
+              Salin Teks WhatsApp
+            </button>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <a href="../portal/" target="_blank" class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-shield-halved text-xs"></i>
+              Buka Portal GTK (1 Pintu)
+            </a>
+            <button onclick="openPrintCardModal()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+              <i class="fa-solid fa-print"></i>
+              Cetak Kartu Akses
+            </button>
+          </div>
+        </div>
+        <!-- Table -->
+        <div class="overflow-y-auto flex-1">
+          <table class="w-full text-xs">
+            <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px] sticky top-0 border-b border-slate-100">
+              <tr>
+                <th class="py-3 px-4 text-left">Nama Karyawan</th>
+                <th class="py-3 px-4 text-left">Peran / Tugas</th>
+                <th class="py-3 px-4 text-center">Kode Akses</th>
+                <th class="py-3 px-4 text-center">Dibuat</th>
+                <th class="py-3 px-4 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="access-code-table-body" class="divide-y divide-slate-100">
+              <!-- rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MODAL: Cetak Kartu Akses
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="modal-print-cards" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[400] hidden items-center justify-center p-4">
+      <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center">
+              <i class="fa-solid fa-id-card"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Cetak Kartu Akses Karyawan</h3>
+              <p class="text-xs text-slate-500">Pilih personil guru/tendik lalu cetak atau simpan kartu akses supervisi (memuat nama &amp; kode sekolah).</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-print"></i>
+              Print / Simpan PDF
+            </button>
+            <button onclick="closePrintCardModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition">
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+          </div>
+        </div>
+        <!-- Teacher Selector & School Badges -->
+        <div class="px-5 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 flex-shrink-0 no-print">
+          <div class="flex items-center gap-2.5">
+            <label class="text-xs font-bold text-slate-600">Pilih Karyawan:</label>
+            <select id="print-card-filter" onchange="renderPrintCards()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none">
+              <option value="ALL">Semua Karyawan (yang punya kode)</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2 text-[11px]">
+            <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 font-bold border border-amber-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-school text-amber-600"></i>
+              <span id="print-modal-school-badge">Sekolah</span>
+            </span>
+            <span class="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-800 font-bold font-mono border border-sky-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-key text-sky-600"></i>
+              <span id="print-modal-code-badge">-</span>
+            </span>
+          </div>
+        </div>
+        <!-- Cards Grid -->
+        <div id="print-cards-container" class="overflow-y-auto flex-1 p-6">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MODAL: Bulk Import Karyawan via XLSX
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="modal-bulk-import" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[350] hidden items-center justify-center p-4">
+      <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-100 max-h-[92vh] flex flex-col">
+        <!-- Header -->
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <i class="fa-solid fa-file-excel text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Import Personil via XLSX</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Unggah file Excel sesuai format template untuk bulk add personil.</p>
+            </div>
+          </div>
+          <button onclick="closeBulkImportModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition">
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+
+        <!-- Steps -->
+        <div class="px-6 py-4 border-b border-slate-100 flex-shrink-0">
+          <!-- Step 1: Download Template -->
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
+            <div class="flex-1">
+              <div class="text-xs font-bold text-slate-800 mb-1">Unduh Template Excel</div>
+              <p class="text-[11px] text-slate-500 mb-2">Isi data karyawan pada file template berikut. Jangan mengubah nama kolom header.</p>
+              <button onclick="downloadXlsxTemplate()" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-sm">
+                <i class="fa-solid fa-download"></i>
+                Download Template (template_karyawan.xlsx)
+              </button>
+            </div>
+          </div>
+          <!-- Step 2: Upload -->
+          <div class="flex items-start gap-3">
+            <div class="w-7 h-7 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
+            <div class="flex-1">
+              <div class="text-xs font-bold text-slate-800 mb-1">Unggah File yang Sudah Diisi</div>
+              <!-- Drop Zone -->
+              <div id="xlsx-dropzone"
+                class="border-2 border-dashed border-slate-300 hover:border-sky-400 bg-slate-50 hover:bg-sky-50/50 rounded-2xl p-6 text-center cursor-pointer transition group"
+                onclick="document.getElementById('xlsx-file-input').click()"
+                ondragover="event.preventDefault(); this.classList.add('border-sky-500','bg-sky-50');"
+                ondragleave="this.classList.remove('border-sky-500','bg-sky-50');"
+                ondrop="handleXlsxDrop(event)">
+                <i class="fa-solid fa-file-arrow-up text-3xl text-slate-300 group-hover:text-sky-400 mb-2 transition"></i>
+                <p class="text-xs font-semibold text-slate-500 group-hover:text-sky-600">Klik atau seret file .xlsx ke sini</p>
+                <p class="text-[11px] text-slate-400 mt-1">Hanya format .xlsx yang didukung</p>
+                <input id="xlsx-file-input" type="file" accept=".xlsx,.xls" class="hidden" onchange="handleXlsxFile(this.files[0])" />
+              </div>
+              <div id="xlsx-file-info" class="hidden mt-2 flex items-center gap-2 text-xs text-emerald-700 font-semibold">
+                <i class="fa-solid fa-check-circle"></i>
+                <span id="xlsx-file-name"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Table -->
+        <div class="flex-1 overflow-y-auto">
+          <div id="xlsx-preview-wrap" class="hidden">
+            <div class="px-5 py-3 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-800"><i class="fa-solid fa-table mr-1"></i>Preview Data — <span id="xlsx-row-count">0</span> baris ditemukan</span>
+              <span class="text-[11px] text-emerald-600">Periksa data sebelum mengimpor</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-[11px] text-left">
+                <thead class="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider text-[10px] sticky top-0">
+                  <tr id="xlsx-preview-head"></tr>
+                </thead>
+                <tbody id="xlsx-preview-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="xlsx-empty-state" class="p-8 text-center text-slate-400">
+            <i class="fa-solid fa-table text-4xl mb-3 opacity-30"></i>
+            <p class="text-xs">Unggah file Excel untuk melihat preview data di sini.</p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-5 border-t border-slate-100 flex items-center justify-between flex-shrink-0">
+          <div id="xlsx-import-errors" class="text-xs text-rose-600 hidden"></div>
+          <div class="flex items-center gap-3 ml-auto">
+            <button onclick="closeBulkImportModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">Batal</button>
+            <button id="btn-confirm-import" onclick="confirmBulkImport()" disabled
+              class="px-5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span id="btn-import-label">Impor Personil</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Uniform Footer -->
+    <footer id="app-footer"></footer>
+    <!-- Uniform Mobile Bottom Nav -->
+    <nav id="app-mobile-nav"></nav>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Check Auth Guard
+        if (window.KS_AUTH) {
+            window.KS_AUTH.requireAuth();
+        }
+
+        function getApiBase() {
+            if (typeof KS_AUTH !== 'undefined' && typeof KS_AUTH.getBaseUrl === 'function') {
+                return KS_AUTH.getBaseUrl();
+            }
+            const p = window.location.pathname;
+            const idx = p.toLowerCase().indexOf('/karyawan');
+            const base = idx !== -1 ? p.slice(0, idx + 1) : '/';
+            return window.location.origin + base;
+        }
+
+        /**
+         * Pure MySQL Employee Database Client
+         * Single source of truth: MySQL `users` table via `api.php`.
+         * Zero localStorage caching, zero hardcoded dummy arrays.
+         */
+        const KS_EMPLOYEE_DB = {
+            _list: [],
+
+            getAll() {
+                return this._list;
+            },
+
+            getById(id) {
+                return this._list.find(e => e.id === id || e.userId === id) || null;
+            },
+
+            async fetchFromServer() {
+                try {
+                    const url = getApiBase() + 'api.php?action=get_employees';
+                    const res = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url) : fetch(url));
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.employees)) {
+                        this._list = data.employees;
+                        return this._list;
+                    }
+                } catch (err) {
+                    console.error('[KS_EMPLOYEE_DB] Gagal memuat data dari MySQL:', err);
+                }
+                return this._list;
+            },
+
+            async create(payload) {
+                try {
+                    const activeSid = window.KS_AUTH ? window.KS_AUTH.getActiveSchoolId() : 'SCH-001';
+                    const body = { ...payload, school_id: activeSid, schoolId: activeSid };
+                    const url = getApiBase() + 'api.php?action=save_employee';
+                    const res = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }) : fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }));
+                    const data = await res.json();
+                    if (data.success) {
+                        await this.fetchFromServer();
+                        return data.employee || payload;
+                    } else if (data.error) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon: 'error', title: 'Gagal Menyimpan', text: data.error });
+                        } else {
+                            alert(data.error);
+                        }
+                    }
+                } catch (err) {
+                    console.error('[KS_EMPLOYEE_DB] Gagal membuat karyawan baru:', err);
+                }
+                return null;
+            },
+
+            async update(empId, payload) {
+                try {
+                    const activeSid = window.KS_AUTH ? window.KS_AUTH.getActiveSchoolId() : 'SCH-001';
+                    const body = { id: empId, ...payload, school_id: activeSid, schoolId: activeSid };
+                    const url = getApiBase() + 'api.php?action=save_employee';
+                    const res = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }) : fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }));
+                    const data = await res.json();
+                    if (data.success) {
+                        await this.fetchFromServer();
+                        return data.employee || body;
+                    } else if (data.error) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon: 'error', title: 'Gagal Mengubah', text: data.error });
+                        } else {
+                            alert(data.error);
+                        }
+                    }
+                } catch (err) {
+                    console.error('[KS_EMPLOYEE_DB] Gagal update karyawan:', err);
+                }
+                return null;
+            },
+
+            async delete(empId) {
+                try {
+                    const activeSid = window.KS_AUTH ? window.KS_AUTH.getActiveSchoolId() : 'SCH-001';
+                    const body = { id: empId, school_id: activeSid, schoolId: activeSid };
+                    const url = getApiBase() + 'api.php?action=delete_employee';
+                    const res = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }) : fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }));
+                    const data = await res.json();
+                    if (data.success) {
+                        this._list = this._list.filter(e => e.id !== empId && e.userId !== empId);
+                        return true;
+                    } else if (data.error) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: data.error });
+                        } else {
+                            alert(data.error);
+                        }
+                    }
+                } catch (err) {
+                    console.error('[KS_EMPLOYEE_DB] Gagal delete karyawan:', err);
+                }
+                return false;
+            },
+
+            getAccessCode(empId) {
+                const emp = this.getById(empId);
+                if (!emp || !emp.accessCode) return null;
+                return { code: emp.accessCode, generatedAt: emp.accessCodeGeneratedAt || null };
+            },
+
+            _randomCode() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                const seg = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+                return `${seg()}-${seg()}`;
+            },
+
+            async generateCode(empId, force = false) {
+                const emp = this.getById(empId);
+                if (!emp) return null;
+                if (!force && emp.accessCode) return emp.accessCode;
+                const code = this._randomCode();
+                await this.update(empId, { accessCode: code, accessCodeGeneratedAt: new Date().toISOString() });
+                return code;
+            },
+
+            async resetCode(empId) {
+                return await this.generateCode(empId, true);
+            },
+
+            async generateAllCodes() {
+                let count = 0;
+                for (const emp of this._list) {
+                    if (!emp.accessCode) {
+                        const code = this._randomCode();
+                        await this.update(emp.id, { accessCode: code, accessCodeGeneratedAt: new Date().toISOString() });
+                        count++;
+                    }
+                }
+                return count;
+            },
+
+            async resetAllCodes() {
+                for (const emp of this._list) {
+                    const code = this._randomCode();
+                    await this.update(emp.id, { accessCode: code, accessCodeGeneratedAt: new Date().toISOString() });
+                }
+            }
+        };
+        window.KS_EMPLOYEE_DB = KS_EMPLOYEE_DB;
+
+        let currentViewMode = 'table'; // 'table' or 'grid'
+        let currentFilteredList = [];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Render Includes Layout
+            if (window.KS_INCLUDES) {
+                window.KS_INCLUDES.init({ type: 'dashboard', activeNav: 'karyawan' });
+            }
+
+            // Purge any stale localStorage legacy keys
+            try {
+                localStorage.removeItem('supervisi_employee_master_database_v1');
+                localStorage.removeItem('ks_employee_master_database_v1');
+                localStorage.removeItem('ks_access_codes_v1');
+            } catch (e) {}
+
+            // Load directly from MySQL users table
+            await KS_EMPLOYEE_DB.fetchFromServer();
+            refreshEmployeeList();
+        });
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const tableBtn = document.getElementById('view-mode-table-btn');
+            const gridBtn = document.getElementById('view-mode-grid-btn');
+            const tableContainer = document.getElementById('employee-table-container');
+            const gridContainer = document.getElementById('employee-grid-container');
+
+            if (mode === 'table') {
+                tableBtn.className = "px-3 py-1.5 rounded-lg bg-white shadow-xs text-primary font-bold transition flex items-center gap-1.5";
+                gridBtn.className = "px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition flex items-center gap-1.5";
+                tableContainer.classList.remove('hidden');
+                gridContainer.classList.add('hidden');
+            } else {
+                gridBtn.className = "px-3 py-1.5 rounded-lg bg-white shadow-xs text-primary font-bold transition flex items-center gap-1.5";
+                tableBtn.className = "px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition flex items-center gap-1.5";
+                tableContainer.classList.add('hidden');
+                gridContainer.classList.remove('hidden');
+            }
+        }
+
+        function refreshEmployeeList() {
+            const allEmployees = window.KS_EMPLOYEE_DB.getAll();
+            updateStats(allEmployees);
+            applyFilters();
+            updateSchoolBadge();
+        }
+
+        function updateSchoolBadge() {
+            const profile = window.KS_AUTH ? window.KS_AUTH.getProfile() : {};
+            const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+            const schoolName = (profile.schoolName || user?.schoolName || user?.school || '').trim();
+            const badge = document.getElementById('active-school-badge');
+            if (badge) {
+                if (schoolName) {
+                    badge.innerHTML = `<i class="fa-solid fa-school text-secondary mr-1.5"></i>${schoolName}`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        function updateStats(list) {
+            document.getElementById('stat-all').innerText = list.length;
+            document.getElementById('total-count-badge').innerText = `${list.length} Personil`;
+            document.getElementById('stat-guru').innerText = list.filter(e => e.role === 'Guru' || e.role === 'Guru BK').length;
+            document.getElementById('stat-tu').innerText = list.filter(e => e.role === 'Administrasi').length;
+            document.getElementById('stat-security').innerText = list.filter(e => e.role === 'Security').length;
+            document.getElementById('stat-ob').innerText = list.filter(e => e.role === 'Office Boy (OB)').length;
+        }
+
+        function filterByRole(role) {
+            document.getElementById('role-select').value = role;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = (document.getElementById('search-input').value || '').toLowerCase().trim();
+            const roleFilter = document.getElementById('role-select').value;
+            const statusFilter = document.getElementById('status-select').value;
+
+            const all = window.KS_EMPLOYEE_DB.getAll();
+            currentFilteredList = all.filter(item => {
+                const matchQuery = !query || 
+                    (item.name && item.name.toLowerCase().includes(query)) ||
+                    (item.nip && item.nip.toLowerCase().includes(query)) ||
+                    (item.subject && item.subject.toLowerCase().includes(query)) ||
+                    (item.role && item.role.toLowerCase().includes(query)) ||
+                    (item.phone && item.phone.toLowerCase().includes(query)) ||
+                    (item.email && item.email.toLowerCase().includes(query));
+
+                const matchRole = (roleFilter === 'ALL') || (item.role === roleFilter);
+                const matchStatus = (statusFilter === 'ALL') || (item.employmentStatus === statusFilter);
+
+                return matchQuery && matchRole && matchStatus;
+            });
+
+            renderTable(currentFilteredList);
+            renderGrid(currentFilteredList);
+            document.getElementById('showing-records-text').innerText = `Menampilkan ${currentFilteredList.length} dari ${all.length} personil`;
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('role-select').value = 'ALL';
+            document.getElementById('status-select').value = 'ALL';
+            applyFilters();
+        }
+
+        function renderTable(list) {
+            const tbody = document.getElementById('employee-table-body');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-10 text-center text-slate-400">
+                            <span class="material-symbols-outlined text-4xl block text-slate-300 mb-2">person_off</span>
+                            Tidak ada data karyawan yang sesuai kriteria pencarian.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            list.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-colors";
+
+                let roleBadge = "bg-emerald-50 text-emerald-800 border-emerald-200";
+                if (item.role === 'Kepala Sekolah') roleBadge = "bg-purple-50 text-purple-800 border-purple-200";
+                else if (item.role === 'Guru BK') roleBadge = "bg-teal-50 text-teal-800 border-teal-200";
+                else if (item.role === 'Administrasi') roleBadge = "bg-blue-50 text-blue-800 border-blue-200";
+                else if (item.role === 'Security') roleBadge = "bg-amber-50 text-amber-800 border-amber-200";
+                else if (item.role === 'Office Boy (OB)') roleBadge = "bg-slate-100 text-slate-800 border-slate-200";
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 text-center font-bold text-slate-400">#${index + 1}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'}" class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-xs" alt="${item.name}" />
+                            <div>
+                                <div class="font-bold text-slate-900">${item.name}</div>
+                                <div class="text-[11px] text-slate-500 font-medium">${item.nickname ? `Panggilan: ${item.nickname}` : ''} ${item.gender ? `&bull; ${item.gender}` : ''}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-semibold border ${roleBadge} inline-block mb-1">
+                            ${item.role}
+                        </span>
+                        <div class="text-[11px] text-slate-500 font-medium">${item.subject ? item.subject : (item.task || item.department)}</div>
+                    </td>
+                    <td class="py-3.5 px-4 text-xs font-mono">
+                        <div class="text-slate-800"><strong class="text-slate-500">NIP:</strong> ${item.nip || '-'}</div>
+                        <div class="text-[11px] text-slate-500"><strong class="text-slate-400">NUPTK:</strong> ${item.nuptk || '-'}</div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-semibold">
+                            ${item.employmentStatus || 'Pegawai'}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-[11px]">
+                        <div class="text-slate-800 flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-slate-400">call</span> ${item.phone || '-'}</div>
+                        <div class="text-slate-500 flex items-center gap-1 truncate max-w-[150px]"><span class="material-symbols-outlined text-[13px] text-slate-400">mail</span> ${item.email || '-'}</div>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="viewEmployeeDetail('${item.id}')" class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-secondary border border-sky-200 rounded-lg text-xs font-bold transition" title="Lihat Profil">
+                                <span class="material-symbols-outlined text-sm align-middle">visibility</span> Detail
+                            </button>
+                            <button onclick="editEmployee('${item.id}')" class="p-1 text-slate-500 hover:text-secondary rounded-lg hover:bg-slate-100 transition" title="Edit">
+                                <span class="material-symbols-outlined text-base">edit</span>
+                            </button>
+                            <button onclick="deleteEmployee('${item.id}')" class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="Hapus">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderGrid(list) {
+            const grid = document.getElementById('employee-grid-container');
+            grid.innerHTML = '';
+
+            if (list.length === 0) return;
+
+            list.forEach(item => {
+                let roleBadge = "bg-emerald-50 text-emerald-800 border-emerald-200";
+                if (item.role === 'Kepala Sekolah') roleBadge = "bg-purple-50 text-purple-800 border-purple-200";
+                else if (item.role === 'Guru BK') roleBadge = "bg-teal-50 text-teal-800 border-teal-200";
+                else if (item.role === 'Administrasi') roleBadge = "bg-blue-50 text-blue-800 border-blue-200";
+                else if (item.role === 'Security') roleBadge = "bg-amber-50 text-amber-800 border-amber-200";
+                else if (item.role === 'Office Boy (OB)') roleBadge = "bg-slate-100 text-slate-800 border-slate-200";
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <img src="${item.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'}" class="w-14 h-14 rounded-2xl object-cover border border-slate-200 shadow-xs" alt="${item.name}" />
+                                <div>
+                                    <h4 class="font-bold text-slate-900 leading-tight font-display">${item.name}</h4>
+                                    <div class="text-xs text-slate-500 font-medium">${item.nickname ? `Panggilan: ${item.nickname}` : item.role}</div>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${roleBadge}">
+                                ${item.role}
+                            </span>
+                        </div>
+
+                        <div class="space-y-2 py-3 border-y border-slate-100 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Mapel / Posisi:</span>
+                                <span class="font-semibold text-slate-800 text-right">${item.subject || item.task || '-'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Status Pegawai:</span>
+                                <span class="font-semibold text-slate-800">${item.employmentStatus || '-'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">NIP:</span>
+                                <span class="font-mono text-slate-700">${item.nip || '-'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Telepon:</span>
+                                <span class="font-semibold text-slate-700">${item.phone || '-'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 mt-4 pt-2">
+                        <button onclick="viewEmployeeDetail('${item.id}')" class="flex-1 py-2 bg-secondary-container text-on-secondary-container hover:bg-sky-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-sm">badge</span> Lihat Profil Lengkap
+                        </button>
+                        <button onclick="editEmployee('${item.id}')" class="p-2 text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition" title="Edit Data">
+                            <span class="material-symbols-outlined text-base">edit</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ==================== SINGLE EMPLOYEE DETAIL MODAL ====================
+        function viewEmployeeDetail(id) {
+            const item = window.KS_EMPLOYEE_DB.getById(id);
+            if (!item) return;
+
+            let roleBadge = "bg-emerald-50 text-emerald-800 border-emerald-200";
+            if (item.role === 'Kepala Sekolah') roleBadge = "bg-purple-50 text-purple-800 border-purple-200";
+            else if (item.role === 'Guru BK') roleBadge = "bg-teal-50 text-teal-800 border-teal-200";
+            else if (item.role === 'Administrasi') roleBadge = "bg-blue-50 text-blue-800 border-blue-200";
+            else if (item.role === 'Security') roleBadge = "bg-amber-50 text-amber-800 border-amber-200";
+            else if (item.role === 'Office Boy (OB)') roleBadge = "bg-slate-100 text-slate-800 border-slate-200";
+
+            document.getElementById('modal-detail-content').innerHTML = `
+                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 pb-6 border-b border-slate-100">
+                    <img src="${item.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'}" class="w-24 h-24 rounded-3xl object-cover border-2 border-slate-200 shadow-md" alt="${item.name}" />
+                    <div class="text-center sm:text-left flex-1">
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                            <h3 class="text-xl font-bold font-display text-slate-900">${item.name}</h3>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${roleBadge}">${item.role}</span>
+                        </div>
+                        <div class="text-xs text-slate-500 font-medium mb-3">
+                            ${item.nickname ? `Nama Panggilan: <strong>${item.nickname}</strong> &bull; ` : ''}
+                            ${item.department || 'SMP Negeri 1 Jakarta Pusat'}
+                        </div>
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-mono font-semibold">NIP: ${item.nip || '-'}</span>
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-mono font-semibold">NUPTK: ${item.nuptk || '-'}</span>
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg font-semibold">${item.employmentStatus || 'Aktif'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span class="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">Mata Pelajaran / Posisi</span>
+                        <p class="font-bold text-slate-800 text-sm">${item.subject || item.role}</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span class="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">Tugas Tambahan / Tanggung Jawab</span>
+                        <p class="font-bold text-slate-800 text-sm">${item.task || '-'}</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span class="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">Email Kepegawaian</span>
+                        <p class="font-bold text-slate-800">${item.email || '-'}</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span class="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">No. Telepon / WhatsApp</span>
+                        <p class="font-bold text-slate-800">${item.phone || '-'}</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span class="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">Pendidikan Terakhir</span>
+                        <p class="font-bold text-slate-800">${item.education || '-'}</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span class="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">Tanggal Bergabung</span>
+                        <p class="font-bold text-slate-800">${item.joinDate || '-'}</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1 sm:col-span-2">
+                        <span class="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">Alamat Domisili</span>
+                        <p class="font-bold text-slate-800">${item.address || '-'}</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+                    <button onclick="editEmployee('${item.id}')" class="px-4 py-2 bg-secondary text-white rounded-xl text-xs font-bold hover:bg-sky-700 transition flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">edit</span> Edit Profil
+                    </button>
+                    <button onclick="closeDetailModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">Tutup</button>
+                </div>
+            `;
+
+            document.getElementById('employee-detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('employee-detail-modal').classList.add('hidden');
+        }
+
+        // ==================== TUGAS TAMBAHAN / PERAN HELPERS ====================
+        const STANDARD_TASKS = [
+            'Kepala Tenaga Administrasi',
+            'PJ Arsip dan Persuratan',
+            'PJ Sarana dan Prasarana',
+            'Tenaga Kebersihan',
+            'Kepala Perpustakaan',
+            'Kepala Laboratorium',
+            'Petugas Keamanan'
+        ];
+
+        function onTaskPresetSelect(val) {
+            const input = document.getElementById('f-task');
+            if (!val) {
+                input.value = '';
+            } else if (val === '__CUSTOM__') {
+                input.focus();
+            } else {
+                input.value = val;
+            }
+        }
+
+        function onTaskInputTyped(val) {
+            const select = document.getElementById('f-task-select');
+            if (STANDARD_TASKS.includes(val)) {
+                select.value = val;
+            } else if (!val || val.trim() === '') {
+                select.value = '';
+            } else {
+                select.value = '__CUSTOM__';
+            }
+        }
+
+        // ==================== ADD / EDIT EMPLOYEE CRUD ====================
+        function openAddEmployeeModal() {
+            document.getElementById('form-employee-id').value = '';
+            document.getElementById('form-modal-title').innerText = 'Tambah Personil Baru';
+            document.getElementById('employee-crud-form').reset();
+            document.getElementById('f-task-select').value = '';
+            document.getElementById('f-task').value = '';
+            document.getElementById('form-photo-input').value = '';
+            document.getElementById('form-photo-name').textContent = 'Belum dipilih';
+            document.getElementById('form-photo-preview').src = 'https://ui-avatars.com/api/?name=?&background=cbd5e1&color=fff&size=80';
+            document.getElementById('employee-form-modal').classList.remove('hidden');
+        }
+
+        function editEmployee(id) {
+            closeDetailModal();
+            const item = window.KS_EMPLOYEE_DB.getById(id);
+            if (!item) return;
+
+            document.getElementById('form-employee-id').value = item.id;
+            document.getElementById('form-modal-title').innerText = `Edit Personil: ${item.name}`;
+
+            document.getElementById('f-name').value = item.name || '';
+            document.getElementById('f-nickname').value = item.nickname || '';
+            document.getElementById('f-role').value = item.role || 'Guru';
+            document.getElementById('f-gender').value = item.gender || 'Laki-laki';
+            document.getElementById('f-status').value = item.employmentStatus || 'PNS';
+            document.getElementById('f-nip').value = item.nip || '';
+            document.getElementById('f-nuptk').value = item.nuptk || '';
+            document.getElementById('f-subject').value = item.subject || '';
+            
+            const currentTask = item.task || '';
+            document.getElementById('f-task').value = currentTask;
+            const taskSelect = document.getElementById('f-task-select');
+            if (STANDARD_TASKS.includes(currentTask)) {
+                taskSelect.value = currentTask;
+            } else if (currentTask.trim() === '') {
+                taskSelect.value = '';
+            } else {
+                taskSelect.value = '__CUSTOM__';
+            }
+
+            document.getElementById('f-email').value = item.email || '';
+            document.getElementById('f-phone').value = item.phone || '';
+            document.getElementById('f-education').value = item.education || '';
+            document.getElementById('f-address').value = item.address || '';
+
+            document.getElementById('form-photo-input').value = '';
+            document.getElementById('form-photo-name').textContent = 'Belum dipilih';
+            // Show existing photo if available
+            const photoSrc = item.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=475569&color=fff&size=80`;
+            document.getElementById('form-photo-preview').src = photoSrc;
+            document.getElementById('employee-form-modal').classList.remove('hidden');
+        }
+
+        function closeFormModal() {
+            document.getElementById('employee-form-modal').classList.add('hidden');
+        }
+
+        async function saveEmployeeForm(e) {
+            e.preventDefault();
+            const empId = document.getElementById('form-employee-id').value;
+
+            const payload = {
+                name: document.getElementById('f-name').value.trim(),
+                nickname: document.getElementById('f-nickname').value.trim(),
+                role: document.getElementById('f-role').value,
+                gender: document.getElementById('f-gender').value,
+                employmentStatus: document.getElementById('f-status').value,
+                nip: document.getElementById('f-nip').value.trim() || '-',
+                nuptk: document.getElementById('f-nuptk').value.trim() || '-',
+                subject: document.getElementById('f-subject').value.trim(),
+                task: document.getElementById('f-task').value.trim(),
+                email: document.getElementById('f-email').value.trim(),
+                phone: document.getElementById('f-phone').value.trim(),
+                education: document.getElementById('f-education').value.trim(),
+                address: document.getElementById('f-address').value.trim(),
+                department: (document.getElementById('f-role').value === 'Guru' || document.getElementById('f-role').value === 'Guru BK') ? 'Tenaga Pendidik' :
+                            document.getElementById('f-role').value === 'Administrasi' ? 'Tata Usaha (TU)' :
+                            document.getElementById('f-role').value === 'Security' ? 'Keamanan' : 'Kebersihan'
+            };
+
+            let savedEmp;
+            if (empId) {
+                savedEmp = await window.KS_EMPLOYEE_DB.update(empId, payload);
+            } else {
+                savedEmp = await window.KS_EMPLOYEE_DB.create(payload);
+            }
+
+            closeFormModal();
+            refreshEmployeeList();
+
+            // Toast feedback
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Tersimpan & Tersinkron!',
+                    text: `Data ${payload.name} berhasil disimpan dan otomatis tersinkron ke Admin & Portal Guru.`,
+                    timer: 2500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            }
+
+            // Upload photo if a new file was selected
+            const photoInput = document.getElementById('form-photo-input');
+            if (photoInput.files && photoInput.files[0] && savedEmp) {
+                uploadPhotoToServer(savedEmp.id || empId, photoInput.files[0]);
+            }
+        }
+
+        function previewFormPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 512000) {
+                alert('Ukuran foto melebihi 500 KB. Silakan pilih foto yang lebih kecil.');
+                event.target.value = '';
+                return;
+            }
+            if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+                alert('Format tidak didukung. Gunakan JPG atau PNG.');
+                event.target.value = '';
+                return;
+            }
+            document.getElementById('form-photo-name').textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('form-photo-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function getApiBase() {
+            const p = window.location.pathname;
+            const idx = p.toLowerCase().indexOf('/karyawan');
+            const base = idx !== -1 ? p.slice(0, idx + 1) : '/';
+            return window.location.origin + base;
+        }
+
+        async function uploadPhotoToServer(empId, file) {
+            try {
+                const fd = new FormData();
+                fd.append('empId', empId);
+                fd.append('photo', file);
+                const activeSid = window.KS_AUTH ? window.KS_AUTH.getActiveSchoolId() : 'SCH-001';
+                fd.append('school_id', activeSid);
+                const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+                const token = localStorage.getItem('supervisi_auth_token') || localStorage.getItem('ks_auth_token') || (user ? user.token : '');
+                const headers = {};
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+                const url = getApiBase() + `api.php?action=upload_photo&school_id=${encodeURIComponent(activeSid)}`;
+                const res  = await fetch(url, { method: 'POST', headers: headers, body: fd });
+                const data = await res.json();
+                if (data.success) {
+                    // Update database with new server photo URL
+                    await window.KS_EMPLOYEE_DB.update(empId, { photo: data.photoUrl });
+                    refreshEmployeeList();
+                } else {
+                    console.warn('[Photo Upload]', data.error);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'warning', title: 'Upload Foto Gagal', text: data.error, confirmButtonColor: '#f59e0b' });
+                    }
+                }
+            } catch(err) {
+                console.error('[Photo Upload Error]', err);
+            }
+        }
+
+        async function deleteEmployee(id) {
+            const item = window.KS_EMPLOYEE_DB.getById(id);
+            if (!item) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus personil "${item.name}" dari database? Data juga akan terhapus dari akun pengguna.`)) {
+                await window.KS_EMPLOYEE_DB.delete(id);
+                refreshEmployeeList();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Dihapus & Disinkron',
+                        text: `Data personil ${item.name} berhasil dihapus dari database MySQL.`,
+                        timer: 2000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                }
+            }
+        }
+
+        // ========== BULK IMPORT XLSX ==========
+        let _xlsxParsedData = [];
+        const XLSX_COLUMNS = [
+            { key: 'name',             label: 'Nama Lengkap *' },
+            { key: 'nickname',         label: 'Nama Panggilan' },
+            { key: 'role',             label: 'Jabatan' },
+            { key: 'gender',           label: 'Jenis Kelamin' },
+            { key: 'employmentStatus', label: 'Status Pegawai' },
+            { key: 'nip',              label: 'NIP' },
+            { key: 'nuptk',            label: 'NUPTK' },
+            { key: 'subject',          label: 'Mata Pelajaran' },
+            { key: 'task',             label: 'Tugas Tambahan' },
+            { key: 'email',            label: 'Email' },
+            { key: 'phone',            label: 'No. Telepon' },
+            { key: 'education',        label: 'Pendidikan Terakhir' },
+            { key: 'address',          label: 'Alamat' },
+            { key: 'joinDate',         label: 'Tanggal Bergabung' },
+        ];
+
+        function openBulkImportModal() {
+            _xlsxParsedData = [];
+            document.getElementById('xlsx-file-input').value = '';
+            document.getElementById('xlsx-file-info').classList.add('hidden');
+            document.getElementById('xlsx-preview-wrap').classList.add('hidden');
+            document.getElementById('xlsx-empty-state').classList.remove('hidden');
+            document.getElementById('btn-confirm-import').disabled = true;
+            document.getElementById('xlsx-import-errors').classList.add('hidden');
+            const m = document.getElementById('modal-bulk-import');
+            m.classList.remove('hidden'); m.classList.add('flex');
+        }
+
+        function closeBulkImportModal() {
+            const m = document.getElementById('modal-bulk-import');
+            m.classList.add('hidden'); m.classList.remove('flex');
+        }
+
+        function handleXlsxDrop(event) {
+            event.preventDefault();
+            document.getElementById('xlsx-dropzone').classList.remove('border-sky-500','bg-sky-50');
+            const file = event.dataTransfer.files[0];
+            if (file) handleXlsxFile(file);
+        }
+
+        function handleXlsxFile(file) {
+            if (!file) return;
+            if (!file.name.match(/\.xlsx?$/i)) {
+                alert('Harap unggah file .xlsx atau .xls');
+                return;
+            }
+            document.getElementById('xlsx-file-name').textContent = file.name;
+            document.getElementById('xlsx-file-info').classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+                    // Map header keys (case-insensitive label matching)
+                    const labelToKey = {};
+                    XLSX_COLUMNS.forEach(c => {
+                        labelToKey[c.label.replace(' *','').toLowerCase().trim()] = c.key;
+                    });
+
+                    _xlsxParsedData = raw.map(row => {
+                        const mapped = {};
+                        Object.keys(row).forEach(h => {
+                            const k = labelToKey[h.toLowerCase().trim()] || h;
+                            let v = row[h];
+                            if (v instanceof Date) v = v.toISOString().slice(0,10);
+                            mapped[k] = String(v).trim();
+                        });
+                        return mapped;
+                    }).filter(r => r.name || r['Nama Lengkap']);
+
+                    // Normalize name field if header was raw
+                    _xlsxParsedData = _xlsxParsedData.map(r => ({
+                        ...r,
+                        name: r.name || r['Nama Lengkap'] || r['Nama Lengkap *'] || ''
+                    }));
+
+                    renderXlsxPreview(_xlsxParsedData);
+                } catch(err) {
+                    alert('Gagal membaca file Excel: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function renderXlsxPreview(data) {
+            if (!data.length) {
+                document.getElementById('xlsx-preview-wrap').classList.add('hidden');
+                document.getElementById('xlsx-empty-state').classList.remove('hidden');
+                document.getElementById('btn-confirm-import').disabled = true;
+                return;
+            }
+
+            document.getElementById('xlsx-row-count').textContent = data.length;
+            document.getElementById('xlsx-empty-state').classList.add('hidden');
+            document.getElementById('xlsx-preview-wrap').classList.remove('hidden');
+            document.getElementById('btn-confirm-import').disabled = false;
+            document.getElementById('btn-import-label').textContent = `Impor ${data.length} Personil`;
+
+            const previewCols = XLSX_COLUMNS.slice(0, 7); // show first 7 cols in preview
+            const thead = document.getElementById('xlsx-preview-head');
+            thead.innerHTML = previewCols.map(c => `<th class="py-2.5 px-3 whitespace-nowrap">${c.label.replace(' *','')}</th>`).join('');
+
+            const tbody = document.getElementById('xlsx-preview-body');
+            tbody.innerHTML = data.slice(0, 50).map((row, i) => {
+                const nameVal = row.name || '';
+                const isInvalid = !nameVal;
+                return `<tr class="${isInvalid ? 'bg-rose-50' : 'hover:bg-slate-50'} transition">
+                  ${previewCols.map(c => `<td class="py-2 px-3 ${c.key==='name'?'font-semibold text-slate-800':''} whitespace-nowrap max-w-[160px] truncate" title="${(row[c.key]||'').replace(/"/g,"'")}">${
+                    isInvalid && c.key==='name' ? '<span class="text-rose-500 font-bold">⚠ Kosong</span>' : (row[c.key] || '<span class="text-slate-300">—</span>')
+                  }</td>`).join('')}
+                </tr>`;
+            }).join('');
+        }
+
+        async function confirmBulkImport() {
+            if (!_xlsxParsedData.length) return;
+            const btn = document.getElementById('btn-confirm-import');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengimpor...';
+
+            try {
+                const activeSid = window.KS_AUTH ? window.KS_AUTH.getActiveSchoolId() : 'SCH-001';
+                const rowsWithSchool = _xlsxParsedData.map(r => ({ ...r, school_id: activeSid, schoolId: activeSid }));
+                const url = getApiBase() + 'api.php?action=bulk_import_employees';
+                const res = await (window.KS_AUTH ? window.KS_AUTH.fetchWithAuth(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rowsWithSchool)
+                }) : fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rowsWithSchool)
+                }));
+                const data = await res.json();
+                if (data.success) {
+                    // Reload fresh data from MySQL server
+                    await KS_EMPLOYEE_DB.fetchFromServer();
+                    closeBulkImportModal();
+                    refreshEmployeeList();
+
+                    const msg = `✅ Berhasil diimpor!\n\n• Personil baru ditambahkan: ${data.inserted}\n• Personil diperbarui: ${data.updated}`
+                        + (data.errors?.length ? `\n\n⚠ Baris dilewati: ${data.errors.length}` : '');
+
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'success', title: 'Import Berhasil!',
+                            html: `<p class="text-sm">Ditambahkan: <strong>${data.inserted}</strong> personil baru &bull; Diperbarui: <strong>${data.updated}</strong></p>${data.errors?.length ? `<p class="text-xs text-rose-500 mt-1">${data.errors.length} baris dilewati (nama kosong)</p>` : ''}`,
+                            confirmButtonColor: '#059669' });
+                    } else { alert(msg); }
+                } else {
+                    throw new Error(data.error || 'Import gagal.');
+                }
+            } catch(err) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>Coba Lagi</span>';
+                const errEl = document.getElementById('xlsx-import-errors');
+                errEl.textContent = '⚠ ' + err.message;
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function downloadXlsxTemplate() {
+            if (typeof XLSX === 'undefined') {
+                alert('Library SheetJS belum dimuat. Coba refresh halaman.');
+                return;
+            }
+            const headers = XLSX_COLUMNS.map(c => c.label);
+            const exampleRow = [
+                'Budi Santoso, S.Pd.', 'Pak Budi', 'Guru', 'Laki-laki',
+                'PNS', '19850415 200901 1 002', '1234567890120001',
+                'Matematika', 'Wali Kelas VIII-A',
+                'budi.santoso@sekolah.sch.id', '0812-3456-7890',
+                'S1 Pendidikan Matematika - UNJ', 'Jl. Contoh No. 1, Jakarta',
+                '2009-01-01'
+            ];
+            const ws = XLSX.utils.aoa_to_sheet([headers, exampleRow]);
+            // Style header row width
+            ws['!cols'] = headers.map(() => ({ wch: 22 }));
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Karyawan');
+            XLSX.writeFile(wb, 'template_karyawan.xlsx');
+        }
+    </script>
+
+    <!-- ═══ Access Code Modal Logic ═══════════════════════════════════════ -->
+    <script>
+        // ── Print CSS injected dynamically ──────────────────────────────
+        const _printStyle = document.createElement('style');
+        _printStyle.textContent = `
+          @media print {
+            @page {
+              size: A4 portrait;
+              margin: 10mm;
+            }
+            body * { visibility: hidden !important; }
+            #print-cards-container, #print-cards-container * { 
+              visibility: visible !important; 
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            #print-cards-container { 
+              position: absolute !important; 
+              left: 0 !important; 
+              top: 0 !important; 
+              width: 100% !important; 
+              padding: 0 !important; 
+              margin: 0 !important;
+              background: white !important; 
+              overflow: visible !important; 
+            }
+            #modal-print-cards { display: block !important; position: static !important; background: transparent !important; }
+            .no-print { display: none !important; }
+            .access-cards-grid {
+              display: grid !important;
+              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+              gap: 12px !important;
+            }
+            .access-card { 
+              break-inside: avoid !important; 
+              page-break-inside: avoid !important; 
+              -webkit-print-color-adjust: exact !important; 
+              print-color-adjust: exact !important;
+              box-shadow: none !important;
+              border: 1px solid #334155 !important;
+              margin-bottom: 8px !important;
+            }
+          }
+        `;
+        document.head.appendChild(_printStyle);
+
+        // ── Open / Close ────────────────────────────────────────────────
+        function openAccessCodeModal() {
+            const modal = document.getElementById('modal-access-codes');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            renderAccessCodeTable();
+        }
+
+        function closeAccessCodeModal() {
+            const modal = document.getElementById('modal-access-codes');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function openPrintCardModal(preselectEmpId = null) {
+            if (window.KS_AUTH && typeof window.KS_AUTH.initServerSync === 'function') {
+                try {
+                    await window.KS_AUTH.initServerSync();
+                } catch(e) {}
+            }
+            const modal = document.getElementById('modal-print-cards');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            populatePrintCardFilter();
+            if (preselectEmpId) {
+                const select = document.getElementById('print-card-filter');
+                if (select) select.value = preselectEmpId;
+            }
+            renderPrintCards();
+        }
+
+        function openPrintCardForSingle(empId) {
+            openPrintCardModal(empId);
+        }
+
+        function closePrintCardModal() {
+            const modal = document.getElementById('modal-print-cards');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Close modals on backdrop click
+        document.getElementById('modal-access-codes').addEventListener('click', function(e) {
+            if (e.target === this) closeAccessCodeModal();
+        });
+        document.getElementById('modal-print-cards').addEventListener('click', function(e) {
+            if (e.target === this) closePrintCardModal();
+        });
+
+        // ── Render Access Code Table (Guru & Tendik) ───────────────────
+        function renderAccessCodeTable() {
+            const tbody = document.getElementById('access-code-table-body');
+            const employees = window.KS_EMPLOYEE_DB.getAll()
+                .sort((a, b) => a.name.localeCompare(b.name));
+
+            if (employees.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Belum ada personil guru/tendik terdaftar.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = employees.map(emp => {
+                const rec = window.KS_EMPLOYEE_DB.getAccessCode(emp.id);
+                const hasCode = !!rec;
+                const dateStr = rec ? new Date(rec.resetAt || rec.generatedAt).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+                
+                const isGuru = emp.role === 'Guru' || emp.role === 'Guru BK';
+                const isKS = emp.role === 'Kepala Sekolah';
+                const roleBadgeClass = isGuru ? 'bg-sky-50 text-sky-700 border-sky-200' :
+                                       isKS ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                                       'bg-amber-50 text-amber-800 border-amber-300';
+                
+                const dutyText = emp.task || emp.subject || '-';
+
+                return `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3 px-4">
+                        <div class="font-semibold text-slate-800">${emp.name}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">NIP: ${emp.nip || '—'}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${roleBadgeClass}">${emp.role || 'Staff'}</span>
+                        <div class="text-[11px] text-slate-600 mt-0.5 font-medium flex items-center gap-1">
+                            ${emp.task ? '<span class="material-symbols-outlined text-xs text-amber-600">assignment_ind</span>' : ''}
+                            <span>${dutyText}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        ${hasCode
+                            ? `<div class="inline-flex items-center gap-1.5">
+                                 <span class="font-mono font-bold text-xs tracking-wider text-slate-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-300">${rec.code}</span>
+                                 <button onclick="copySingleAccessCode('${rec.code}', '${emp.name.replace(/'/g, "\\'")}')" class="p-1 hover:bg-slate-200 rounded text-slate-500 hover:text-slate-800 transition" title="Salin Kode">
+                                   <i class="fa-solid fa-copy text-xs"></i>
+                                 </button>
+                               </div>`
+                            : `<span class="text-slate-300 text-xs italic">Belum digenerate</span>`
+                        }
+                    </td>
+                    <td class="py-3 px-4 text-center text-slate-500 text-[11px]">${dateStr}</td>
+                    <td class="py-3 px-4 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
+                        ${hasCode
+                            ? `<button onclick="openPrintCardForSingle('${emp.id}')" title="Cetak kartu akses personil ini" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold border border-slate-300 transition flex items-center gap-1"><i class="fa-solid fa-id-card"></i>Kartu</button>
+                               <button onclick="handleResetSingle('${emp.id}')" title="Reset kode akses" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[10px] font-bold border border-rose-200 transition flex items-center gap-1"><i class="fa-solid fa-arrows-rotate"></i>Reset</button>`
+                            : `<button onclick="handleGenerateSingle('${emp.id}')" title="Generate kode akses" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-bold border border-emerald-200 transition flex items-center gap-1"><i class="fa-solid fa-wand-magic-sparkles"></i>Generate</button>`
+                        }
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ── Single & Batch Copy Helpers ─────────────────────────────────
+        function copySingleAccessCode(code, name) {
+            if (!code) return;
+            navigator.clipboard.writeText(code);
+            showToast(`✅ Kode akses untuk ${name} (${code}) telah disalin.`, 'emerald');
+        }
+
+        function copyAllAccessCodesWhatsApp() {
+            const profile = window.KS_AUTH ? window.KS_AUTH.getProfile() : {};
+            const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+            const schoolName = (profile.schoolName || user?.schoolName || user?.school || 'Sekolah').trim();
+            const schoolCode = (profile.schoolCode || user?.schoolCode || (window.KS_AUTH ? window.KS_AUTH.getSchoolCode() : '') || '-').trim();
+            
+            let portalUrl = (window.KS_AUTH && typeof window.KS_AUTH.getPortalUrl === 'function')
+                ? window.KS_AUTH.getPortalUrl()
+                : `${window.location.origin}/portal/`;
+            let guruUrl = (window.KS_AUTH && typeof window.KS_AUTH.getGuruUrl === 'function') 
+                ? window.KS_AUTH.getGuruUrl() 
+                : `${window.location.origin}/guru/`;
+            let tendikUrl = (window.KS_AUTH && typeof window.KS_AUTH.getTendikPortalUrl === 'function') 
+                ? window.KS_AUTH.getTendikPortalUrl() 
+                : `${window.location.origin}/tendik/portal/`;
+
+            const employees = window.KS_EMPLOYEE_DB.getAll().sort((a,b) => a.name.localeCompare(b.name));
+
+            let text = `*INFORMASI KODE AKSES PORTAL SUPERVISI KARYAWAN*\n` +
+                       `Sekolah: ${schoolName}\n` +
+                       `Kode Sekolah: ${schoolCode}\n\n` +
+                       `*LINK PORTAL SUPERVISI TERPADU (1 PINTU):*\n` +
+                       `• Portal GTK (Guru & Tendik): ${portalUrl}\n\n` +
+                       `*DAFTAR KODE AKSES PERSONAL (GURU & TENDIK):*\n`;
+
+            if (employees.length === 0) {
+                text += `(Belum ada data personil terdaftar)\n`;
+            } else {
+                employees.forEach((emp, i) => {
+                    const code = emp.accessCode || (window.KS_EMPLOYEE_DB.getAccessCode(emp.id)?.code) || '-';
+                    const role = emp.role || 'Karyawan';
+                    const duty = emp.task || emp.subject || '';
+                    const dutyStr = duty ? ` (${duty})` : '';
+                    text += `${i + 1}. ${emp.name} [${role}${dutyStr}] -> Kode: ${code}\n`;
+                });
+            }
+
+            text += `\n*Petunjuk Masuk Portal:*\n` +
+                    `1. Buka Portal Terpadu GTK (${portalUrl})\n` +
+                    `2. Pilih Nama Sekolah & masukkan Kode Akses Sekolah: *${schoolCode}*\n` +
+                    `3. Pilih Identitas Anda (Pendidik / Tenaga Kependidikan)\n` +
+                    `4. Masukkan Kode Akses Personal Anda, lalu klik "Masuk Dashboard GTK".\n` +
+                    `Simpan kode akses ini dengan baik. Terima kasih!`;
+
+            navigator.clipboard.writeText(text);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Teks Lengkap Disalin!',
+                    text: 'Daftar kode akses seluruh karyawan (Guru & Tendik) siap dibagikan ke WhatsApp grup sekolah.',
+                    confirmButtonColor: '#059669'
+                });
+            } else {
+                showToast('✅ Teks WhatsApp seluruh karyawan telah disalin!', 'emerald');
+            }
+        }
+
+        // ── Actions ─────────────────────────────────────────────────────
+        async function handleGenerateAll() {
+            showToast('Sedang membuat kode akses karyawan...', 'blue');
+            const count = await window.KS_EMPLOYEE_DB.generateAllCodes();
+            renderAccessCodeTable();
+            if (count > 0) {
+                showToast(`✅ ${count} kode akses baru berhasil digenerate.`, 'emerald');
+            } else {
+                showToast('ℹ️ Semua karyawan sudah memiliki kode akses.', 'blue');
+            }
+        }
+
+        async function handleGenerateSingle(empId) {
+            await window.KS_EMPLOYEE_DB.generateCode(empId);
+            renderAccessCodeTable();
+            showToast('✅ Kode akses berhasil digenerate.', 'emerald');
+        }
+
+        async function handleResetSingle(empId) {
+            if (!confirm('Reset kode akses personil ini? Kode lama tidak bisa digunakan lagi.')) return;
+            await window.KS_EMPLOYEE_DB.resetCode(empId);
+            renderAccessCodeTable();
+            showToast('🔄 Kode akses berhasil direset.', 'amber');
+        }
+
+        async function handleResetAll() {
+            if (!confirm('Reset semua kode akses karyawan? Semua kode lama tidak bisa digunakan lagi. Pastikan sudah membagikan kode/kartu baru setelah ini.')) return;
+            showToast('Sedang mereset kode akses...', 'amber');
+            await window.KS_EMPLOYEE_DB.resetAllCodes();
+            renderAccessCodeTable();
+            showToast('🔄 Semua kode akses karyawan telah direset.', 'amber');
+        }
+
+        // ── Print Cards ─────────────────────────────────────────────────
+        function populatePrintCardFilter() {
+            const select = document.getElementById('print-card-filter');
+            const employees = window.KS_EMPLOYEE_DB.getAll()
+                .filter(e => window.KS_EMPLOYEE_DB.getAccessCode(e.id));
+            select.innerHTML = '<option value="ALL">Semua Karyawan (yang punya kode)</option>' +
+                employees.map(e => `<option value="${e.id}">${e.name} (${e.role || 'Karyawan'})</option>`).join('');
+        }
+
+        function renderPrintCards() {
+            const container = document.getElementById('print-cards-container');
+            const filterEl = document.getElementById('print-card-filter');
+            const filter = filterEl ? filterEl.value : 'ALL';
+            const profile = window.KS_AUTH ? window.KS_AUTH.getProfile() : {};
+            const user = window.KS_AUTH ? window.KS_AUTH.getUser() : null;
+            const schoolName = (profile.schoolName || user?.schoolName || user?.school || 'Sekolah').trim();
+            const schoolCode = (profile.schoolCode || user?.schoolCode || (window.KS_AUTH ? window.KS_AUTH.getSchoolCode() : '') || '-').trim();
+
+            // Update school info badges in modal header if present
+            const badgeSchool = document.getElementById('print-modal-school-badge');
+            if (badgeSchool) badgeSchool.textContent = schoolName;
+            const badgeCode = document.getElementById('print-modal-code-badge');
+            if (badgeCode) badgeCode.textContent = schoolCode;
+
+            // Resolve portal URLs
+            const guruUrl = (window.KS_AUTH && typeof window.KS_AUTH.getGuruUrl === 'function') 
+                ? window.KS_AUTH.getGuruUrl() 
+                : ((window.location.origin || '') + '/guru/');
+            const tendikUrl = (window.KS_AUTH && typeof window.KS_AUTH.getTendikPortalUrl === 'function')
+                ? window.KS_AUTH.getTendikPortalUrl()
+                : ((window.location.origin || '') + '/tendik/portal/');
+
+            let employees = window.KS_EMPLOYEE_DB.getAll()
+                .filter(e => window.KS_EMPLOYEE_DB.getAccessCode(e.id));
+            if (filter !== 'ALL') {
+                employees = employees.filter(e => e.id === filter);
+            }
+
+            if (employees.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-400 text-xs py-12">Tidak ada kode akses yang tersedia. Generate terlebih dahulu dari modal Kelola Kode Akses Karyawan.</div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="access-cards-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${employees.map(emp => {
+                        const rec = window.KS_EMPLOYEE_DB.getAccessCode(emp.id);
+                        const isBkEmp = emp.role === 'Guru BK';
+                        const isGuru = emp.role === 'Guru' || isBkEmp || emp.role === 'Kepala Sekolah';
+                        
+                        let targetPortalUrl = guruUrl;
+                        let portalTag = 'Portal Guru';
+                        let portalBadgeColor = 'text-emerald-400 bg-emerald-950/60 border-emerald-800/50';
+                        let portalIconColor = 'text-emerald-400';
+
+                        if (isBkEmp) {
+                            targetPortalUrl = (window.KS_AUTH ? window.KS_AUTH.getBaseUrl() : '/') + 'gurubk/';
+                            portalTag = 'Portal Guru BK';
+                            portalBadgeColor = 'text-teal-400 bg-teal-950/60 border-teal-800/50';
+                            portalIconColor = 'text-teal-400';
+                        } else if (!isGuru) {
+                            targetPortalUrl = tendikUrl;
+                            portalTag = 'Portal Tendik';
+                            portalBadgeColor = 'text-amber-400 bg-amber-950/60 border-amber-800/50';
+                            portalIconColor = 'text-amber-400';
+                        }
+
+                        const cardSub = emp.task ? `${emp.role} • ${emp.task}` : (emp.subject || emp.role || 'Staff');
+
+                        return `
+                        <div class="access-card bg-slate-900 text-white rounded-2xl overflow-hidden shadow-lg border border-slate-700/80 flex flex-col justify-between" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                            <!-- Header: Nama Sekolah & Kode Sekolah -->
+                            <div class="px-3.5 py-2.5 flex items-center justify-between gap-2 border-b border-amber-600/40 text-white" style="background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <div class="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0 text-white shadow-xs">
+                                        <i class="fa-solid fa-school text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="text-[8px] font-bold text-amber-100 uppercase tracking-wider leading-none">Nama Sekolah</div>
+                                        <div class="text-xs font-black text-white truncate leading-tight uppercase" title="${schoolName}">${schoolName}</div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0 text-right bg-slate-900/60 px-2 py-1 rounded-lg border border-white/20">
+                                    <div class="text-[7px] font-bold text-amber-200 uppercase tracking-wider leading-none">Kode Sekolah</div>
+                                    <div class="font-mono font-black text-xs text-amber-300 tracking-wider leading-tight">${schoolCode}</div>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="p-3.5 space-y-3 flex-1 flex flex-col justify-between">
+                                <!-- Identitas Karyawan -->
+                                <div class="flex items-start gap-3">
+                                    <img src="${emp.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(emp.name) + '&background=334155&color=fff&size=80'}"
+                                        alt="${emp.name}" class="w-12 h-12 rounded-xl object-cover flex-shrink-0 border-2 border-slate-600 shadow-sm"
+                                        onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=334155&color=fff&size=80'">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-bold text-sm text-white leading-tight truncate" title="${emp.name}">${emp.name}</div>
+                                        <div class="text-amber-300 text-[10px] font-semibold mt-0.5 truncate">${cardSub}</div>
+                                        <div class="text-slate-400 text-[9px] font-mono mt-0.5">NIP: ${emp.nip || '—'}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Box Kredensial Login Portal: Kode Sekolah & Kode Akses -->
+                                <div class="rounded-xl p-2.5 border border-slate-700/80 space-y-2" style="background-color: #0b1120;">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="rounded-lg p-1.5 border border-slate-700 text-center" style="background-color: #1e293b;">
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Kode Sekolah</div>
+                                            <div class="font-mono font-black text-xs text-sky-400 tracking-wider">${schoolCode}</div>
+                                        </div>
+                                        <div class="rounded-lg p-1.5 border border-amber-500/40 text-center" style="background-color: #1e293b;">
+                                            <div class="text-[8px] font-bold text-amber-300 uppercase tracking-wider mb-0.5">Kode Akses</div>
+                                            <div class="font-mono font-black text-xs text-amber-400 tracking-wider">${rec.code}</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-[8px] text-slate-400 text-center leading-tight">
+                                        Masukkan <span class="text-slate-300 font-semibold">Kode Sekolah</span> &amp; <span class="text-amber-300 font-semibold">Kode Akses</span> saat login di portal
+                                    </div>
+                                </div>
+
+                                <!-- Footer: Portal URL -->
+                                <div class="pt-1.5 border-t border-slate-700/60 flex items-center justify-between text-[9px] text-slate-400">
+                                    <div class="flex items-center gap-1.5 min-w-0 truncate">
+                                        <i class="fa-solid fa-arrow-up-right-from-square ${portalIconColor} text-[10px] flex-shrink-0"></i>
+                                        <span class="truncate font-mono text-slate-300">${targetPortalUrl}</span>
+                                    </div>
+                                    <span class="text-[8px] font-bold ${portalBadgeColor} px-1.5 py-0.5 rounded border flex-shrink-0">${portalTag}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+        }
+
+        // ── Toast Helper ─────────────────────────────────────────────────
+        function showToast(msg, color = 'slate') {
+            const colorMap = {
+                emerald: 'bg-emerald-500', amber: 'bg-amber-500', blue: 'bg-blue-500', rose: 'bg-rose-500', slate: 'bg-slate-700'
+            };
+            const t = document.createElement('div');
+            t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] px-5 py-3 rounded-2xl text-white text-xs font-bold shadow-xl transition-all duration-300 ${colorMap[color] || colorMap.slate}`;
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
+        }
+    </script>
+</body>
+</html>

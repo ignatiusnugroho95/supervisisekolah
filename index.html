@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SupervisiSekolah.id - Platform Supervisi Akademik &amp; Kinerja Sekolah</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eceef0",
+                        "primary": "#000000",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary-fixed": "#131b2e",
+                        "error": "#ba1a1a",
+                        "tertiary": "#000000",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#001a42",
+                        "secondary": "#006c49",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-surface-variant": "#45464d",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface": "#f7f9fb",
+                        "tertiary-container": "#001a42",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-primary": "#bec6e0",
+                        "primary-container": "#131b2e",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "surface-bright": "#f7f9fb",
+                        "on-primary-container": "#7c839b",
+                        "surface-tint": "#565e74",
+                        "background": "#f7f9fb",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "on-error-container": "#93000a",
+                        "on-background": "#191c1e",
+                        "secondary-container": "#6cf8bb",
+                        "on-secondary-container": "#00714d",
+                        "primary-fixed": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed-variant": "#004395",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c6c6cd",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-container": "#3980f4",
+                        "outline": "#76777d",
+                        "on-surface": "#191c1e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "1rem",
+                        "stack-sm": "0.5rem",
+                        "margin-desktop": "2rem",
+                        "container-max": "1280px",
+                        "stack-lg": "1.5rem",
+                        "margin-mobile": "1rem",
+                        "gutter": "1rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "title-md": ["18px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .card-shadow {
+            box-shadow: 0px 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .bento-card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .ai-glow {
+            border: 1px solid rgba(0, 108, 73, 0.2);
+            background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%);
+        }
+    </style>
+    <!-- Auth & Includes Helpers -->
+    <script src="js/auth.js"></script>
+    <script src="js/includes.js"></script>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+    <!-- Uniform TopNavBar Container -->
+    <header id="app-header" class="bg-surface shadow-sm sticky top-0 z-[100] w-full"></header>
+    <main class="flex-grow">
+        <!-- Hero Section: Web Card Responsive -->
+        <section class="relative pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden bg-surface">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop space-y-12">
+                <!-- Header Title -->
+                <div class="text-center max-w-3xl mx-auto space-y-4">
+                    <div class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-3.5 py-1 rounded-full text-xs font-bold">
+                        <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        <span>PLATFORM INTEGRASI SUPERVISI &amp; KINERJA SEKOLAH</span>
+                    </div>
+                    <h1 class="font-display-lg text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-primary leading-tight">
+                        Pilih Portal Akses <span class="text-secondary">Sekolah Anda</span>
+                    </h1>
+                    <p class="font-body-lg text-sm sm:text-base text-on-surface-variant max-w-2xl mx-auto">
+                        Sistem terintegrasi untuk Guru dan Kepala Sekolah. Silakan pilih portal yang sesuai dengan peran Anda di sekolah.
+                    </p>
+                </div>
+
+                <!-- Announcement Banner: Toolkit Guru & Prompt Generator -->
+                <div class="max-w-4xl mx-auto mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-indigo-900 via-slate-900 to-emerald-950 text-white shadow-xl border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 text-xl shadow-lg shadow-indigo-500/30">
+                            <span class="material-symbols-outlined text-2xl">auto_awesome</span>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase tracking-wider border border-emerald-500/30">
+                                    Fitur Baru Guru
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 text-[10px] font-semibold border border-indigo-400/30">
+                                    Toolkit Guru AI
+                                </span>
+                            </div>
+                            <h2 class="text-base sm:text-lg font-bold text-white mt-1">
+                                Generator Modul Ajar Deep Learning (Word/PDF) &amp; Prompt Claude AI
+                            </h2>
+                            <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">
+                                Buat modul ajar Kurikulum Merdeka siap cetak (.doc/PDF) lengkap Kop &amp; Tanda Tangan, atau generate prompt AI berstandar supervisi.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2.5 flex-shrink-0 w-full md:w-auto">
+                        <a href="guru/toolkit/generator-modul-ajar/" class="w-full md:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition active:scale-95 text-center">
+                            <span>Modul Ajar Word</span>
+                            <span class="material-symbols-outlined text-sm">description</span>
+                        </a>
+                        <a href="guru/toolkit/" class="w-full md:w-auto px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 font-semibold text-xs border border-white/20 flex items-center justify-center gap-1.5 transition text-center" title="Jelajahi Semua Toolkit">
+                            <span class="material-symbols-outlined text-sm">handyman</span>
+                            <span>Toolkit Guru</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Web Card Responsive: 2 Primary Gateways -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
+                    <!-- CARD 1: DASHBOARD GURU -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border-2 border-emerald-200 hover:border-emerald-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Untuk Guru
+                                </span>
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-2xl">school</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h2 class="font-display-lg text-2xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                    Dashboard Guru
+                                </h2>
+                                <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                                    Lihat statistik pelaksanaan supervisi sekolah, panduan 8 fokus perilaku kinerja PMM, serta buka lembar laporan observasi kelas mandiri.
+                                </p>
+                            </div>
+
+                            <!-- Highlights -->
+                            <div class="space-y-2.5 pt-2 border-t border-slate-100 text-xs text-slate-600">
+                                <div class="flex items-center gap-2 text-indigo-700 font-semibold bg-indigo-50 px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                                    <span class="material-symbols-outlined text-base text-indigo-600">auto_awesome</span>
+                                    <span>Toolkit Guru: Generator Prompt RPP Deep Learning &amp; STEM</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-emerald-600">query_stats</span>
+                                    <span>Statistik &amp; progres observasi sekolah real-time</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-emerald-600">menu_book</span>
+                                    <span>Panduan 8 indikator fokus kinerja Kemendikbudristek</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-emerald-600">verified</span>
+                                    <span>Akses rekapitulasi &amp; cetak lembar supervisi mandiri</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 mt-6 border-t border-slate-100 space-y-2.5">
+                            <a href="portal/"
+                                class="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 text-center">
+                                <span class="material-symbols-outlined text-lg">badge</span>
+                                <span>Buka Portal GTK (Guru &amp; Tendik)</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </a>
+                            <a href="guru/toolkit/"
+                                class="w-full py-2.5 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs border border-indigo-200 transition-all flex items-center justify-center gap-1.5 active:scale-95 text-center">
+                                <span class="material-symbols-outlined text-base">auto_awesome</span>
+                                <span>Buka Toolkit Guru &amp; Prompt AI</span>
+                            </a>
+                            <p class="text-[11px] text-slate-400 text-center mt-1">
+                                Masuk 1 pintu via Nama Sekolah, Kode Sekolah &amp; Kode Akses GTK
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- CARD 2: DASHBOARD KEPALA SEKOLAH -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border-2 border-slate-200 hover:border-primary hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-primary"></span> Untuk Kepala Sekolah
+                                </span>
+                                <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-2xl">shield_person</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h2 class="font-display-lg text-2xl font-bold text-slate-900 group-hover:text-primary transition-colors">
+                                    Dashboard Kepala Sekolah
+                                </h2>
+                                <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                                    Pusat komando pimpinan sekolah untuk input supervisi kelas, evaluasi 19 kompetensi kinerja, database staf, dan manajemen kode akses.
+                                </p>
+                            </div>
+
+                            <!-- Highlights -->
+                            <div class="space-y-2.5 pt-2 border-t border-slate-100 text-xs text-slate-600">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-blue-600">visibility</span>
+                                    <span>Supervisi klinis &amp; telaah otomatis modul RPP</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-secondary">assignment</span>
+                                    <span>Evaluasi kinerja 19 aspek kompetensi tahunan</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-purple-600">badge</span>
+                                    <span>Database staf, kontrol periode &amp; kode sekolah</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 mt-6 border-t border-slate-100">
+                            <button onclick="handleGoToDashboard()"
+                                class="w-full py-3.5 px-5 rounded-2xl bg-primary hover:bg-slate-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 text-center">
+                                <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+                                <span>Buka Dashboard Kepala Sekolah</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </button>
+                            <p class="text-[11px] text-slate-400 text-center mt-2.5">
+                                Masuk menggunakan akun pimpinan sekolah terdaftar
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Value Proposition -->
+        <section id="keunggulan" class="py-20 bg-background">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+                <div class="text-center mb-16">
+                    <h2 class="font-headline-lg text-headline-lg md:text-[36px] font-bold mb-4">Solusi Cerdas untuk
+                        Kepemimpinan Sekolah</h2>
+                    <p class="text-on-surface-variant max-w-2xl mx-auto">Kami mengintegrasikan teknologi AI tercanggih
+                        untuk meringankan beban administratif Anda.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Card 1 -->
+                    <div class="bg-white p-8 rounded-2xl card-shadow border border-outline-variant/20 bento-card cursor-pointer" onclick="handleGoToEvaluasi()">
+                        <div class="w-12 h-12 bg-secondary-container rounded-xl flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-on-secondary-container"
+                                style="font-variation-settings: 'FILL' 1;">rate_review</span>
+                        </div>
+                        <h3 class="font-title-md text-title-md mb-3">Evaluasi Kinerja Terstruktur</h3>
+                        <p class="text-on-surface-variant font-body-sm text-body-sm">Urutkan guru per aspek kompetensi secara drag-and-drop, konversi skor otomatis, dan ekspor instan ke format PDF/Excel.</p>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="bg-white p-8 rounded-2xl card-shadow border border-outline-variant/20 bento-card">
+                        <div class="w-12 h-12 bg-primary-container rounded-xl flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-on-primary-container"
+                                style="font-variation-settings: 'FILL' 1;">description</span>
+                        </div>
+                        <h3 class="font-title-md text-title-md mb-3">Administrasi Tanpa Ribet</h3>
+                        <p class="text-on-surface-variant font-body-sm text-body-sm">Buat Surat Tugas, SK, dan Edaran
+                            Komite dalam hitungan detik dengan templat cerdas kami.</p>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="bg-white p-8 rounded-2xl card-shadow border border-outline-variant/20 bento-card">
+                        <div
+                            class="w-12 h-12 bg-surface-container-highest rounded-xl flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-primary"
+                                style="font-variation-settings: 'FILL' 1;">analytics</span>
+                        </div>
+                        <h3 class="font-title-md text-title-md mb-3">Pantau Sekolah Real-Time</h3>
+                        <p class="text-on-surface-variant font-body-sm text-body-sm">Ringkasan presensi guru &amp; siswa
+                            terintegrasi langsung dengan database lokal sekolah Anda.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Feature Showcase -->
+        <section id="fitur" class="py-20 bg-surface-container-low">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    <!-- Feature 1: Large Bento -->
+                    <div
+                        class="lg:col-span-7 bg-white p-10 rounded-[32px] card-shadow ai-glow flex flex-col justify-between overflow-hidden relative">
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="material-symbols-outlined text-secondary">auto_awesome</span>
+                                <span class="font-label-md text-label-md text-secondary uppercase tracking-wider">AI
+                                    Executive Daily Summary</span>
+                            </div>
+                            <h3 class="font-headline-lg text-headline-lg mb-4">Wawasan Sekolah dalam Sekejap</h3>
+                            <p class="text-on-surface-variant max-w-md">Setiap pagi, terima ringkasan intelijen tentang
+                                apa yang terjadi di sekolah Anda, dari tren kehadiran hingga prioritas hari ini.</p>
+                        </div>
+                        <div class="mt-12 -mb-10 -mr-10 self-end w-full max-w-sm">
+                            <div
+                                class="bg-surface-container p-6 rounded-tl-[24px] border-t border-l border-outline-variant/30">
+                                <div class="flex gap-4 items-center mb-4">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+                                        <span
+                                            class="material-symbols-outlined text-on-secondary-container text-sm">robot_2</span>
+                                    </div>
+                                    <div class="font-label-md text-label-md">Laporan Harian: Semester 2026/2027</div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="h-2 bg-white rounded-full w-3/4"></div>
+                                    <div class="h-2 bg-white rounded-full w-full"></div>
+                                    <div class="h-2 bg-white rounded-full w-1/2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Feature 2 & 3: Vertical Stack -->
+                    <div class="lg:col-span-5 flex flex-col gap-8">
+                        <div class="bg-primary text-on-primary p-8 rounded-[32px] card-shadow flex-grow">
+                            <span class="material-symbols-outlined mb-6 text-4xl">edit_document</span>
+                            <h3 class="font-title-md text-title-md mb-2">Auto-Draft Surat Dinas</h3>
+                            <p class="text-on-primary/70 font-body-sm text-body-sm">Cukup ketik instruksi singkat,
+                                biarkan AI merangkai kalimat formal yang sempurna untuk surat kedinasan.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-[32px] card-shadow border border-outline-variant/20 flex-grow cursor-pointer" onclick="handleGoToEvaluasi()">
+                            <span class="material-symbols-outlined mb-6 text-4xl text-secondary">verified_user</span>
+                            <h3 class="font-title-md text-title-md mb-2">Smart Evaluasi &amp; Supervisi</h3>
+                            <p class="text-on-surface-variant font-body-sm text-body-sm">Sistem pendukung keputusan
+                                untuk evaluasi guru objektif berbasis 19 aspek kompetensi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- CTA Banner -->
+        <section class="py-20 px-margin-mobile md:px-margin-desktop">
+            <div
+                class="max-w-container-max mx-auto bg-primary rounded-[40px] p-8 md:p-20 text-center relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-64 h-64 bg-secondary/20 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2">
+                </div>
+                <div class="relative z-10">
+                    <h2 class="font-display-lg text-white mb-6">Siap Menjadi Kepala Sekolah SMP yang Lebih Produktif?
+                    </h2>
+                    <p class="text-primary-fixed/80 text-lg mb-10 max-w-2xl mx-auto">Masuk sekarang untuk mengakses seluruh instrumen supervisi, data kinerja pendidik, dan fitur AI otomatis.</p>
+                    <button onclick="handleGoToDashboard()"
+                        class="bg-secondary text-on-secondary px-10 py-5 rounded-2xl font-bold text-xl hover:scale-105 transition-transform shadow-2xl active:scale-95 flex items-center justify-center gap-3 mx-auto">
+                        <span class="material-symbols-outlined">lock_open</span>
+                        Buka Dashboard Kepala Sekolah
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Uniform Footer Container -->
+    <footer id="app-footer" class="bg-surface py-12 border-t border-outline-variant/10 w-full mt-auto"></footer>
+
+    <!-- Uniform Mobile Bottom Navigation -->
+    <nav id="app-mobile-nav" class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 md:hidden bg-surface-container shadow-lg rounded-t-xl"></nav>
+
+    <!-- Modal Login Interaktif -->
+    <!-- Universal Login Modal Interaktif (Satu Pintu untuk Semua Role) -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in-95 duration-200">
+            <!-- Close Button -->
+            <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition" aria-label="Tutup Modal">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <!-- Header Modal -->
+            <div class="text-center mb-5">
+                <div class="w-14 h-14 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner border border-emerald-200">
+                    <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">lock</span>
+                </div>
+                <h3 class="text-xl font-extrabold text-primary">Universal Login Portal</h3>
+                <p class="text-xs text-on-surface-variant mt-1">Satu pintu akses untuk Kepala Sekolah, Pengawas Pembina &amp; Super Admin</p>
+            </div>
+
+            <!-- Notice Khusus Guru & Tendik (GTK) -->
+            <div class="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-start gap-2.5 shadow-2xs">
+                <span class="material-symbols-outlined text-emerald-600 text-lg flex-shrink-0 mt-0.5">badge</span>
+                <div class="leading-relaxed text-[11px]">
+                    <span class="font-bold text-emerald-900">Akses Guru &amp; Tendik:</span>
+                    Guru &amp; Tenaga Kependidikan tidak login dari formulir ini. Silakan gunakan 
+                    <a href="./portal/" class="font-extrabold text-emerald-700 underline hover:text-emerald-900 inline-flex items-center gap-0.5 ml-0.5">
+                        Portal Terpadu GTK (1 Pintu) &rarr;
+                    </a>
+                    dengan memilih Nama Sekolah, Kode Sekolah &amp; Kode Akses GTK.
+                </div>
+            </div>
+
+            <!-- Quick Account Switcher (Demo & Testing - Guru Removed) -->
+            <div class="mb-4 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+                    <span>Pilihan Cepat Masuk (Demo):</span>
+                    <span class="text-emerald-700 font-semibold">1-Klik Isi</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                    <button type="button" onclick="setLoginCredentials('superadmin', 'superadmin123', 'Super Admin')" 
+                        class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 text-[11px] font-semibold border border-slate-200 flex items-center gap-1.5 transition text-left active:scale-95 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-indigo-600 flex-shrink-0"></span>
+                        <span class="truncate">Super Admin</span>
+                    </button>
+                    <button type="button" onclick="setLoginCredentials('eagenwidi', 'kepalasekolah', 'Kepala Sekolah')" 
+                        class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 hover:border-amber-300 text-slate-700 text-[11px] font-semibold border border-slate-200 flex items-center gap-1.5 transition text-left active:scale-95 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                        <span class="truncate">Kepala Sekolah</span>
+                    </button>
+                    <button type="button" onclick="setLoginCredentials('pengawas', 'pengawas123', 'Pengawas')" 
+                        class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-blue-50 hover:border-blue-300 text-slate-700 text-[11px] font-semibold border border-slate-200 flex items-center gap-1.5 transition text-left active:scale-95 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></span>
+                        <span class="truncate">Pengawas</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="submitLogin(event)" class="space-y-3.5">
+                <!-- Alert Error -->
+                <div id="login-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span id="login-error-text">Username atau password salah!</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="login-username">
+                        Username / Email
+                    </label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">person</span>
+                        <input id="login-username" type="text" required autocomplete="username"
+                            class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition outline-none"
+                            placeholder="Contoh: eagenwidi atau superadmin..." value="eagenwidi" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" for="login-password">
+                        Kata Sandi
+                    </label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">lock</span>
+                        <input id="login-password" type="password" required autocomplete="current-password"
+                            class="w-full pl-11 pr-11 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition outline-none"
+                            placeholder="Masukkan kata sandi..." value="kepalasekolah" />
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+                            <span id="pwd-eye-icon" class="material-symbols-outlined text-lg">visibility</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-200/70 flex items-start gap-2">
+                    <span class="material-symbols-outlined text-base text-emerald-600 flex-shrink-0">info</span>
+                    <span>Sistem otomatis mendeteksi wewenang role Anda dan mengarahkan langsung ke portal yang berhak.</span>
+                </div>
+
+                <button id="btn-submit-login" type="submit"
+                    class="w-full py-3 bg-primary text-on-primary rounded-xl font-bold text-sm shadow-md hover:bg-slate-800 active:scale-[0.99] transition flex items-center justify-center gap-2 mt-1">
+                    <span class="material-symbols-outlined text-lg">login</span>
+                    <span>Masuk ke Portal</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Unified Header, Footer & Mobile Nav
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.KS_INCLUDES) {
+                window.KS_INCLUDES.init({ type: 'public', activeNav: 'home' });
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('loginRequired') === '1') {
+                const dest = urlParams.get('dest') || 'dashboard';
+                openLoginModal(dest);
+            }
+        });
+
+        function setLoginCredentials(u, p, label) {
+            document.getElementById('login-username').value = u;
+            document.getElementById('login-password').value = p;
+            document.getElementById('login-error').classList.add('hidden');
+        }
+
+        function openLoginModal(targetDestination = 'dashboard') {
+            window._targetDestination = targetDestination;
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('login-username').focus();
+            }, 100);
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('login-password');
+            const eyeIcon = document.getElementById('pwd-eye-icon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.innerText = 'visibility_off';
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.innerText = 'visibility';
+            }
+        }
+
+        async function submitLogin(event) {
+            event.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+            const errBox = document.getElementById('login-error');
+            const errText = document.getElementById('login-error-text');
+            const btn = document.getElementById('btn-submit-login');
+
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">sync</span> Memverifikasi...';
+            btn.disabled = true;
+
+            try {
+                const res = await window.KS_AUTH.login(u, p);
+                if (res.success) {
+                    btn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span> Berhasil!';
+                    
+                    setTimeout(() => {
+                        const baseUrl = window.KS_AUTH.getBaseUrl();
+                        // If user logged in as super_admin, always send to admin console
+                        if (res.role === 'super_admin') {
+                            window.location.href = baseUrl + 'admin';
+                            return;
+                        }
+
+                        // If user logged in as pengawas, send to pengawas audit view
+                        if (res.role === 'pengawas') {
+                            window.location.href = baseUrl + 'dashboard/?view=pengawas';
+                            return;
+                        }
+
+                        // Kepala Sekolah: respect target destination if provided
+                        if (window._targetDestination === 'evaluasi') {
+                            window.location.href = window.KS_AUTH.getEvaluasiUrl();
+                        } else if (window._targetDestination === 'observasi') {
+                            window.location.href = window.KS_AUTH.getObservasiUrl();
+                        } else if (window._targetDestination === 'karyawan') {
+                            window.location.href = window.KS_AUTH.getKaryawanUrl();
+                        } else {
+                            window.location.href = window.KS_AUTH.getDashboardUrl();
+                        }
+                    }, 500);
+                } else {
+                    btn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span> Masuk ke Portal';
+                    btn.disabled = false;
+                    
+                    if (res.isGuru) {
+                        errText.innerHTML = `${res.message}<div class="mt-2 pt-2 border-t border-rose-200"><a href="./guru/" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow transition active:scale-95"><span class="material-symbols-outlined text-sm">school</span><span>Buka Portal Khusus Guru &rarr;</span></a></div>`;
+                    } else {
+                        errText.innerText = res.message;
+                    }
+                    errBox.classList.remove('hidden');
+                }
+            } catch(e) {
+                btn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span> Masuk ke Portal';
+                btn.disabled = false;
+                errText.innerText = 'Terjadi kesalahan sistem: ' + e.message;
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        function handleGoToDashboard() {
+            if (window.KS_AUTH && window.KS_AUTH.isLoggedIn()) {
+                window.location.href = window.KS_AUTH.getDashboardUrl();
+            } else {
+                openLoginModal('dashboard');
+            }
+        }
+
+        function handleGoToKaryawan() {
+            if (window.KS_AUTH && window.KS_AUTH.isLoggedIn()) {
+                window.location.href = window.KS_AUTH.getKaryawanUrl();
+            } else {
+                openLoginModal('karyawan');
+            }
+        }
+
+        function handleGoToEvaluasi() {
+            if (window.KS_AUTH && window.KS_AUTH.isLoggedIn()) {
+                window.location.href = window.KS_AUTH.getEvaluasiUrl();
+            } else {
+                openLoginModal('evaluasi');
+            }
+        }
+
+        function handleGoToObservasi() {
+            if (window.KS_AUTH && window.KS_AUTH.isLoggedIn()) {
+                window.location.href = window.KS_AUTH.getObservasiUrl();
+            } else {
+                openLoginModal('observasi');
+            }
+        }
+
+        // Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+    </script>
+</body>
+
+</html>
