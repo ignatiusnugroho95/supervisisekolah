@@ -10,8 +10,8 @@
  */
 
 const KS_INDICATOR_MANAGER = {
-  STORAGE_KEY_CONFIG: 'ks_supervision_config_cache_v3',
-  STORAGE_KEY_ACTIVE: 'ks_active_categories_v3',
+  STORAGE_KEY_CONFIG: 'ks_supervision_config_cache_v4',
+  STORAGE_KEY_ACTIVE: 'ks_active_categories_v4',
 
   _configCache: null,
 
